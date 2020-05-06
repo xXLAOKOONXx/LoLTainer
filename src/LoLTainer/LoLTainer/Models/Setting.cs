@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using LoLTainer.Misc;
 
 namespace LoLTainer.Models
 {
+    [Serializable]
     public class Setting : INotifyPropertyChanged
     {
         private Misc.Event _event;
@@ -55,11 +57,17 @@ namespace LoLTainer.Models
             _fileName = fileName;
         }
 
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public Setting()
+        {
+
         }
     }
 }

@@ -14,5 +14,7 @@ namespace LoLTainer.Interfaces
         bool AddSetting(Setting setting);
         bool CheckFileExists(Setting setting);
         bool CheckAllFilesExist();
+
+        void Close();
     }
 }

@@ -10,6 +10,7 @@ namespace LoLTainer.Interfaces
     interface IAPIManager
     {
         Binding SummonerNameBinding();
+        Binding SummonerIconBinding();
 
         Binding APIConnectionMessageBinding();
         /// <summary>

@@ -1,0 +1,19 @@
+{
+  "MainWindow": {
+    "BackgroundColor": "#dddddd",
+    "QueueBodyBackgroundColor": "#424242",
+    "BTNAddQueueBackgroundColor": "#43a047",
+    "BTNChangeImgBackgroundColor": "#6ab7ff",
+    "BTNDeleteBackgroundColor": "#ff7043",
+    "BTNheadBackgroundColor": "#1e88e5"
+  },
+  "AddQueue": {
+    "BTNPickIconBackgroundColor": "#6ab7ff",
+    "BTNAddQueueBackgroundColor": "#43a047",
+    "BackgroundColor": "#dddddd",
+    "LBLQueueBackgroundColor": "#cccccc"
+  },
+  "IconPicker": {
+    "BackgroundColor": "#dddddd"
+  }
+}
