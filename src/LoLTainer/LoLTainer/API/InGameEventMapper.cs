@@ -21,7 +21,22 @@ namespace LoLTainer.API
         public EventHandler PlayerDragon;
         #endregion
 
+        #region private properties
+
         private TimeSpan _multiKillDifference = TimeSpan.FromSeconds(5);
+        private IEnumerable<string> _teamMateSummonerNames;
+        private IEnumerable<string> _enemySummonerNames;
+        private string _playerSummonerName;
+        private Models.InGameAPI.PlayerList.TeamSide _playerTeamSide;
+
+        private EventData _mostRecentEventData;
+
+        private List<TimeSpan> _playerKills = new List<TimeSpan>();
+        private int _playerMultikill = 0;
+
+        private EventHandler NoMapping;
+        #endregion
+        #region Constructors
 
         public InGameEventMapper(InGameApiManager inGameApiManager)
         {
@@ -29,11 +44,38 @@ namespace LoLTainer.API
             AddPlayerKillEvents(inGameApiManager);
             inGameApiManager.OnGameEvent += OnGameEvent;
         }
+        #endregion
+        #region public methods
+        /// <summary>
+        /// Get the <see cref="EventHandler"/> for a specific <paramref name="event"/>
+        /// </summary>
+        /// <param name="event"></param>
+        /// <returns>Eventhandler for the <paramref name="event"/>, if not supported it returns an eventhandler that will never be triggered</returns>
+        public ref EventHandler GetEventHandler(Misc.Event @event)
+        {
+            switch (@event)
+            {
+                case Misc.Event.PlayerKill:
+                    return ref PlayerKill;
+                case Misc.Event.PlayerDoubleKill:
+                    return ref PlayerDoubleKill;
+                case Misc.Event.PlayerTripleKill:
+                    return ref PlayerTripleKill;
+                case Misc.Event.PlayerQuodraKill:
+                    return ref PlayerQuodraKill;
+                case Misc.Event.PlayerPentaKill:
+                    return ref PlayerPentaKill;
+                case Misc.Event.PlayerDragonKill:
+                    return ref PlayerDragon;
+                case Misc.Event.PlayerBaronKill:
+                    return ref PlayerBaron;
 
-        private IEnumerable<string> _teamMateSummonerNames;
-        private IEnumerable<string> _enemySummonerNames;
-        private string _playerSummonerName;
-        private Models.InGameAPI.PlayerList.TeamSide _playerTeamSide;
+                default:
+                    return ref NoMapping;
+            }
+        }
+        #endregion
+        #region private methods
 
         private async Task GetPlayerInformation(InGameApiManager inGameApiManager)
         {
@@ -71,11 +113,6 @@ namespace LoLTainer.API
             inGameApiManager.OnGameEvent += OnGameEvent;
         }
 
-        private EventData _mostRecentEventData;
-
-        private List<TimeSpan> _playerKills = new List<TimeSpan>();
-        private int _playerMultikill = 0;
-
         private void OnGameEvent(object sender, EventData eventData)
         {
             foreach (var ev in eventData.Events)
@@ -102,8 +139,7 @@ namespace LoLTainer.API
                                         PlayerDoubleKill.Invoke(null, null);
                                         break;
                                     case 3:
-                                        PlayerTripleKill
-.Invoke(null, null);
+                                        PlayerTripleKill.Invoke(null, null);
                                         break;
                                     case 4:
                                         PlayerQuodraKill.Invoke(null, null);
@@ -135,30 +171,6 @@ namespace LoLTainer.API
             }
             _mostRecentEventData = eventData;
         }
-        private EventHandler NoMapping;
-
-        public ref EventHandler GetEventHandler(Misc.Event @event)
-        {
-            switch (@event)
-            {
-                case Misc.Event.PlayerKill:
-                    return ref PlayerKill;
-                case Misc.Event.PlayerDoubleKill:
-                    return ref PlayerDoubleKill;
-                case Misc.Event.PlayerTripleKill:
-                    return ref PlayerTripleKill;
-                case Misc.Event.PlayerQuodraKill:
-                    return ref PlayerQuodraKill;
-                case Misc.Event.PlayerPentaKill:
-                    return ref PlayerPentaKill;
-                case Misc.Event.PlayerDragonKill:
-                    return ref PlayerDragon;
-                case Misc.Event.PlayerBaronKill:
-                    return ref PlayerBaron;
-
-                default:
-                    return ref NoMapping;
-            }
-        }
+        #endregion
     }
 }

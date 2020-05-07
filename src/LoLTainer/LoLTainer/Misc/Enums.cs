@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.Misc
 {
+    /// <summary>
+    /// Events that are supported in this application.
+    /// Implementation for support can be found in <see cref="API.InGameEventMapper"/>.
+    /// </summary>
     public enum Event
     {
+        /* !IMPORTANT!
+         * When adding a new event here ensure support in API.InGameEventMapper
+         */
         PlayerKill = 11,
         PlayerDoubleKill = 12,
         PlayerTripleKill = 13,

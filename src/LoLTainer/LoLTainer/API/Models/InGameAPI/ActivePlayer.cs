@@ -7,13 +7,23 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.API.Models.InGameAPI
 {
+    /// <summary>
+    /// Virtual object for JSON Object from ActivePlayer Endpoint
+    /// </summary>
     public class ActivePlayer
     {
         private JObject _jObject;
+        /// <summary>
+        /// Constructor of <see cref="ActivePlayer"/>
+        /// </summary>
+        /// <param name="jObject">JSON Object from endpoint</param>
         public ActivePlayer(JObject jObject)
         {
             _jObject = jObject;
         }
+        /// <summary>
+        /// Returns the field value of the JSON Object for "summonerName"
+        /// </summary>
         public string SummonerName
         {
             get

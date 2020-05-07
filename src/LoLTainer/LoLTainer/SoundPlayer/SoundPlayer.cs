@@ -7,9 +7,16 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.SoundPlayer
 {
+    /// <summary>
+    /// SoundPlayer with <see cref="Interfaces.ISoundPlayer"/> implemented.
+    /// Uses the mci funfction of winmm DLL to play sound.
+    /// Supports using different playerIds to play different sound in paralell.
+    /// </summary>
     public class SoundPlayer : Interfaces.ISoundPlayer
     {
         private List<int> _playerIds = new List<int>();
+
+        #region ISoundPlayer EndPoints
         public async Task ClearCaches()
         {
             var delList = new List<int>();
@@ -29,6 +36,7 @@ namespace LoLTainer.SoundPlayer
             if (_playerIds.Contains(playerId))
             {
                 CloseDevice(playerId.ToString());
+                _playerIds.Remove(playerId);
             }
             OpenFile(fileName, playerId.ToString());
             Play(playerId.ToString(), TimeSpan.FromSeconds(playLengthInSec));
@@ -39,16 +47,16 @@ namespace LoLTainer.SoundPlayer
         {
             Stop(playerId.ToString());
         }
-
         public async Task TerminateAllSounds()
         {
             foreach (var v in _playerIds)
             {
-
+                StopSound(v);
+                ClearCash(v.ToString());
             }
             _playerIds = new List<int>();
         }
-
+        #endregion
 
 
         [DllImport("winmm.dll")]
@@ -72,7 +80,7 @@ namespace LoLTainer.SoundPlayer
             string format = @"close {0}";
             var call = String.Format(format, playerDeviceName);
             mciSendString(call, null, 0, IntPtr.Zero);
-
+            
         }
 
         private static void Play(string playerDeviceName, TimeSpan playDuration)
@@ -91,10 +99,7 @@ namespace LoLTainer.SoundPlayer
 
         private static void ClearCash(string playerDeviceName)
         {
-            throw new NotImplementedException();
-
-            // if running stop
-            // delete device
+            CloseDevice(playerDeviceName);
         }
     }
 }

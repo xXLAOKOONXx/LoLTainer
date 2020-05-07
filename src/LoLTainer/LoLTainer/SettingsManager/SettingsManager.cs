@@ -13,17 +13,22 @@ namespace LoLTainer.SettingsManager
     public class SettingsManager : Interfaces.ISettingsManager
     {
         private List<Setting> _settings;
-
+        /// <summary>
+        /// Constructor for <see cref="SettingsManager"/>.
+        /// Reads stored settings from file or creates a blank list of settings otherwise
+        /// </summary>
         public SettingsManager()
         {
-            /* If SettingsFile Exists and works load into _settings
-             * else build new empty list
-             * 
-             * 
-             */
             if (File.Exists(_settingsPath))
             {
-                ReadSettingsFromFile();
+                try
+                {
+                    ReadSettingsFromFile();
+                }
+                catch (Exception ex)
+                {
+                    _settings = new List<Setting>();
+                }
             }
             else
             {
@@ -55,9 +60,10 @@ namespace LoLTainer.SettingsManager
         }
         #endregion
 
+        #region ISettingsManager Implementation
         public bool AddSetting(Setting setting)
         {
-            if(_settings.Select(s => s.Event).Contains(setting.Event))
+            if (_settings.Select(s => s.Event).Contains(setting.Event))
             {
                 return false;
             }
@@ -68,7 +74,7 @@ namespace LoLTainer.SettingsManager
 
         public bool CheckAllFilesExist()
         {
-            foreach(var item in _settings)
+            foreach (var item in _settings)
             {
                 if (!CheckFileExists(item))
                 {
@@ -85,7 +91,7 @@ namespace LoLTainer.SettingsManager
 
         public IEnumerable<Setting> GetAllSettings()
         {
-            foreach(var item in _settings)
+            foreach (var item in _settings)
             {
                 yield return item;
             }
@@ -101,5 +107,6 @@ namespace LoLTainer.SettingsManager
         {
             WriteSettingsToFile();
         }
+        #endregion
     }
 }

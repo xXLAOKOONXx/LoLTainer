@@ -12,11 +12,21 @@ using WebSocketSharp;
 
 namespace LoLTainer.API
 {
+
     public class APIManager : Interfaces.IAPIManager
     {
-        Interfaces.ISettingsManager _settingsManager;
-        Interfaces.ISoundPlayer _soundPlayer;
+        #region private properties
+        private Interfaces.ISettingsManager _settingsManager;
+        private Interfaces.ISoundPlayer _soundPlayer;
+        private LCUManager _lCUManager;
+        private InGameApiManager _inGameApiManager;
+        private InGameEventMapper _inGameEventMapper;
+        #endregion
 
+        /// <summary>
+        /// Constructor of <see cref="APIManager"/>
+        /// </summary>
+        /// <param name="settingsManager"><see cref="Interfaces.ISettingsManager"/> to draw the Settings from</param>
         public  APIManager(Interfaces.ISettingsManager settingsManager)
         {
             _settingsManager = settingsManager;
@@ -25,6 +35,8 @@ namespace LoLTainer.API
             _lCUManager = new LCUManager();
             _lCUManager.InGame += OnIngameChange;
         }
+
+        #region IAPIManager Implementation
         public Binding APIConnectionMessageBinding()
         {
             throw new NotImplementedException();
@@ -44,11 +56,14 @@ namespace LoLTainer.API
         {
             throw new NotImplementedException();
         }
+        #endregion
 
-        private LCUManager _lCUManager;
-        private InGameApiManager _inGameApiManager;
-        private InGameEventMapper _inGameEventMapper;
-
+        /// <summary>
+        /// Listener for changes on the State of being ingame.
+        /// Opens / Closes InGameApiManager
+        /// </summary>
+        /// <param name="sender">can be null</param>
+        /// <param name="inGame">true if ingame</param>
         private void OnIngameChange(object sender, bool inGame)
         {
             if (inGame && _inGameApiManager == null)

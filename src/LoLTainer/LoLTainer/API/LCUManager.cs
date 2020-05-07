@@ -30,18 +30,17 @@ namespace LoLTainer.API
 
 
         #region private constants
+        private const string GameEvent = "OnJsonApiEvent_lol-gameflow_v1_session";
+        /* Below EndPoints are not in use yet, as they might be relevant in future they are listed here.
         private const string SummonerIconChangedEvent = "OnJsonApiEvent_lol-summoner_v1_current-summoner";
         private const string LoggedInEvent = "OnJsonApiEvent_lol-login_v1_login-data-packet";
         private const string QueueUpEvent = "OnJsonApiEvent_lol-lobby-team-builder_v1_lobby";
         private const string LobbyChangedEvent = "OnJsonApiEvent_lol-lobby_v2_lobby";
-        private const string GameEvent = "OnJsonApiEvent_lol-gameflow_v1_session";
-
+        */
         static readonly string _authRegexPattern = @"""--remoting-auth-token=(?'token'.*?)"" | ""--app-port=(?'port'|.*?)""";
         static readonly RegexOptions _authRegexOptions = RegexOptions.Multiline;
         #endregion
         #region private properties
-        private bool _connected = false;
-        private bool _terminationRequested = false;
         private string _apiDomain;
         private AuthenticationHeaderValue _authHeader;
         private string _token;
@@ -50,12 +49,14 @@ namespace LoLTainer.API
         private WebSocket _webSocket;
         #endregion
         #region EventHandler
-        public EventHandler<MessageEventArgs> WebsocketMessageEventHandler { get; private set; }
+        private EventHandler<MessageEventArgs> WebsocketMessageEventHandler { get; set; }
+        public EventHandler<JArray> GameFlowSessionEventHandler { get; private set; }
+        /* Below EndPoints are not in use yet, as they might be relevant in future they are listed here.
         public EventHandler<JArray> SummonerIconChangedEventHandler { get; private set; }
         public EventHandler<JArray> LoggedInEventHandler { get; private set; }
         public EventHandler<JArray> QueueUpEventHandler { get; private set; }
         public EventHandler<JArray> LobbyChangedEventHandler { get; private set; }
-        public EventHandler<JArray> GameFlowSessionEventHandler { get; private set; }
+        */
         #endregion
 
         private void OnGameFlowSession(object sender, JArray jArray)
@@ -74,10 +75,11 @@ namespace LoLTainer.API
 
             var EventName = Messages[1].ToString();
 
-            Console.WriteLine("Event: " + EventName + " uri " + Messages[2]["uri"]);
+            // Console.WriteLine("Event: " + EventName + " uri " + Messages[2]["uri"]);
 
             switch (EventName)
             {
+                /* Below EndPoints are not in use yet, as they might be relevant in future they are listed here.
                 case SummonerIconChangedEvent:
                     SummonerIconChangedEventHandler.Invoke(sender, Messages);
                     break;
@@ -90,6 +92,7 @@ namespace LoLTainer.API
                 case LobbyChangedEvent:
                     //LobbyChangedEventHandler.Invoke(sender, Messages);
                     break;
+                    */
                 case GameEvent:
                     GameFlowSessionEventHandler.Invoke(sender, Messages);
                     break;
@@ -133,13 +136,8 @@ namespace LoLTainer.API
 
         }
 
-        private void SetUpConnection()
+        private void SetUpConnection(string port, string token)
         {
-            string port;
-            string token;
-            GetAuth(out port, out token);
-
-
             var BaseString = string.Format("{0}:{1}", "riot", token);
             var Base64Data = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(BaseString));
             _authHeader = new AuthenticationHeaderValue("Basic", Base64Data);
@@ -155,11 +153,15 @@ namespace LoLTainer.API
 
             wb.Connect();
 
-            //wb.Send("[5,\"" + SummonerIconChangedEvent + "\"]");
-            // wb.Send("[5,\"" + QueueUpEvent + "\"]");
-            //  wb.Send("[5,\"" + LobbyChangedEvent + "\"]");
+            // Subscribe to GameEvents
             wb.Send("[5,\"" + GameEvent + "\"]");
-            //  wb.Send("[5,\"" + LoggedInEvent + "\"]");
+
+            /* Below EndPoints are not in use yet, as they might be relevant in future they are listed here.
+            wb.Send("[5,\"" + SummonerIconChangedEvent + "\"]");
+            wb.Send("[5,\"" + QueueUpEvent + "\"]");
+            wb.Send("[5,\"" + LobbyChangedEvent + "\"]");
+            wb.Send("[5,\"" + LoggedInEvent + "\"]");
+            */
 
             _webSocket = wb;
             WebSocketActivityChanged.Invoke(this, true);
@@ -179,8 +181,8 @@ namespace LoLTainer.API
 
         private async Task InitiateClientConnection()
         {
-            string port;
-            string token;
+            string port = "";
+            string token = "";
             var successfulGetAuth = false;
             while (!successfulGetAuth)
             {
@@ -191,12 +193,13 @@ namespace LoLTainer.API
                 }
                 catch (Exception e)
                 {
+                    // No Client found => retry in a few seconds
                     await Task.Delay(10000);
                 }
             }
             try
             {
-                SetUpConnection();
+                SetUpConnection(port:port,token:token);
             }
             catch (Exception ex)
             {
