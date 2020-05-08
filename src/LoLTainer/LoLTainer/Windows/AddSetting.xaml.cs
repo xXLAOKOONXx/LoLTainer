@@ -60,6 +60,8 @@ namespace LoLTainer.Windows
             {
                 this.EventPicker.Children.Add(PickerOption(item));
             }
+            _event = freshEvents[0];
+            RadioButtonClicked.Invoke(null, _event);
         }
 
         private JToken _uISettings;
