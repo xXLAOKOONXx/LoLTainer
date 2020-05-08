@@ -12,7 +12,8 @@
 On the main window you can click on "Add Mapping" to add a new mapping.  
 ![Add Mapping](https://github.com/xXLaokoonXx/LoLTainer/blob/master/documentation/img/AddSettingWindow_Blank.png?raw=true)  
 On the left side select side select your event, on the right side you can click on the "Select File" button and select your sound file (WAV).  
-After selecting both you can add the mapping and it will be active in the next game.
+After selecting both you can add the mapping and it will be active in the next game.  
+The soundfile need to be longer than 10 seconds, while the first 10 seconds will be played when triggered.
 
 ## Change Mapping
 Changing a Mapping is not available yet. You can use the delete button and add a new mapping for the event.  
