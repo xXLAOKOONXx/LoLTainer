@@ -70,14 +70,7 @@ namespace LoLTainer.SoundPlayer
         private static void OpenFile(string filepath, string playerDeviceName)
         {
             string format;
-            if (filepath.Split('.').Last() == "mp3")
-            {
-                format = @"open ""{0}"" type mpegvideo alias {1}";
-            }
-            else
-            {
-                format = @"open ""{0}"" alias {1}";
-            }
+            format = @"open ""{0}"" alias {1}";
             var call = String.Format(format, filepath, playerDeviceName);
             mciSendString(call, null, 0, IntPtr.Zero);
 
