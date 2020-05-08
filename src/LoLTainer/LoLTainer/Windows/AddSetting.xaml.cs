@@ -126,7 +126,7 @@ namespace LoLTainer.Windows
             var dialog = new System.Windows.Forms.OpenFileDialog();
 
 
-            var filter = "SoundFiles (mp3, wav)|*.wav;*.mp3|MP3|*.mp3|WAV|*.wav";
+            var filter = "SoundFiles (WAV)|*.wav";
 
             dialog.Filter = filter;
             dialog.FilterIndex = 1;
