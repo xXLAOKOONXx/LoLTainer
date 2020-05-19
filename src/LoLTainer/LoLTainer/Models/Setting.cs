@@ -86,6 +86,7 @@ namespace LoLTainer.Models
         /// <param name="propertyName"></param>
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
+            Loggings.Logger.Log(Loggings.LogType.Settings, "Setting changed " + this.Event.ToString() + " " + propertyName);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 

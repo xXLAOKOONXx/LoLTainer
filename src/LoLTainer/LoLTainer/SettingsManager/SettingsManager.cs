@@ -46,17 +46,21 @@ namespace LoLTainer.SettingsManager
         }
         private void ReadSettingsFromFile()
         {
+            Loggings.Logger.Log(Loggings.LogType.Settings, "Reading settings from file");
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(_settingsPath, FileMode.Open, FileAccess.Read, FileShare.Read);
             _settings = (List<Setting>)formatter.Deserialize(stream);
             stream.Close();
+            Loggings.Logger.Log(Loggings.LogType.Settings, "Settings read from file");
         }
         private void WriteSettingsToFile()
         {
+            Loggings.Logger.Log(Loggings.LogType.Settings, "Saving settings in file");
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(_settingsPath, FileMode.Create, FileAccess.Write, FileShare.None);
             formatter.Serialize(stream, _settings);
             stream.Close();
+            Loggings.Logger.Log(Loggings.LogType.Settings, "Settings saved in file");
         }
         #endregion
 
@@ -65,19 +69,23 @@ namespace LoLTainer.SettingsManager
         {
             if (_settings.Select(s => s.Event).Contains(setting.Event))
             {
+                Loggings.Logger.Log(Loggings.LogType.Settings, "Adding settings tried, but already exists");
                 return false;
             }
             _settings.Add(setting);
+            Loggings.Logger.Log(Loggings.LogType.Settings, "New setting added: " + setting.Event.ToString() + " " + setting.FileName);
             WriteSettingsToFile();
             return true;
         }
 
         public bool CheckAllFilesExist()
         {
+            Loggings.Logger.Log(Loggings.LogType.Settings, "Checking all files");
             foreach (var item in _settings)
             {
                 if (!CheckFileExists(item))
                 {
+                    Loggings.Logger.Log(Loggings.LogType.Settings, "(!) File of setting not existing: " + item.Event.ToString() + " " + item.FileName);
                     return false;
                 }
             }
@@ -100,6 +108,7 @@ namespace LoLTainer.SettingsManager
         public bool RemoveSetting(Setting setting)
         {
             var ret = _settings.Remove(setting);
+            Loggings.Logger.Log(Loggings.LogType.Settings, "Returning Setting " + setting.Event.ToString() + " was " + (ret ? "successful" : "unsuccsessful"));
             return ret;
         }
 
