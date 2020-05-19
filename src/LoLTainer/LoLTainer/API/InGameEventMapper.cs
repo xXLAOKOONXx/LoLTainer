@@ -40,9 +40,12 @@ namespace LoLTainer.API
 
         public InGameEventMapper(InGameApiManager inGameApiManager)
         {
+
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Setting up InGameMapper");
             GetPlayerInformation(inGameApiManager).Wait();
             AddPlayerKillEvents(inGameApiManager);
             inGameApiManager.OnGameEvent += OnGameEvent;
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameMapper set up");
         }
         #endregion
         #region public methods
@@ -110,6 +113,7 @@ namespace LoLTainer.API
 
         private void AddPlayerKillEvents(InGameApiManager inGameApiManager)
         {
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Adding PlayerKillEvents");
             inGameApiManager.OnGameEvent += OnGameEvent;
         }
 
@@ -128,6 +132,7 @@ namespace LoLTainer.API
                                 _playerKills.Add(ev.EventTime);
                                 PlayerKill.Invoke(null, null);
                                 _playerMultikill = 1;
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Single Kill occured");
                             }
                             else
                             {
@@ -137,15 +142,19 @@ namespace LoLTainer.API
                                 {
                                     case 2:
                                         PlayerDoubleKill.Invoke(null, null);
+                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Double Kill occured");
                                         break;
                                     case 3:
                                         PlayerTripleKill.Invoke(null, null);
+                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Triple Kill occured");
                                         break;
                                     case 4:
                                         PlayerQuodraKill.Invoke(null, null);
+                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Quodra Kill occured");
                                         break;
                                     default:
                                         PlayerPentaKill.Invoke(null, null);
+                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Penta Kill occured");
                                         break;
                                 }
                             }
@@ -157,6 +166,7 @@ namespace LoLTainer.API
                         if (ev.KillerName == _playerSummonerName)
                         {
                             PlayerDragon.Invoke(null, null);
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Kill occured");
                         }
                     }
                     else
@@ -165,6 +175,7 @@ namespace LoLTainer.API
                         if (ev.KillerName == _playerSummonerName)
                         {
                             PlayerBaron.Invoke(null, null);
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Kill occured");
                         }
                     }
                 }

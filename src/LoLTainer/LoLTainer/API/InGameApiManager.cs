@@ -43,6 +43,7 @@ namespace LoLTainer.API
         /// </summary>
         public InGameApiManager()
         {
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameApiManager started");
             Task.Run(()=>
             GameActionLooper(TimeSpan.FromMilliseconds(200)));
         }
@@ -102,7 +103,7 @@ namespace LoLTainer.API
 
         private async Task GameActionLooper(TimeSpan delay)
         {
-            Console.WriteLine("GameActionLooper started with a delay in seconds: " + delay.TotalSeconds);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "GameActionLooper started with a delay in seconds: " + delay.TotalSeconds);
             while (_gameActionCrawling)
             {
                 try
@@ -111,7 +112,7 @@ namespace LoLTainer.API
                 await GameActionRequester();
                 }catch(Exception ex)
                 {
-                    Console.WriteLine("EXCEPTION!!!");
+                    Loggings.Logger.Log(Loggings.LogType.IngameAPI, "!!! Exception cought in GameActionLooper (InGameApiManager), loop continue anyway");
                 }
                 await Task.Delay(delay);
             }
@@ -127,7 +128,7 @@ namespace LoLTainer.API
 
             if(response != _mostRecentGameEventList)
             {
-                Console.WriteLine("New Event occured!");
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "New InGame Event occured");
 
                 _mostRecentGameEventList = response;
 

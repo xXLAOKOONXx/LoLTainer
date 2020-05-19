@@ -87,6 +87,7 @@ namespace LoLTainer.API
             foreach(var setting in _settingsManager.GetAllSettings())
             {
                 _inGameEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec); };
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-InGame-Eventlistener set up: " + setting.Event.ToString());
             }
         }
     }
