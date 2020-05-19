@@ -84,10 +84,26 @@ namespace LoLTainer.SoundPlayer
 
         }
 
+        /// <summary>
+        /// Play the device starting by 0.
+        /// If the file is long enough the file will be played for <paramref name="playDuration"/>.
+        /// If the file is not long enough the file will be played completely
+        /// </summary>
+        /// <param name="playerDeviceName">name of device</param>
+        /// <param name="playDuration">duration to play the device</param>
         private static void Play(string playerDeviceName, TimeSpan playDuration)
         {
+            string call;
+            if(GetSoundLength(playerDeviceName) >= playDuration)
+            {
             string format = @"play {0} from 0 to {1}";
-            var call = String.Format(format, playerDeviceName, playDuration.TotalMilliseconds);
+            call = String.Format(format, playerDeviceName, playDuration.TotalMilliseconds);
+            }
+            else
+            {
+                string format = @"play {0} from 0";
+                call = String.Format(format, playerDeviceName);
+            }
             mciSendString(call, null, 0, IntPtr.Zero);
         }
 
@@ -101,6 +117,26 @@ namespace LoLTainer.SoundPlayer
         private static void ClearCash(string playerDeviceName)
         {
             CloseDevice(playerDeviceName);
+        }
+
+        /// <summary>
+        /// Function to get the Length of a open device.
+        /// </summary>
+        /// <param name="playerDeviceName">Name of device</param>
+        /// <returns>Duration of the current player Device</returns>
+        private static TimeSpan GetSoundLength(string playerDeviceName)
+        {
+            StringBuilder lengthBuf = new StringBuilder(32);
+
+            var format = "status {0} length";
+            var command = String.Format(format, playerDeviceName);
+
+            mciSendString(command, lengthBuf, lengthBuf.Capacity, IntPtr.Zero);
+
+            int length = 0;
+            int.TryParse(lengthBuf.ToString(), out length);
+
+            return TimeSpan.FromMilliseconds(length);
         }
     }
 }
