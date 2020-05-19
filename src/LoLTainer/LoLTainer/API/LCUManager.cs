@@ -168,7 +168,7 @@ namespace LoLTainer.API
             */
 
             _webSocket = wb;
-            WebSocketActivityChanged.Invoke(this, true);
+            WebSocketActivityChanged?.Invoke(this, true);
 
             _token = token;
             _port = port;
@@ -178,7 +178,7 @@ namespace LoLTainer.API
 
         private void OnWebSocketClose(object sender, CloseEventArgs closeEventArgs)
         {
-            WebSocketActivityChanged(this, false);
+            WebSocketActivityChanged?.Invoke(this, false);
             InitiateClientConnection();
         }
 
