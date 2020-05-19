@@ -18,9 +18,11 @@ namespace LoLTainer.API
 
         public LCUManager()
         {
+            Loggings.Logger.Log(Loggings.LogType.LCU,"Setting up LCU Manager");
             WebsocketMessageEventHandler += OnWebSocketMessage;
             GameFlowSessionEventHandler += OnGameFlowSession;
             InitiateClientConnection();
+            Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Manager set up");
         }
         /// <summary>
         /// EventArgument = Websocket is active;
@@ -63,10 +65,12 @@ namespace LoLTainer.API
         {
             var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
             InGame.Invoke(this, b);
+            Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b?"InGame":"Not InGame"));
         } 
 
         private void OnWebSocketMessage(object sender, MessageEventArgs e)
         {
+            Loggings.Logger.Log(Loggings.LogType.LCU, "WebSocket Message received");
             var Messages = JArray.Parse(e.Data);
 
             int MessageType = 0;
@@ -188,8 +192,10 @@ namespace LoLTainer.API
             {
                 try
                 {
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Get LCU port and token");
                     GetAuth(out port, out token);
                     successfulGetAuth = true;
+                    Loggings.Logger.Log(Loggings.LogType.LCU, String.Format("LCU Port: {0}, Token: {1}",port,token));
                 }
                 catch (Exception e)
                 {
@@ -200,6 +206,7 @@ namespace LoLTainer.API
             try
             {
                 SetUpConnection(port:port,token:token);
+                Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Connection established");
             }
             catch (Exception ex)
             {
