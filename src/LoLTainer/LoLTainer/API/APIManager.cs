@@ -19,6 +19,7 @@ namespace LoLTainer.API
         private Interfaces.ISettingsManager _settingsManager;
         private Interfaces.ISoundPlayer _soundPlayer;
         private LCUManager _lCUManager;
+        private LCUEventMapper _lCUEventMapper;
         private InGameApiManager _inGameApiManager;
         private InGameEventMapper _inGameEventMapper;
         #endregion
@@ -34,6 +35,9 @@ namespace LoLTainer.API
 
             _lCUManager = new LCUManager();
             _lCUManager.InGame += OnIngameChange;
+
+            _lCUEventMapper = new LCUEventMapper(_lCUManager);
+            MakeLCUMapping();
         }
 
         #region IAPIManager Implementation
@@ -88,6 +92,15 @@ namespace LoLTainer.API
             {
                 _inGameEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec); };
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-InGame-Eventlistener set up: " + setting.Event.ToString());
+            }
+        }
+
+        private void MakeLCUMapping()
+        {
+            foreach (var setting in _settingsManager.GetAllSettings())
+            {
+                _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec); };
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-LCU-Eventlistener set up: " + setting.Event.ToString());
             }
         }
     }
