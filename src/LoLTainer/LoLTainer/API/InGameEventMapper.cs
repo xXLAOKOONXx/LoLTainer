@@ -34,6 +34,9 @@ namespace LoLTainer.API
         private List<TimeSpan> _playerKills = new List<TimeSpan>();
         private int _playerMultikill = 0;
 
+        /// <summary>
+        /// Eventhandler to hold Events not triggered by this EventMapper.
+        /// </summary>
         private EventHandler NoMapping;
         #endregion
         #region Constructors

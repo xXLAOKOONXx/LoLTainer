@@ -8,12 +8,12 @@ namespace LoLTainer.Misc
 {
     /// <summary>
     /// Events that are supported in this application.
-    /// Implementation for support can be found in <see cref="API.InGameEventMapper"/>.
+    /// Implementation for support can be found in <see cref="API.InGameEventMapper"/> or <see cref="API.LCUEventMapper"/>.
     /// </summary>
     public enum Event
     {
         /* !IMPORTANT!
-         * When adding a new event here ensure support in API.InGameEventMapper
+         * When adding a new event here ensure support in API.InGameEventMapper or API.LCUEventMapper
          */
         PlayerKill = 11,
         PlayerDoubleKill = 12,
@@ -37,5 +37,11 @@ namespace LoLTainer.Misc
         //PlayerBaronSteal = 56,
         //TeamDragonSteal = 57,
         //TeamBaronSteal = 58
+        /*
+         * --LCU--
+         */
+         EnterChampSelect = 1010,
+         EnterGame = 1020,
+         EndGame = 1030
     }
 }

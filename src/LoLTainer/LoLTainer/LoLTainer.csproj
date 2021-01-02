@@ -82,6 +82,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="API\LCUEventMapper.cs" />
     <Compile Include="Loggings\Logger.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />
     <Compile Include="SoundPlayer\SoundPlayer.cs" />

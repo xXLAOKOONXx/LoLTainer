@@ -52,7 +52,7 @@ namespace LoLTainer.API
         #endregion
         #region EventHandler
         private EventHandler<MessageEventArgs> WebsocketMessageEventHandler { get; set; }
-        public EventHandler<JArray> GameFlowSessionEventHandler { get; private set; }
+        public EventHandler<JArray> GameFlowSessionEventHandler { get; set; }
         /* Below EndPoints are not in use yet, as they might be relevant in future they are listed here.
         public EventHandler<JArray> SummonerIconChangedEventHandler { get; private set; }
         public EventHandler<JArray> LoggedInEventHandler { get; private set; }
