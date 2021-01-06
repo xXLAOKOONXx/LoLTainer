@@ -29,6 +29,7 @@ namespace LoLTainer.Windows
         private int _soundPlayerGroup = 0;
         private Action<Setting> _action;
         private double _volume = -1;
+        private bool _playingSound = false;
         public AddSetting(Action<Setting> action, IEnumerable<Event> usedEvents)
         {
             _action = action;
@@ -167,6 +168,34 @@ namespace LoLTainer.Windows
                 set.PlayLengthInSec = x;
                 _action(set);
                 this.Close();
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("One or more entries are not valid.");
+            }
+        }
+
+        private async void BTNPlaySound_Click(object sender, RoutedEventArgs e)
+        {
+            if (_playingSound)
+            {
+                return;
+            }
+            int x;
+            if (AllValid(out x))
+            {
+                _playingSound = true;
+                var set = new Setting(_event, _fileName);
+                set.SoundPlayerGroup = _soundPlayerGroup;
+                set.Volume = (int)Math.Round(SLDVolume.Value, 0);
+                set.PlayLengthInSec = x;
+                var t = new Task(async () =>
+                {
+                    var soundplayer = new SoundPlayer.MediaPlayer();
+                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLengthInSec, set.Volume);
+                    _playingSound = false;
+                });
+                t.Start();
             }
             else
             {

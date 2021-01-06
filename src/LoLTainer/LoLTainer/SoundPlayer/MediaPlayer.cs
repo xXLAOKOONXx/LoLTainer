@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows;
 using System.Threading;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
 
 namespace LoLTainer.SoundPlayer
 {
@@ -66,20 +67,41 @@ namespace LoLTainer.SoundPlayer
                     Loggings.Logger.Log(Loggings.LogType.Sound, "DispatcherQueue for File '" + fileName + "' using Player " + playerId + "started");
                     Console.WriteLine("Dispatcher answered");
                     player.Close();
+                    var opened = false;
+                    player.MediaOpened += (s,o) => { opened = true; };
                     player.Open(uri);
+                    
                     if (!myPlayer) return;
                     player.Play();
-                    if (playLengthInSec < 0)
+                    if ((playLengthInSec < 0))
                     {
-                        playLengthInSec = (int)Math.Round(player.NaturalDuration.TimeSpan.TotalSeconds, 0);
+                        return;
+                        /*
+                        player.
+                        if (player.NaturalDuration.HasTimeSpan)
+                        {
+                            playLengthInSec = (int)Math.Round(player.NaturalDuration.TimeSpan.TotalSeconds, 0);
+                            Loggings.Logger.Log(Loggings.LogType.Sound, "Updated Length of '" + fileName + "' to " + playLengthInSec + "seconds");
+                        }
+                        else
+                        {
+                            Loggings.Logger.Log(Loggings.LogType.Sound, "Failed Updating Length for '" + fileName + "' cause no TimeSpan in natural duration of file. Timer set to 10sec.");
+                            playLengthInSec = 10;
+                            Console.WriteLine("Debugging:");
+                            Console.WriteLine("Value of HastTimeSpan:" + player.NaturalDuration.HasTimeSpan);
+                            Thread.Sleep(100);
+                            Console.WriteLine("Value of HastTimeSpan after waiting:" + player.NaturalDuration.HasTimeSpan);
+
+
+                        }*/
                     }
                     Thread.Sleep(1000 * playLengthInSec);
                     if (!myPlayer) return;
                     player.Stop();
                     player.Close();
                     Console.WriteLine("Sound should be off");
-                    Loggings.Logger.Log(Loggings.LogType.Sound, "DispatcherQueue for File '" + fileName + "' using Player " + playerId + "ended");
-                    //player.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Normal);
+                    Loggings.Logger.Log(Loggings.LogType.Sound, "DispatcherQueue for File '" + fileName + "' using Player " + playerId + " ended at " + playLengthInSec + "seconds");
+
                 });
 
                 player.Dispatcher.Invoke(del);
@@ -121,5 +143,6 @@ namespace LoLTainer.SoundPlayer
         }
 
         private EventHandler<int> playerTaken;
+        
     }
 }
