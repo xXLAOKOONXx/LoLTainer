@@ -17,6 +17,15 @@
                 <Label Name="LBLFileName" Content="File Name"/>
                 <Button Name="BTNFileName" Content="Select File" Padding="20,0,20,0" Click="BTNFileName_Click"/>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,20,0,20">
+                <Label Name="LBLVolumeExplain" Content="Volume (-1 = stay the same): "/>
+                <Label Name="LBLVolumeDisplay" Content="{Binding ElementName=SLDVolume, Path=Value}"/>
+            </StackPanel>
+            <Slider x:Name="SLDVolume" AutoToolTipPlacement="BottomRight" Margin="10" Minimum="-1" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" Value="-1"></Slider>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,20">
+                <Label Name="LBLDurationExplain" Content="Play Duration (-1 = until the end): "/>
+                <TextBox Name="TXTDuration" Width="150" Padding="5"/>
+            </StackPanel>
             <Button Name="BTNAddSetting" Content="Add" Width="200" HorizontalAlignment="Right" Margin="20" Click="BTNAddSetting_Click"/>
         </StackPanel>
     </Grid>

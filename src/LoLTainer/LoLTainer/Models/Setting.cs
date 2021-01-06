@@ -17,6 +17,7 @@ namespace LoLTainer.Models
         private string _fileName;
         private int _playLengthInSec = 10;
         private int _soundPlayerGroup = 0;
+        private int _volume = -1;
 
         /// <summary>
         /// Full file name for the sound played when setting triggers
@@ -62,6 +63,15 @@ namespace LoLTainer.Models
                 _event = value;
             }
         }
+        public int Volume
+        {
+            get => _volume; set
+            {
+                NotifyPropertyChanged();
+                _volume = value;
+            }
+        }
+
 
         /// <summary>
         /// Constructor

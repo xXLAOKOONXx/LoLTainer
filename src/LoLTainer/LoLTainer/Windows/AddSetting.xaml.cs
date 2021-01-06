@@ -28,26 +28,38 @@ namespace LoLTainer.Windows
         private string _fileName = "";
         private int _soundPlayerGroup = 0;
         private Action<Setting> _action;
+        private double _volume = -1;
         public AddSetting(Action<Setting> action, IEnumerable<Event> usedEvents)
         {
             _action = action;
             InitializeComponent();
+            //AddBinding();
             DrawUISettings();
             DrawPickList(usedEvents);
+        }
+
+        private void AddBinding()
+        {
+            var bnd = new Binding();
+            bnd.Source = _volume;
+            LBLVolumeDisplay.SetBinding(ContentProperty, bnd);
+            var bnd2 = new Binding();
+            bnd2.Source = _volume;
+            SLDVolume.SetBinding(ContentProperty, bnd2);
         }
 
         public void DrawPickList(IEnumerable<Event> usedEvents)
         {
             var freshEvents = new List<Event>();
             var events = Enum.GetValues(typeof(Event));
-            foreach(Event item in events)
+            foreach (Event item in events)
             {
                 if (!usedEvents.Contains(item))
                 {
                     freshEvents.Add(item);
                 }
             }
-            if(freshEvents.Count == 0)
+            if (freshEvents.Count == 0)
             {
 
                 var msgbx = MessageBox.Show("Check your settings list, you already have every available Event in your list.");
@@ -56,7 +68,7 @@ namespace LoLTainer.Windows
 
                 return;
             }
-            foreach(var item in freshEvents)
+            foreach (var item in freshEvents)
             {
                 this.EventPicker.Children.Add(PickerOption(item));
             }
@@ -114,12 +126,15 @@ namespace LoLTainer.Windows
             return horistack;
         }
 
-        private bool AllValid()
+        private bool AllValid(out int x)
         {
             if (!File.Exists(_fileName))
             {
+                x = 10;
                 return false;
             }
+            if (!int.TryParse(TXTDuration.Text,out x))
+                return false;
             return true;
         }
 
@@ -132,7 +147,7 @@ namespace LoLTainer.Windows
 
             dialog.Filter = filter;
             dialog.FilterIndex = 1;
-                //"txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            //"txt files (*.txt)|*.txt|All files (*.*)|*.*";
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -143,10 +158,12 @@ namespace LoLTainer.Windows
 
         private void BTNAddSetting_Click(object sender, RoutedEventArgs e)
         {
-            if (AllValid())
+            int x;
+            if (AllValid(out x))
             {
                 var set = new Setting(_event, _fileName);
                 set.SoundPlayerGroup = _soundPlayerGroup;
+                set.Volume = (int)Math.Round(SLDVolume.Value, 0);
                 _action(set);
                 this.Close();
             }

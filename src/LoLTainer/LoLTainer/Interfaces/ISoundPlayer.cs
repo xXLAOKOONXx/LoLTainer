@@ -18,8 +18,9 @@ namespace LoLTainer.Interfaces
         /// <param name="playerId">ID of the music player</param>
         /// <param name="fileName">full path to sound file</param>
         /// <param name="playLengthInSec">seconds the file should be played</param>
+        /// <param name="volume">volume standardized between 0 and 100. To not change the volume use -1.</param>
         /// <returns></returns>
-        Task PlaySound(int playerId, string fileName, int playLengthInSec);
+        Task PlaySound(int playerId, string fileName, int playLengthInSec, int volume = -1);
         /// <summary>
         /// Stops the sound assosiated to a specific <paramref name="playerId"/>
         /// </summary>

@@ -14,6 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,7 +27,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -85,6 +85,7 @@
     <Compile Include="API\LCUEventMapper.cs" />
     <Compile Include="Loggings\Logger.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />
+    <Compile Include="SoundPlayer\MediaPlayer.cs" />
     <Compile Include="SoundPlayer\SoundPlayer.cs" />
     <Compile Include="Windows\AddSetting.xaml.cs">
       <DependentUpon>AddSetting.xaml</DependentUpon>

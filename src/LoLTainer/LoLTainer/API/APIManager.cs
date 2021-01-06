@@ -31,7 +31,7 @@ namespace LoLTainer.API
         public  APIManager(Interfaces.ISettingsManager settingsManager)
         {
             _settingsManager = settingsManager;
-            _soundPlayer = new SoundPlayer.SoundPlayer();
+            _soundPlayer = new SoundPlayer.MediaPlayer();
 
             _lCUManager = new LCUManager();
             _lCUManager.InGame += OnIngameChange;

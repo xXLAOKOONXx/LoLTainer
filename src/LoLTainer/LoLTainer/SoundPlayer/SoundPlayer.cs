@@ -31,7 +31,7 @@ namespace LoLTainer.SoundPlayer
             _playerIds.RemoveAll(x => delList.Contains(x));
         }
 
-        public async Task PlaySound(int playerId, string fileName, int playLengthInSec)
+        public async Task PlaySound(int playerId, string fileName, int playLengthInSec, int volume = -1)
         {
             if (_playerIds.Contains(playerId))
             {
