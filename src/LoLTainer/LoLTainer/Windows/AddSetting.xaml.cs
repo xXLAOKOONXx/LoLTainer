@@ -164,6 +164,7 @@ namespace LoLTainer.Windows
                 var set = new Setting(_event, _fileName);
                 set.SoundPlayerGroup = _soundPlayerGroup;
                 set.Volume = (int)Math.Round(SLDVolume.Value, 0);
+                set.PlayLengthInSec = x;
                 _action(set);
                 this.Close();
             }

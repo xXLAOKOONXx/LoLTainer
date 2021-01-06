@@ -69,6 +69,10 @@ namespace LoLTainer.SoundPlayer
                     player.Open(uri);
                     if (!myPlayer) return;
                     player.Play();
+                    if (playLengthInSec < 0)
+                    {
+                        playLengthInSec = (int)Math.Round(player.NaturalDuration.TimeSpan.TotalSeconds, 0);
+                    }
                     Thread.Sleep(1000 * playLengthInSec);
                     if (!myPlayer) return;
                     player.Stop();
