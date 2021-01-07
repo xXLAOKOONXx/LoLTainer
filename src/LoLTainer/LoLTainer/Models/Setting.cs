@@ -18,6 +18,7 @@ namespace LoLTainer.Models
         private int _playLengthInSec = 10;
         private int _soundPlayerGroup = 0;
         private int _volume = -1;
+        private PlayMode _playMode = PlayMode.StopPlaying;
 
         /// <summary>
         /// Full file name for the sound played when setting triggers
@@ -63,12 +64,26 @@ namespace LoLTainer.Models
                 _event = value;
             }
         }
+        /// <summary>
+        /// The Volume the sound will play at. Normalized to values between 0 and 100. '-1' stands for not changing the volume.
+        /// </summary>
         public int Volume
         {
             get => _volume; set
             {
                 NotifyPropertyChanged();
                 _volume = value;
+            }
+        }
+        /// <summary>
+        /// The <see cref="PlayMode"/> the sound will be played with.
+        /// </summary>
+        public PlayMode PlayMode
+        {
+            get => _playMode; set
+            {
+                NotifyPropertyChanged();
+                _playMode = value;
             }
         }
 

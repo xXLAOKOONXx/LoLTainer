@@ -46,8 +46,17 @@ namespace LoLTainer.Misc
     }
     public enum PlayMode
     {
+        /// <summary>
+        /// The sound will wait until the current sound from the group is finished
+        /// </summary>
         WaitPlaying,
+        /// <summary>
+        /// The sound will stop the current sound from the group and start immediately
+        /// </summary>
         StopPlaying,
+        /// <summary>
+        /// Before starting to play all other sounds will be shut down
+        /// </summary>
         StopAllPlaying
     }
 }

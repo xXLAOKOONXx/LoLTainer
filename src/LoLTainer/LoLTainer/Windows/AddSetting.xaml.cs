@@ -31,23 +31,14 @@ namespace LoLTainer.Windows
         private Action<Setting> _action;
         private double _volume = -1;
         private bool _playingSound = false;
+        private PlayMode _playMode = PlayMode.StopPlaying;
         public AddSetting(Action<Setting> action, IEnumerable<Event> usedEvents)
         {
             _action = action;
             InitializeComponent();
-            //AddBinding();
+            UpdatePlayModeRadios();
             DrawUISettings();
             DrawPickList(usedEvents);
-        }
-
-        private void AddBinding()
-        {
-            var bnd = new Binding();
-            bnd.Source = _volume;
-            LBLVolumeDisplay.SetBinding(ContentProperty, bnd);
-            var bnd2 = new Binding();
-            bnd2.Source = _volume;
-            SLDVolume.SetBinding(ContentProperty, bnd2);
         }
 
         public void DrawPickList(IEnumerable<Event> usedEvents)
@@ -75,7 +66,7 @@ namespace LoLTainer.Windows
                 this.EventPicker.Children.Add(PickerOption(item));
             }
             _event = freshEvents[0];
-            RadioButtonClicked.Invoke(null, _event);
+            EventRadioButtonClicked.Invoke(null, _event);
         }
 
         private JToken _uISettings;
@@ -95,7 +86,7 @@ namespace LoLTainer.Windows
 
             this.BTNFileName.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BTNPickIconBackgroundColor"].ToString()));
         }
-        private EventHandler<Event> RadioButtonClicked;
+        private EventHandler<Event> EventRadioButtonClicked;
         private UIElement PickerOption(Event @event)
         {
             var horistack = new StackPanel();
@@ -107,9 +98,9 @@ namespace LoLTainer.Windows
             radio.Click += (sender, e) =>
             {
                 _event = @event;
-                RadioButtonClicked.Invoke(sender, @event);
+                EventRadioButtonClicked.Invoke(sender, @event);
             };
-            RadioButtonClicked += (sender, selectedEvent) => { radio.IsChecked = selectedEvent == @event; };
+            EventRadioButtonClicked += (sender, selectedEvent) => { radio.IsChecked = selectedEvent == @event; };
 
             var lbl = new Label();
             lbl.Content = @event.ToString();
@@ -119,13 +110,38 @@ namespace LoLTainer.Windows
             lbl.MouseDown += (sender, e) =>
             {
                 _event = @event;
-                RadioButtonClicked.Invoke(sender, @event);
+                EventRadioButtonClicked.Invoke(sender, @event);
             };
 
             horistack.Children.Add(radio);
             horistack.Children.Add(lbl);
 
             return horistack;
+        }
+
+        private void PlayModeWaitClicked(object sender, EventArgs args)
+        {
+            _playMode = PlayMode.WaitPlaying;
+            UpdatePlayModeRadios();
+        }
+        private void PlayModeStopClicked(object sender, EventArgs args)
+        {
+            _playMode = PlayMode.StopPlaying;
+            UpdatePlayModeRadios();
+
+        }
+        private void PlayModeStopAllClicked(object sender, EventArgs args)
+        {
+            _playMode = PlayMode.StopAllPlaying;
+            UpdatePlayModeRadios();
+
+        }
+
+        private void UpdatePlayModeRadios()
+        {
+            RDBWait.IsChecked = _playMode == PlayMode.WaitPlaying;
+            RDBStop.IsChecked = _playMode == PlayMode.StopPlaying;
+            RDBStopAll.IsChecked = _playMode == PlayMode.StopAllPlaying;
         }
 
         private bool AllValid(out int playLength, out int group)
@@ -197,7 +213,7 @@ namespace LoLTainer.Windows
                 var t = new Task(async () =>
                 {
                     var soundplayer = APIManager.GetActiveManager().SoundPlayer;
-                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLengthInSec, set.Volume);
+                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLengthInSec, set.Volume, _playMode);
                     _playingSound = false;
                 });
                 t.Start();

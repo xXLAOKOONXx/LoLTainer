@@ -36,7 +36,6 @@ namespace LoLTainer.SoundPlayer
 
             var audioFile = new AudioFileReader(fileName);
             var outputDevice = GetPlayer(playerId);
-            outputDevice.DeviceNumber = playerId;
             if (volume >= 0)
             {
                 if (volume > 100)

@@ -116,7 +116,7 @@ namespace LoLTainer.API
         {
             foreach (var setting in _settingsManager.GetAllSettings())
             {
-                _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec); };
+                _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec,setting.Volume,setting.PlayMode); };
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-LCU-Eventlistener set up: " + setting.Event.ToString());
             }
         }
