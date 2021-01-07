@@ -77,10 +77,13 @@ namespace LoLTainer
             var bnd = new Binding("FileName");
             bnd.Source = setting;
             lbl1.SetBinding(Label.ContentProperty, bnd);
+            lbl1.HorizontalContentAlignment = HorizontalAlignment.Right;
+            lbl1.FlowDirection = FlowDirection.RightToLeft;
             Grid.SetColumn(lbl1, 0);
+            Grid.SetColumnSpan(lbl1, 2); // As long as no edit Button available this space might be used in that way.
             body.Children.Add(lbl1);
 
-
+            /* Edit Button removed at least temporary
             var btn = new Button();
             btn.Content = "Edit";
             Grid.SetColumn(btn, 1);
@@ -89,6 +92,7 @@ namespace LoLTainer
                 ChangeSetting(setting);
             };
             body.Children.Add(btn);
+            */
 
 
             magicWrap.Children.Add(body);
