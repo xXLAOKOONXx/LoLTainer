@@ -12,14 +12,22 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Name="LeftPanel" Grid.Column="0" Orientation="Vertical">
-            <Image Name="IMGCurrentSummonerIcon" Width="150px" Height="150px" Margin="5,5,5,5"/>
-            <Label Name="LBLSummonerName" HorizontalAlignment="Center" Content="SummonerName" FontSize="20"/>
-            <Label Name="LBLSummonerClubTag" HorizontalAlignment="Center" Content="ClubTAG"/>
-            <StackPanel Name="ClientUpdateFrame">
-                <Label Name="ClientStatus" />
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Name="LeftPanel" Grid.Row="0" Orientation="Vertical">
+                <Image Name="IMGCurrentSummonerIcon" Width="150px" Height="150px" Margin="5,5,5,5"/>
+                <Label Name="LBLSummonerName" HorizontalAlignment="Center" Content="SummonerName" FontSize="20"/>
+                <StackPanel Name="ClientUpdateFrame">
+                    <Label Name="LBLClientStatus" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+            <TextBlock Name="TXTBLKRiotLegal" Grid.Row="1" TextWrapping="Wrap" Padding="5">
+            LoLTainer isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
+            </TextBlock>
+        </Grid>
         <ScrollViewer Grid.Column="1">
             <StackPanel>
 

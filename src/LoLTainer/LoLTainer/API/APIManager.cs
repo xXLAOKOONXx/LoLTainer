@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Management;
 using System.Net.Http.Headers;
@@ -13,7 +14,7 @@ using WebSocketSharp;
 namespace LoLTainer.API
 {
 
-    public class APIManager : Interfaces.IAPIManager
+    public class APIManager : Interfaces.IAPIManager, INotifyPropertyChanged
     {
         static APIManager _activeManager = null;
         /// <summary>
@@ -30,6 +31,19 @@ namespace LoLTainer.API
         /// </summary>
         public Interfaces.ISoundPlayer SoundPlayer { get => _soundPlayer; }
 
+        public string APIConnectionMessage
+        {
+            get => _aPIConnectionMessage;
+            set
+            {
+                _aPIConnectionMessage = value;
+                OnPropertyChanged("APIConnectionMessage");
+            }
+        }
+        #region const
+        private const string LCUNotConnected = "Not Connected";
+        private const string LCUConnected = "Connected to Client";
+        #endregion
         #region private properties
         private Interfaces.ISettingsManager _settingsManager;
         private Interfaces.ISoundPlayer _soundPlayer;
@@ -37,6 +51,7 @@ namespace LoLTainer.API
         private LCUEventMapper _lCUEventMapper;
         private InGameApiManager _inGameApiManager;
         private InGameEventMapper _inGameEventMapper;
+        private string _aPIConnectionMessage = LCUNotConnected;
         #endregion
 
         /// <summary>
@@ -49,7 +64,12 @@ namespace LoLTainer.API
             _soundPlayer = new SoundPlayer.NAudioPlayer();
 
             _lCUManager = new LCUManager();
+            _lCUManager.Connected += OnLCUConnectionChange;
             _lCUManager.InGame += OnIngameChange;
+            if (_lCUManager.IsConnected)
+            {
+                OnLCUConnectionChange(this, true);
+            }
 
             _lCUEventMapper = new LCUEventMapper(_lCUManager);
             MakeLCUMapping();
@@ -60,7 +80,9 @@ namespace LoLTainer.API
         #region IAPIManager Implementation
         public Binding APIConnectionMessageBinding()
         {
-            throw new NotImplementedException();
+            var bnd = new Binding("APIConnectionMessage");
+            bnd.Source = this;
+            return bnd;
         }
 
         public void SetInGameAPIOnOff(bool active)
@@ -75,7 +97,9 @@ namespace LoLTainer.API
 
         public Binding SummonerNameBinding()
         {
-            throw new NotImplementedException();
+            var bnd = new Binding("CurrentSummonerName");
+            bnd.Source = _lCUManager;
+            return bnd;
         }
         #endregion
 
@@ -102,6 +126,23 @@ namespace LoLTainer.API
                 _soundPlayer.TerminateAllSounds();
             }
         }
+        /// <summary>
+        /// Listener for changes on the State of LCU Manager being connected to Client.
+        /// Updates Connection Message.
+        /// </summary>
+        /// <param name="sender">can be null</param>
+        /// <param name="inGame">true if ingame</param>
+        private void OnLCUConnectionChange(object sender, bool connected)
+        {
+            if (connected)
+            {
+                APIConnectionMessage = LCUConnected;
+            }
+            else
+            {
+                APIConnectionMessage = LCUNotConnected;
+            }
+        }
 
         private void MakeIngameMapping()
         {
@@ -118,6 +159,17 @@ namespace LoLTainer.API
             {
                 _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec,setting.Volume,setting.PlayMode); };
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-LCU-Eventlistener set up: " + setting.Event.ToString());
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string info)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(info));
             }
         }
     }

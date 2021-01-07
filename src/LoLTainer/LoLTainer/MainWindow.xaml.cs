@@ -33,6 +33,13 @@ namespace LoLTainer
             _aPIManager = new API.APIManager(_settingsManager);
             DrawUISettings();
             DrawList();
+            SetBindings();
+        }
+
+        private void SetBindings()
+        {
+            LBLClientStatus.SetBinding(ContentProperty, _aPIManager.APIConnectionMessageBinding());
+            LBLSummonerName.SetBinding(ContentProperty, _aPIManager.SummonerNameBinding());
         }
 
         private void DrawUISettings()
@@ -48,6 +55,9 @@ namespace LoLTainer
             this.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BackgroundColor"].ToString()));
 
             this.BTNAddMapping.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BTNAddQueueBackgroundColor"].ToString()));
+
+            this.TXTBLKRiotLegal.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["TXTBLKRiotLegalBackgroundColor"].ToString()));
+
         }
 
         private void DrawList()

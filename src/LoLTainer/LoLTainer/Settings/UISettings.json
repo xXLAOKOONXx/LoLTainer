@@ -5,7 +5,8 @@
     "BTNAddQueueBackgroundColor": "#43a047",
     "BTNChangeImgBackgroundColor": "#6ab7ff",
     "BTNDeleteBackgroundColor": "#ff7043",
-    "BTNheadBackgroundColor": "#1e88e5"
+    "BTNheadBackgroundColor": "#1e88e5",
+    "TXTBLKRiotLegalBackgroundColor": "#cccccc"
   },
   "AddSetting": {
     "BTNFileNameBackgroundColor": "#6ab7ff",
