@@ -27,9 +27,7 @@ namespace LoLTainer.Windows
         private bool _manualClose = true;
         private Event _event;
         private string _fileName = "";
-        private int _soundPlayerGroup = 0;
         private Action<Setting> _action;
-        private double _volume = -1;
         private bool _playingSound = false;
         private PlayMode _playMode = PlayMode.StopPlaying;
         public AddSetting(Action<Setting> action, IEnumerable<Event> usedEvents)
@@ -72,50 +70,106 @@ namespace LoLTainer.Windows
         private JToken _uISettings;
         private void DrawUISettings()
         {
-            var filePath = System.IO.Path.Combine(AppContext.BaseDirectory, "Settings", "UISettings.json");
+            try
+            {
+                var filePath = System.IO.Path.Combine(AppContext.BaseDirectory, "Settings", "UISettings.json");
 
-            var jsontext = System.IO.File.ReadAllText(filePath);
+                var jsontext = System.IO.File.ReadAllText(filePath);
 
-            var uISettings = JObject.Parse(jsontext);
+                var uISettings = JObject.Parse(jsontext);
 
-            _uISettings = uISettings["AddQueue"];
+                _uISettings = uISettings["AddQueue"];
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.UI, "Failed loading AddQueue UISettings from File, Error Message: " + ex.Message);
+            }
 
-            this.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BackgroundColor"].ToString()));
+            SetBackgroundFromSettings(this, "BackgroundColor");
+            SetBackgroundFromSettings(BTNAddSetting, "BTNAddSettingBackgroundColor");
+            SetBackgroundFromSettings(BTNFileName, "BTNFileNameBackgroundColor");
+            SetBackgroundFromSettings(BTNPlaySound, "BTNPlaySoundBackground");
 
-            this.BTNAddSetting.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BTNAddQueueBackgroundColor"].ToString()));
+            SetBorderFromSettings(BTNFileName, "ErrorBorderColor");
+            SetBorderFromSettings(TXTDuration, "ErrorBorderColor");
+            SetBorderFromSettings(TXTGroup, "ErrorBorderColor");
 
-            this.BTNFileName.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BTNPickIconBackgroundColor"].ToString()));
+            /*
+             * <SolidColorBrush x:Key="SliderSelectionBackground" Color="Green" />
+                <SolidColorBrush x:Key="SliderSelectionBorder" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBackground" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBackgroundDisabled" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBackgroundDragging" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBackgroundHover" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBorder" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBorderDisabled" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBorderDragging" Color="Green" />
+                <SolidColorBrush x:Key="SliderThumbBorderHover" Color="Green" />
+             * 
+             */
+             
         }
+
+        private void SetBackgroundFromSettings(Control control, string colorName)
+        {
+
+            Brush tmpBrush;
+            try
+            {
+                tmpBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings[colorName].ToString()));
+                control.Background = tmpBrush;
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Error getting Color from UISettings; Color:{0}, ErrorMessage:{1}", colorName, ex.Message));
+            }
+        }
+
+        private void SetBorderFromSettings(Control control, string colorName)
+        {
+
+            Brush tmpBrush;
+            try
+            {
+                tmpBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings[colorName].ToString()));
+                control.BorderBrush = tmpBrush;
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Error getting Color from UISettings; Color:{0}, ErrorMessage:{1}", colorName, ex.Message));
+            }
+        }
+
         private EventHandler<Event> EventRadioButtonClicked;
         private UIElement PickerOption(Event @event)
         {
             var horistack = new StackPanel();
             horistack.Margin = new Thickness(5, 5, 5, 5);
             horistack.Orientation = Orientation.Horizontal;
-            var radio = new RadioButton();
-            radio.Padding = new Thickness(10);
-            radio.VerticalAlignment = VerticalAlignment.Center;
-            radio.Click += (sender, e) =>
-            {
-                _event = @event;
-                EventRadioButtonClicked.Invoke(sender, @event);
-            };
-            EventRadioButtonClicked += (sender, selectedEvent) => { radio.IsChecked = selectedEvent == @event; };
-
             var lbl = new Label();
             lbl.Content = @event.ToString();
             lbl.VerticalAlignment = VerticalAlignment.Center;
             lbl.Width = 150;
-            lbl.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["LBLQueueBackgroundColor"].ToString()));
+            SetBackgroundFromSettings(lbl, "LBLQueueBackgroundColor");
             lbl.MouseDown += (sender, e) =>
             {
                 _event = @event;
                 EventRadioButtonClicked.Invoke(sender, @event);
             };
 
-            horistack.Children.Add(radio);
+            EventRadioButtonClicked += (sender, selectedEvent) =>
+            {
+                //radio.IsChecked = selectedEvent == @event;
+                if (selectedEvent == @event)
+                {
+                    SetBackgroundFromSettings(lbl, "LBLQueueSelectedBackgroundColor");
+                }
+                else
+                {
+                    SetBackgroundFromSettings(lbl, "LBLQueueBackgroundColor");
+                }
+            };
             horistack.Children.Add(lbl);
-
             return horistack;
         }
 
@@ -146,20 +200,32 @@ namespace LoLTainer.Windows
 
         private bool AllValid(out int playLength, out int group)
         {
+            var success = true;
             if (!File.Exists(_fileName))
             {
-                playLength = 10;
-                group = 0;
-                return false;
+                BTNFileName.BorderThickness = new Thickness(2);
+                success = false;
             }
-            if (!int.TryParse(TXTDuration.Text, out playLength))
+            else
             {
-                group = 0;
-                return false;
+                BTNFileName.BorderThickness = new Thickness(0);
             }
-            if (!int.TryParse(TXTGroup.Text, out group))
-                return false;
-            return true;
+            ExtractInt(TXTDuration, out playLength, ref success);
+            ExtractInt(TXTGroup, out group, ref success);
+            return success;
+        }
+
+        private void ExtractInt(TextBox textBox, out int value, ref bool success)
+        {
+            if (!int.TryParse(TXTDuration.Text, out value))
+            {
+                textBox.BorderThickness = new Thickness(2);
+                success = false;
+            }
+            else
+            {
+                textBox.BorderThickness = new Thickness(0);
+            }
         }
 
         private void BTNFileName_Click(object sender, RoutedEventArgs e)
