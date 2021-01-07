@@ -15,11 +15,13 @@ namespace LoLTainer.Misc
         /* !IMPORTANT!
          * When adding a new event here ensure support in API.InGameEventMapper or API.LCUEventMapper
          */
-        PlayerKill = 11,
+        PlayerAnyKill = 10,
+        PlayerSingleKill = 11,
         PlayerDoubleKill = 12,
         PlayerTripleKill = 13,
         PlayerQuodraKill = 14,
         PlayerPentaKill = 15,
+        PlayerFirstBlood = 16,
         //TeamKill = 21,
         //TeamDoubleKill = 22,
         //TeamTripleKill = 23,
