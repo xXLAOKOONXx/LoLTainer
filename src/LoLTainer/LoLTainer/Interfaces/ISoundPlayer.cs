@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoLTainer.Misc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,7 @@ namespace LoLTainer.Interfaces
         /// <param name="playLengthInSec">seconds the file should be played</param>
         /// <param name="volume">volume standardized between 0 and 100. To not change the volume use -1.</param>
         /// <returns></returns>
-        Task PlaySound(int playerId, string fileName, int playLengthInSec, int volume = -1);
+        Task PlaySound(int playerId, string fileName, int playLengthInSec, int volume = -1, PlayMode playMode = PlayMode.WaitPlaying);
         /// <summary>
         /// Stops the sound assosiated to a specific <paramref name="playerId"/>
         /// </summary>

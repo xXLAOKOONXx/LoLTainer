@@ -44,4 +44,10 @@ namespace LoLTainer.Misc
          EnterGame = 1020,
          EndGame = 1030
     }
+    public enum PlayMode
+    {
+        WaitPlaying,
+        StopPlaying,
+        StopAllPlaying
+    }
 }

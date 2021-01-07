@@ -1,4 +1,5 @@
-﻿using LoLTainer.Misc;
+﻿using LoLTainer.API;
+using LoLTainer.Misc;
 using LoLTainer.Models;
 using Newtonsoft.Json.Linq;
 using System;
@@ -127,14 +128,20 @@ namespace LoLTainer.Windows
             return horistack;
         }
 
-        private bool AllValid(out int x)
+        private bool AllValid(out int playLength, out int group)
         {
             if (!File.Exists(_fileName))
             {
-                x = 10;
+                playLength = 10;
+                group = 0;
                 return false;
             }
-            if (!int.TryParse(TXTDuration.Text,out x))
+            if (!int.TryParse(TXTDuration.Text, out playLength))
+            {
+                group = 0;
+                return false;
+            }
+            if (!int.TryParse(TXTGroup.Text, out group))
                 return false;
             return true;
         }
@@ -159,13 +166,12 @@ namespace LoLTainer.Windows
 
         private void BTNAddSetting_Click(object sender, RoutedEventArgs e)
         {
-            int x;
-            if (AllValid(out x))
+            if (AllValid(out int playLength, out int group))
             {
                 var set = new Setting(_event, _fileName);
-                set.SoundPlayerGroup = _soundPlayerGroup;
+                set.SoundPlayerGroup = group;
                 set.Volume = (int)Math.Round(SLDVolume.Value, 0);
-                set.PlayLengthInSec = x;
+                set.PlayLengthInSec = playLength;
                 _action(set);
                 this.Close();
             }
@@ -181,17 +187,16 @@ namespace LoLTainer.Windows
             {
                 return;
             }
-            int x;
-            if (AllValid(out x))
+            if (AllValid(out int playLength, out int group))
             {
                 _playingSound = true;
                 var set = new Setting(_event, _fileName);
-                set.SoundPlayerGroup = _soundPlayerGroup;
+                set.SoundPlayerGroup = group;
                 set.Volume = (int)Math.Round(SLDVolume.Value, 0);
-                set.PlayLengthInSec = x;
+                set.PlayLengthInSec = playLength;
                 var t = new Task(async () =>
                 {
-                    var soundplayer = new SoundPlayer.MediaPlayer();
+                    var soundplayer = APIManager.GetActiveManager().SoundPlayer;
                     await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLengthInSec, set.Volume);
                     _playingSound = false;
                 });
