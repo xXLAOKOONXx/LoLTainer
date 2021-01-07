@@ -130,7 +130,7 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            if (_playerKills.Count == 0 || !(_playerKills.Last() + _multiKillDifference > ev.EventTime))
+                            if (_playerKills.Count == 0 || !(_playerKills.First().TotalMilliseconds + (_multiKillDifference.TotalMilliseconds * _playerMultikill) > ev.EventTime.TotalMilliseconds))
                             {
                                 _playerKills.Add(ev.EventTime);
                                 PlayerKill?.Invoke(null, null);
