@@ -7,18 +7,15 @@
     "BTNDeleteBackgroundColor": "#ff7043",
     "BTNheadBackgroundColor": "#1e88e5"
   },
-  "AddQueue": {
+  "AddSetting": {
     "BTNFileNameBackgroundColor": "#6ab7ff",
     "BTNAddSettingBackgroundColor": "#43a047",
     "BackgroundColor": "#dddddd",
-    "LBLQueueBackgroundColor": "#cccccc",
-    "LBLQueueSelectedBackgroundColor": "#6ab7ff",
+    "LBLActionBackgroundColor": "#cccccc",
+    "LBLActionSelectedBackgroundColor": "#6ab7ff",
     "ErrorBorderColor": "#c62828",
-    "BTNPlaySoundBackground": "#cccccc",
-    "SLDVolumeSliderBackgroundColor": "#bbbbbb",
-    "SLDVolumeLineBackgroundColor": "#bbbbbb"
-  },
-  "IconPicker": {
-    "BackgroundColor": "#dddddd"
+    "BTNPlaySoundBackground": "#bbbbbb",
+    "LBLPlayModeBackgroundColor": "#cccccc",
+    "LBLPlayModeSelectedBackgroundColor": "#6ab7ff"
   }
 }

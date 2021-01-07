@@ -10,6 +10,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
         <ScrollViewer Grid.Column="0">
             <StackPanel Name="EventPicker" />
@@ -20,29 +21,32 @@
                 <Button Name="BTNFileName" Content="Select File" Padding="20,0,20,0" Click="BTNFileName_Click" BorderThickness="0"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,5">
-                <Label Name="LBLVolumeExplain" Content="Volume (-1 = stay the same): "/>
+                <Label Name="LBLVolumeExplain" Content="Volume: "/>
                 <Label Name="LBLVolumeDisplay" Content="{Binding ElementName=SLDVolume, Path=Value}"/>
+                <Label Name="LBLVolumeExplainDetail" Content=" (-1 = stays at previous volume of same group)" FontSize="9" VerticalContentAlignment="Bottom"/>
             </StackPanel>
             <Slider x:Name="SLDVolume" AutoToolTipPlacement="BottomRight" Margin="10" Minimum="-1" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" Value="-1"></Slider>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5">
-                <Label Name="LBLDurationExplain" Content="Play Duration (-1 = until the end): "/>
-                <TextBox Name="TXTDuration" Width="150" Padding="5" Text="-1" BorderThickness="0"/>
+                <Label Name="LBLDurationExplain" Content="Play Duration in seconds (-1 = play file to end): "/>
+                <TextBox Name="TXTDuration" Width="150" Padding="5" Text="-1" BorderThickness="0" HorizontalContentAlignment="Right"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5">
-                <Label Name="LBLGroupExplain" Content="Group (enter a number):"/>
-                <TextBox Name="TXTGroup" Width="150" Padding="5" Text="0" BorderThickness="0"/>
+                <Label Name="LBLGroupExplain" Content="Group ID (number):"/>
+                <TextBox Name="TXTGroup" Width="150" Padding="5" Text="0" BorderThickness="0" HorizontalContentAlignment="Right"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5">
-                <RadioButton Name="RDBWait" Margin="5" Click="PlayModeWaitClicked"/>
-                <Label Content="Wait Playing" MouseDown="PlayModeWaitClicked"/>
-                <RadioButton Name="RDBStop" Margin="5" Click="PlayModeStopClicked"/>
-                <Label Content="Stop Group" MouseDown="PlayModeStopClicked"/>
-                <RadioButton Name="RDBStopAll"  Margin="5" Click="PlayModeStopAllClicked"/>
-                <Label Content="Stop All Playing" MouseDown="PlayModeStopAllClicked"/>
-            </StackPanel>
+            <Grid Margin="5,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Name="LBLPlayModeWait" Grid.Column="0" Content="Wait Playing" MouseDown="PlayModeWaitClicked" HorizontalContentAlignment="Center"/>
+                <Label Name="LBLPlayModeStop" Grid.Column="1" Content="Stop Group" MouseDown="PlayModeStopClicked" HorizontalContentAlignment="Center"/>
+                <Label Name="LBLPlayModeStopAll" Grid.Column="2" Content="Stop All Playing" MouseDown="PlayModeStopAllClicked" HorizontalContentAlignment="Center"/>
+            </Grid>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
-                <Button Name="BTNPlaySound" Content="Test Sound" Width="200" HorizontalAlignment="Left" Margin="20" Click="BTNPlaySound_Click" BorderThickness="0"/>
-                <Button Name="BTNAddSetting" Content="Add" Width="200" HorizontalAlignment="Right" Margin="20" Click="BTNAddSetting_Click" BorderThickness="0"/>
+                <Button Name="BTNPlaySound" Content="Test Sound" Width="200" HorizontalAlignment="Left" Margin="20" Click="BTNPlaySound_Click" BorderThickness="0" Height="25"/>
+                <Button Name="BTNAddSetting" Content="Add" Width="200" HorizontalAlignment="Right" Margin="20" Click="BTNAddSetting_Click" BorderThickness="0" Height="25"/>
             </StackPanel>
         </StackPanel>
     </Grid>

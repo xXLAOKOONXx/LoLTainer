@@ -34,8 +34,8 @@ namespace LoLTainer.Windows
         {
             _action = action;
             InitializeComponent();
-            UpdatePlayModeRadios();
             DrawUISettings();
+            UpdatePlayModeLabels();
             DrawPickList(usedEvents);
         }
 
@@ -78,7 +78,7 @@ namespace LoLTainer.Windows
 
                 var uISettings = JObject.Parse(jsontext);
 
-                _uISettings = uISettings["AddQueue"];
+                _uISettings = uISettings["AddSetting"];
             }
             catch (Exception ex)
             {
@@ -93,21 +93,6 @@ namespace LoLTainer.Windows
             SetBorderFromSettings(BTNFileName, "ErrorBorderColor");
             SetBorderFromSettings(TXTDuration, "ErrorBorderColor");
             SetBorderFromSettings(TXTGroup, "ErrorBorderColor");
-
-            /*
-             * <SolidColorBrush x:Key="SliderSelectionBackground" Color="Green" />
-                <SolidColorBrush x:Key="SliderSelectionBorder" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBackground" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBackgroundDisabled" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBackgroundDragging" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBackgroundHover" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBorder" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBorderDisabled" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBorderDragging" Color="Green" />
-                <SolidColorBrush x:Key="SliderThumbBorderHover" Color="Green" />
-             * 
-             */
-             
         }
 
         private void SetBackgroundFromSettings(Control control, string colorName)
@@ -162,11 +147,11 @@ namespace LoLTainer.Windows
                 //radio.IsChecked = selectedEvent == @event;
                 if (selectedEvent == @event)
                 {
-                    SetBackgroundFromSettings(lbl, "LBLQueueSelectedBackgroundColor");
+                    SetBackgroundFromSettings(lbl, "LBLActionSelectedBackgroundColor");
                 }
                 else
                 {
-                    SetBackgroundFromSettings(lbl, "LBLQueueBackgroundColor");
+                    SetBackgroundFromSettings(lbl, "LBLActionBackgroundColor");
                 }
             };
             horistack.Children.Add(lbl);
@@ -176,26 +161,37 @@ namespace LoLTainer.Windows
         private void PlayModeWaitClicked(object sender, EventArgs args)
         {
             _playMode = PlayMode.WaitPlaying;
-            UpdatePlayModeRadios();
+            UpdatePlayModeLabels();
         }
         private void PlayModeStopClicked(object sender, EventArgs args)
         {
             _playMode = PlayMode.StopPlaying;
-            UpdatePlayModeRadios();
+            UpdatePlayModeLabels();
 
         }
         private void PlayModeStopAllClicked(object sender, EventArgs args)
         {
             _playMode = PlayMode.StopAllPlaying;
-            UpdatePlayModeRadios();
+            UpdatePlayModeLabels();
 
         }
 
-        private void UpdatePlayModeRadios()
+        private void UpdatePlayModeLabels()
         {
-            RDBWait.IsChecked = _playMode == PlayMode.WaitPlaying;
-            RDBStop.IsChecked = _playMode == PlayMode.StopPlaying;
-            RDBStopAll.IsChecked = _playMode == PlayMode.StopAllPlaying;
+            SetLabelBackgroundOnSelected(LBLPlayModeWait, _playMode == PlayMode.WaitPlaying);
+            SetLabelBackgroundOnSelected(LBLPlayModeStop, _playMode == PlayMode.StopPlaying);
+            SetLabelBackgroundOnSelected(LBLPlayModeStopAll, _playMode == PlayMode.StopAllPlaying);
+        }
+        private void SetLabelBackgroundOnSelected(Label label, bool selected)
+        {
+            if (selected)
+            {
+                SetBackgroundFromSettings(label, "LBLPlayModeSelectedBackgroundColor");
+            }
+            else
+            {
+                SetBackgroundFromSettings(label, "LBLPlayModeBackgroundColor");
+            }
         }
 
         private bool AllValid(out int playLength, out int group)
