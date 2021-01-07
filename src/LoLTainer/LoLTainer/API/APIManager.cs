@@ -15,6 +15,21 @@ namespace LoLTainer.API
 
     public class APIManager : Interfaces.IAPIManager
     {
+        static APIManager _activeManager = null;
+        /// <summary>
+        /// Returns the latest build API Manager to gain access to APIs like SoundPlayer
+        /// </summary>
+        /// <returns></returns>
+        public static APIManager GetActiveManager()
+        {
+            return _activeManager;
+        }
+
+        /// <summary>
+        /// SoundPlayer used by APIManager
+        /// </summary>
+        public Interfaces.ISoundPlayer SoundPlayer { get => _soundPlayer; }
+
         #region private properties
         private Interfaces.ISettingsManager _settingsManager;
         private Interfaces.ISoundPlayer _soundPlayer;
@@ -31,13 +46,15 @@ namespace LoLTainer.API
         public  APIManager(Interfaces.ISettingsManager settingsManager)
         {
             _settingsManager = settingsManager;
-            _soundPlayer = new SoundPlayer.SoundPlayer();
+            _soundPlayer = new SoundPlayer.NAudioPlayer();
 
             _lCUManager = new LCUManager();
             _lCUManager.InGame += OnIngameChange;
 
             _lCUEventMapper = new LCUEventMapper(_lCUManager);
             MakeLCUMapping();
+
+            _activeManager = this;
         }
 
         #region IAPIManager Implementation
@@ -99,7 +116,7 @@ namespace LoLTainer.API
         {
             foreach (var setting in _settingsManager.GetAllSettings())
             {
-                _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec); };
+                _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec,setting.Volume,setting.PlayMode); };
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-LCU-Eventlistener set up: " + setting.Event.ToString());
             }
         }

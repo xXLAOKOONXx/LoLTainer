@@ -11,11 +11,13 @@ namespace LoLTainer.API
     public class InGameEventMapper
     {
         #region InGame Actions
-        public EventHandler PlayerKill;
+        public EventHandler PlayerAnyKill;
+        public EventHandler PlayerSingleKill;
         public EventHandler PlayerDoubleKill;
         public EventHandler PlayerTripleKill;
         public EventHandler PlayerQuodraKill;
         public EventHandler PlayerPentaKill;
+        public EventHandler PlayerFirstBlood;
 
         public EventHandler PlayerBaron;
         public EventHandler PlayerDragon;
@@ -61,8 +63,10 @@ namespace LoLTainer.API
         {
             switch (@event)
             {
-                case Misc.Event.PlayerKill:
-                    return ref PlayerKill;
+                case Misc.Event.PlayerAnyKill:
+                    return ref PlayerAnyKill;
+                case Misc.Event.PlayerSingleKill:
+                    return ref PlayerSingleKill;
                 case Misc.Event.PlayerDoubleKill:
                     return ref PlayerDoubleKill;
                 case Misc.Event.PlayerTripleKill:
@@ -71,6 +75,8 @@ namespace LoLTainer.API
                     return ref PlayerQuodraKill;
                 case Misc.Event.PlayerPentaKill:
                     return ref PlayerPentaKill;
+                case Misc.Event.PlayerFirstBlood:
+                    return ref PlayerFirstBlood;
                 case Misc.Event.PlayerDragonKill:
                     return ref PlayerDragon;
                 case Misc.Event.PlayerBaronKill:
@@ -116,7 +122,7 @@ namespace LoLTainer.API
 
         private void AddPlayerKillEvents(InGameApiManager inGameApiManager)
         {
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Adding PlayerKillEvents");
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Adding OnGameEvents");
             inGameApiManager.OnGameEvent += OnGameEvent;
         }
 
@@ -130,37 +136,44 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            if (_playerKills.Count == 0 || !(_playerKills.Last() + _multiKillDifference > ev.EventTime))
+                            PlayerAnyKill?.Invoke(null, null);
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Any Kill occured");
+                            if (!eventData.Events.Select(x => x.EventID).Contains(ev.EventID + 1) || 
+                                eventData.Events.Where(e => e.EventID == ev.EventID + 1).First().EventName == EventData.EventNames.MultiKill || 
+                                eventData.Events.Where(e => e.EventID == ev.EventID + 1).First().EventName == EventData.EventNames.FirstBlood)
                             {
-                                _playerKills.Add(ev.EventTime);
-                                PlayerKill?.Invoke(null, null);
-                                _playerMultikill = 1;
+                                PlayerSingleKill.Invoke(null, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Single Kill occured");
-                            }
-                            else
-                            {
-                                _playerKills.Add(ev.EventTime);
-                                _playerMultikill++;
-                                switch (_playerMultikill)
-                                {
-                                    case 2:
-                                        PlayerDoubleKill?.Invoke(null, null);
-                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Double Kill occured");
-                                        break;
-                                    case 3:
-                                        PlayerTripleKill?.Invoke(null, null);
-                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Triple Kill occured");
-                                        break;
-                                    case 4:
-                                        PlayerQuodraKill?.Invoke(null, null);
-                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Quodra Kill occured");
-                                        break;
-                                    default:
-                                        PlayerPentaKill?.Invoke(null, null);
-                                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Penta Kill occured");
-                                        break;
-                                }
-                            }
+                            }                            
+                        }
+                    }
+                    else
+                    if(ev.EventName == EventData.EventNames.FirstBlood && ev.Recipient  == _playerSummonerName)
+                    {
+                        PlayerFirstBlood.Invoke(null, null);
+                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player First Blood occured");
+                    }
+                    else
+                    if (ev.EventName == EventData.EventNames.MultiKill && ev.KillerName == _playerSummonerName)
+                    {
+                        switch (ev.KillStreak)
+                        {
+                            case 2:
+                                PlayerDoubleKill.Invoke(null, null);
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Double Kill occured");
+                                break;
+                            case 3:
+                                PlayerTripleKill.Invoke(null, null);
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Triple Kill occured");
+                                break;
+                            case 4:
+                                PlayerQuodraKill.Invoke(null, null);
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Quodra Kill occured");
+                                break;
+                            case 5:
+                                PlayerPentaKill.Invoke(null, null);
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Penta Kill occured");
+                                break;
                         }
                     }
                     else

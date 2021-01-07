@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoLTainer.Misc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,9 +9,12 @@ using System.Threading.Tasks;
 namespace LoLTainer.SoundPlayer
 {
     /// <summary>
+    /// !Deprecated! use NAudio instead.
     /// SoundPlayer with <see cref="Interfaces.ISoundPlayer"/> implemented.
     /// Uses the mci funfction of winmm DLL to play sound.
     /// Supports using different playerIds to play different sound in paralell.
+    /// Supports PlayLength.
+    /// Does not support volume or PlayModes!
     /// </summary>
     public class SoundPlayer : Interfaces.ISoundPlayer
     {
@@ -31,7 +35,7 @@ namespace LoLTainer.SoundPlayer
             _playerIds.RemoveAll(x => delList.Contains(x));
         }
 
-        public async Task PlaySound(int playerId, string fileName, int playLengthInSec)
+        public async Task PlaySound(int playerId, string fileName, int playLengthInSec, int volume = -1, PlayMode playMode = PlayMode.StopPlaying)
         {
             if (_playerIds.Contains(playerId))
             {

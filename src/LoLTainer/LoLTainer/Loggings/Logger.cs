@@ -88,6 +88,23 @@ namespace LoLTainer.Loggings
             logFiles.Add(LogFile.Full);
             switch (logType)
             {
+                case LogType.Sound:
+                    logFiles.Add(LogFile.Sound);
+                    logFiles.Add(LogFile.InGame);
+                    break;
+                case LogType.IngameAPI:
+                    logFiles.Add(LogFile.IngameAPI);
+                    logFiles.Add(LogFile.InGame);
+                    break;
+                case LogType.Settings:
+                    logFiles.Add(LogFile.Settings);
+                    break;
+                case LogType.LCU:
+                    logFiles.Add(LogFile.LCU);
+                    break;
+                case LogType.UI:
+                    logFiles.Add(LogFile.UI);
+                    break;
                 default:
                     break;
             }
@@ -114,6 +131,12 @@ namespace LoLTainer.Loggings
                 case LogFile.UI:
                     fileName = "UI.log";
                     break;
+                case LogFile.Sound:
+                    fileName = "Sound.log";
+                    break;
+                case LogFile.InGame:
+                    fileName = "InGame.log";
+                    break;
                 default:
                     return null;
             }
@@ -126,7 +149,8 @@ namespace LoLTainer.Loggings
         Settings,
         UI,
         IngameAPI,
-        LCU
+        LCU,
+        Sound
     }
 
     public enum LogFile
@@ -135,6 +159,8 @@ namespace LoLTainer.Loggings
         Settings,
         UI,
         IngameAPI,
-        LCU
+        LCU,
+        Sound,
+        InGame
     }
 }

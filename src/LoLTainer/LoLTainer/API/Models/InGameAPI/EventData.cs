@@ -96,6 +96,22 @@ namespace LoLTainer.API.Models.InGameAPI
             {
                 get => _jToken["Stolen"].ToString() != "False";
             }
+            /// <summary>
+            /// <para>JSON Property Recipient</para>  
+            /// <para>used for <see cref="Event"/> <see cref="EventNames.FirstBlood"/></para>
+            /// </summary>
+            public string Recipient
+            {
+                get => _jToken["Recipient"].ToString();
+            }
+            /// <summary>
+            /// <para>JSON Property Killstreak</para>  
+            /// <para>used for <see cref="Event"/> <see cref="EventNames.MultiKill"/> to name the number of kills in the multikill</para>
+            /// </summary>
+            public int KillStreak
+            {
+                get => int.Parse(_jToken["Killstreak"].ToString());
+            }
         }
 
         public static class EventNames
@@ -103,6 +119,8 @@ namespace LoLTainer.API.Models.InGameAPI
             public const string ChampionKill = "ChampionKill";
             public const string DragonKill = "DragonKill";
             public const string BaronKill = "BaronKill";
+            public const string MultiKill = "Multikill";
+            public const string FirstBlood = "FirstBlood";
         }
 
     }

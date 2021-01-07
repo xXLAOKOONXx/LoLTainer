@@ -1,4 +1,5 @@
-﻿using LoLTainer.Misc;
+﻿using LoLTainer.API;
+using LoLTainer.Misc;
 using LoLTainer.Models;
 using Newtonsoft.Json.Linq;
 using System;
@@ -28,10 +29,14 @@ namespace LoLTainer.Windows
         private string _fileName = "";
         private int _soundPlayerGroup = 0;
         private Action<Setting> _action;
+        private double _volume = -1;
+        private bool _playingSound = false;
+        private PlayMode _playMode = PlayMode.StopPlaying;
         public AddSetting(Action<Setting> action, IEnumerable<Event> usedEvents)
         {
             _action = action;
             InitializeComponent();
+            UpdatePlayModeRadios();
             DrawUISettings();
             DrawPickList(usedEvents);
         }
@@ -40,14 +45,14 @@ namespace LoLTainer.Windows
         {
             var freshEvents = new List<Event>();
             var events = Enum.GetValues(typeof(Event));
-            foreach(Event item in events)
+            foreach (Event item in events)
             {
                 if (!usedEvents.Contains(item))
                 {
                     freshEvents.Add(item);
                 }
             }
-            if(freshEvents.Count == 0)
+            if (freshEvents.Count == 0)
             {
 
                 var msgbx = MessageBox.Show("Check your settings list, you already have every available Event in your list.");
@@ -56,12 +61,12 @@ namespace LoLTainer.Windows
 
                 return;
             }
-            foreach(var item in freshEvents)
+            foreach (var item in freshEvents)
             {
                 this.EventPicker.Children.Add(PickerOption(item));
             }
             _event = freshEvents[0];
-            RadioButtonClicked.Invoke(null, _event);
+            EventRadioButtonClicked.Invoke(null, _event);
         }
 
         private JToken _uISettings;
@@ -81,7 +86,7 @@ namespace LoLTainer.Windows
 
             this.BTNFileName.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BTNPickIconBackgroundColor"].ToString()));
         }
-        private EventHandler<Event> RadioButtonClicked;
+        private EventHandler<Event> EventRadioButtonClicked;
         private UIElement PickerOption(Event @event)
         {
             var horistack = new StackPanel();
@@ -93,9 +98,9 @@ namespace LoLTainer.Windows
             radio.Click += (sender, e) =>
             {
                 _event = @event;
-                RadioButtonClicked.Invoke(sender, @event);
+                EventRadioButtonClicked.Invoke(sender, @event);
             };
-            RadioButtonClicked += (sender, selectedEvent) => { radio.IsChecked = selectedEvent == @event; };
+            EventRadioButtonClicked += (sender, selectedEvent) => { radio.IsChecked = selectedEvent == @event; };
 
             var lbl = new Label();
             lbl.Content = @event.ToString();
@@ -105,7 +110,7 @@ namespace LoLTainer.Windows
             lbl.MouseDown += (sender, e) =>
             {
                 _event = @event;
-                RadioButtonClicked.Invoke(sender, @event);
+                EventRadioButtonClicked.Invoke(sender, @event);
             };
 
             horistack.Children.Add(radio);
@@ -114,12 +119,46 @@ namespace LoLTainer.Windows
             return horistack;
         }
 
-        private bool AllValid()
+        private void PlayModeWaitClicked(object sender, EventArgs args)
+        {
+            _playMode = PlayMode.WaitPlaying;
+            UpdatePlayModeRadios();
+        }
+        private void PlayModeStopClicked(object sender, EventArgs args)
+        {
+            _playMode = PlayMode.StopPlaying;
+            UpdatePlayModeRadios();
+
+        }
+        private void PlayModeStopAllClicked(object sender, EventArgs args)
+        {
+            _playMode = PlayMode.StopAllPlaying;
+            UpdatePlayModeRadios();
+
+        }
+
+        private void UpdatePlayModeRadios()
+        {
+            RDBWait.IsChecked = _playMode == PlayMode.WaitPlaying;
+            RDBStop.IsChecked = _playMode == PlayMode.StopPlaying;
+            RDBStopAll.IsChecked = _playMode == PlayMode.StopAllPlaying;
+        }
+
+        private bool AllValid(out int playLength, out int group)
         {
             if (!File.Exists(_fileName))
             {
+                playLength = 10;
+                group = 0;
                 return false;
             }
+            if (!int.TryParse(TXTDuration.Text, out playLength))
+            {
+                group = 0;
+                return false;
+            }
+            if (!int.TryParse(TXTGroup.Text, out group))
+                return false;
             return true;
         }
 
@@ -132,7 +171,7 @@ namespace LoLTainer.Windows
 
             dialog.Filter = filter;
             dialog.FilterIndex = 1;
-                //"txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            //"txt files (*.txt)|*.txt|All files (*.*)|*.*";
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -143,12 +182,41 @@ namespace LoLTainer.Windows
 
         private void BTNAddSetting_Click(object sender, RoutedEventArgs e)
         {
-            if (AllValid())
+            if (AllValid(out int playLength, out int group))
             {
                 var set = new Setting(_event, _fileName);
-                set.SoundPlayerGroup = _soundPlayerGroup;
+                set.SoundPlayerGroup = group;
+                set.Volume = (int)Math.Round(SLDVolume.Value, 0);
+                set.PlayLengthInSec = playLength;
                 _action(set);
                 this.Close();
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("One or more entries are not valid.");
+            }
+        }
+
+        private async void BTNPlaySound_Click(object sender, RoutedEventArgs e)
+        {
+            if (_playingSound)
+            {
+                return;
+            }
+            if (AllValid(out int playLength, out int group))
+            {
+                _playingSound = true;
+                var set = new Setting(_event, _fileName);
+                set.SoundPlayerGroup = group;
+                set.Volume = (int)Math.Round(SLDVolume.Value, 0);
+                set.PlayLengthInSec = playLength;
+                var t = new Task(async () =>
+                {
+                    var soundplayer = APIManager.GetActiveManager().SoundPlayer;
+                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLengthInSec, set.Volume, _playMode);
+                    _playingSound = false;
+                });
+                t.Start();
             }
             else
             {
