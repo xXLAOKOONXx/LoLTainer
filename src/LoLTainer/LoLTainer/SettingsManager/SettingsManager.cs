@@ -109,6 +109,10 @@ namespace LoLTainer.SettingsManager
         {
             var ret = _settings.Remove(setting);
             Loggings.Logger.Log(Loggings.LogType.Settings, "Returning Setting " + setting.Event.ToString() + " was " + (ret ? "successful" : "unsuccsessful"));
+            if (ret)
+            {
+                this.WriteSettingsToFile();
+            }
             return ret;
         }
 

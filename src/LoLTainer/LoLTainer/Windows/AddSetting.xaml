@@ -11,7 +11,9 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Name="EventPicker" Grid.Column="0"/>
+        <ScrollViewer Grid.Column="0">
+            <StackPanel Name="EventPicker" />
+        </ScrollViewer>
         <StackPanel Grid.Column="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,5">
                 <Label Name="LBLFileName" Content="File Name"/>
