@@ -213,7 +213,7 @@ namespace LoLTainer.Windows
 
         private void ExtractInt(TextBox textBox, out int value, ref bool success)
         {
-            if (!int.TryParse(TXTDuration.Text, out value))
+            if (!int.TryParse(textBox.Text, out value))
             {
                 textBox.BorderThickness = new Thickness(2);
                 success = false;
