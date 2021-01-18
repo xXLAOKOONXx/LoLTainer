@@ -140,7 +140,7 @@ namespace LoLTainer.API
 
                 var eventListRequest = JObject.Parse(response);
 
-                this.OnGameEvent?.Invoke(this, new EventData(eventListRequest));
+                this.OnGameEvent?.BeginInvoke(this, new EventData(eventListRequest), EndAsyncEvent, null);
             }
         }
 
@@ -151,7 +151,23 @@ namespace LoLTainer.API
         {
             _gameActionCrawling = false;
             OnGameEvent = null;
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Closing InGameApiManager",base.Id);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Closing InGameApiManager", base.Id);
+        }
+
+
+        private void EndAsyncEvent(IAsyncResult iar)
+        {
+            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
+            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+
+            try
+            {
+                invokedMethod.EndInvoke(iar);
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
+            }
         }
     }
 }

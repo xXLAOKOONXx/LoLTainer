@@ -45,7 +45,7 @@ namespace LoLTainer.API
 
         public InGameEventMapper(InGameApiManager inGameApiManager) : base()
         {
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Setting up InGameEventMapper with OID "  + base.Id, base.Id);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Setting up InGameEventMapper with OID " + base.Id, base.Id);
             GetPlayerInformation(inGameApiManager).Wait();
             AddPlayerKillEvents(inGameApiManager);
             inGameApiManager.OnGameEvent += OnGameEvent;
@@ -140,11 +140,11 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            PlayerAnyKill?.Invoke(null, null);
+                            PlayerAnyKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Any Kill occured", base.Id);
                             if (IsSingleKill(eventData, ev))
                             {
-                                PlayerSingleKill?.Invoke(null, null);
+                                PlayerSingleKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Single Kill occured", base.Id);
                             }
                         }
@@ -152,7 +152,7 @@ namespace LoLTainer.API
                     else
                     if (ev.EventName == EventData.EventNames.FirstBlood && ev.Recipient == _playerSummonerName)
                     {
-                        PlayerFirstBlood?.Invoke(null, null);
+                        PlayerFirstBlood?.BeginInvoke(null, null, EndAsyncEvent, null);
                         Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player First Blood occured", base.Id);
                     }
                     else
@@ -161,19 +161,19 @@ namespace LoLTainer.API
                         switch (ev.KillStreak)
                         {
                             case 2:
-                                PlayerDoubleKill?.Invoke(null, null);
+                                PlayerDoubleKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Double Kill occured", base.Id);
                                 break;
                             case 3:
-                                PlayerTripleKill?.Invoke(null, null);
+                                PlayerTripleKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Triple Kill occured", base.Id);
                                 break;
                             case 4:
-                                PlayerQuodraKill?.Invoke(null, null);
+                                PlayerQuodraKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Quodra Kill occured", base.Id);
                                 break;
                             case 5:
-                                PlayerPentaKill?.Invoke(null, null);
+                                PlayerPentaKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Penta Kill occured", base.Id);
                                 break;
                         }
@@ -183,7 +183,7 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            PlayerDragon?.Invoke(null, null);
+                            PlayerDragon?.BeginInvoke(null, null, EndAsyncEvent, null);
                             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Kill occured", base.Id);
                         }
                     }
@@ -192,7 +192,7 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            PlayerBaron?.Invoke(null, null);
+                            PlayerBaron?.BeginInvoke(null, null, EndAsyncEvent, null);
                             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Kill occured", base.Id);
                         }
                     }
@@ -208,6 +208,20 @@ namespace LoLTainer.API
                 .Where(item => item.EventTime == ev.EventTime)
                 .Where(item => item.EventName == EventData.EventNames.MultiKill || item.EventName == EventData.EventNames.FirstBlood)
                 .Count() == 1;
+        }
+        private void EndAsyncEvent(IAsyncResult iar)
+        {
+            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
+            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+
+            try
+            {
+                invokedMethod.EndInvoke(iar);
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
+            }
         }
         #endregion
     }

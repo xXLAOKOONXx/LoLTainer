@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.API
 {
-    public class LCUEventMapper
+    public class LCUEventMapper : IdentifiableObject
     {
         #region InGame Actions
         public EventHandler EnterGame;
@@ -26,7 +26,7 @@ namespace LoLTainer.API
         #endregion
         #region Constructors
 
-        public LCUEventMapper(LCUManager lCUManager)
+        public LCUEventMapper(LCUManager lCUManager) : base()
         {
 
             Loggings.Logger.Log(Loggings.LogType.LCU, "Setting up LCUMapper");
@@ -58,7 +58,7 @@ namespace LoLTainer.API
         #endregion
         #region private methods
 
-        
+
         private void AddLCUGameFlowEvents(LCUManager lCUManager)
         {
             Loggings.Logger.Log(Loggings.LogType.LCU, "Adding LCUGameFlowEvents");
@@ -78,7 +78,7 @@ namespace LoLTainer.API
                     {
                         return;
                     }
-                    EnterGame?.Invoke(null, null);
+                    EnterGame?.BeginInvoke(null, null, EndAsyncEvent, null);
                     isInChampSelect = false;
                     isInGame = true;
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
@@ -88,7 +88,7 @@ namespace LoLTainer.API
                     {
                         return;
                     }
-                    EnterChampSelect?.Invoke(null, null);
+                    EnterChampSelect?.BeginInvoke(null, null, EndAsyncEvent, null);
                     isInChampSelect = true;
                     isInGame = false;
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
@@ -97,12 +97,28 @@ namespace LoLTainer.API
                     if (isInGame)
                     {
                         isInGame = false;
-                        EndGame?.Invoke(null, null);
+                        EndGame?.BeginInvoke(null, null, EndAsyncEvent, null);
                         Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
                         return;
                     }
                     isInChampSelect = false;
                     return;
+            }
+        }
+
+
+        private void EndAsyncEvent(IAsyncResult iar)
+        {
+            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
+            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+
+            try
+            {
+                invokedMethod.EndInvoke(iar);
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
             }
         }
         #endregion

@@ -15,7 +15,7 @@ using WebSocketSharp;
 
 namespace LoLTainer.API
 {
-    public class LCUManager : INotifyPropertyChanged
+    public class LCUManager : IdentifiableObject, INotifyPropertyChanged
     {
         public EventHandler<bool> Connected;
         public EventHandler<bool> InGame;
@@ -59,11 +59,11 @@ namespace LoLTainer.API
             }
         }
 
-        public LCUManager()
+        public LCUManager() : base()
         {
             Connected += (o, b) => IsConnected = b;
 
-            Loggings.Logger.Log(Loggings.LogType.LCU,"Setting up LCU Manager");
+            Loggings.Logger.Log(Loggings.LogType.LCU, "Setting up LCU Manager");
             WebsocketMessageEventHandler += OnWebSocketMessage;
             GameFlowSessionEventHandler += OnGameFlowSession;
             InitiateClientConnection();
@@ -115,8 +115,8 @@ namespace LoLTainer.API
         {
             var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
             InGame?.Invoke(this, b);
-            Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b?"InGame":"Not InGame"));
-        } 
+            Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b ? "InGame" : "Not InGame"));
+        }
 
         private void OnWebSocketMessage(object sender, MessageEventArgs e)
         {
@@ -145,10 +145,10 @@ namespace LoLTainer.API
                     break;
                     */
                 case SummonerIconChangedEvent:
-                    SummonerChangedEventHandler?.Invoke(sender, Messages);
+                    SummonerChangedEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent, null);
                     break;
                 case GameEvent:
-                    GameFlowSessionEventHandler?.Invoke(sender, Messages);
+                    GameFlowSessionEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent, null);
                     break;
                 default:
                     break;
@@ -218,7 +218,7 @@ namespace LoLTainer.API
             wb.Send("[5,\"" + SummonerIconChangedEvent + "\"]");
 
             _webSocket = wb;
-            WebSocketActivityChanged?.Invoke(this, true);
+            WebSocketActivityChanged?.BeginInvoke(this, true, EndAsyncEvent, null);
 
             _token = token;
             _port = port;
@@ -228,8 +228,8 @@ namespace LoLTainer.API
 
         private void OnWebSocketClose(object sender, CloseEventArgs closeEventArgs)
         {
-            WebSocketActivityChanged?.Invoke(this, false);
-            Connected?.Invoke(this, false);
+            WebSocketActivityChanged?.BeginInvoke(this, false, EndAsyncEvent, null);
+            Connected?.BeginInvoke(this, false, EndAsyncEvent, null);
             InitiateClientConnection();
         }
 
@@ -246,7 +246,7 @@ namespace LoLTainer.API
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Get LCU port and token");
                     GetAuth(out port, out token);
                     successfulGetAuth = true;
-                    Loggings.Logger.Log(Loggings.LogType.LCU, String.Format("LCU Port: {0}, Token: {1}",port,token));
+                    Loggings.Logger.Log(Loggings.LogType.LCU, String.Format("LCU Port: {0}, Token: {1}", port, token));
                 }
                 catch (Exception e)
                 {
@@ -256,9 +256,9 @@ namespace LoLTainer.API
             }
             try
             {
-                SetUpConnection(port:port,token:token);
+                SetUpConnection(port: port, token: token);
                 Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Connection established");
-                Connected?.Invoke(this, true);
+                Connected?.BeginInvoke(this, true, EndAsyncEvent, null);
                 UpdateSummonerInformation();
             }
             catch (Exception ex)
@@ -315,6 +315,21 @@ namespace LoLTainer.API
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(info));
+            }
+        }
+
+        private void EndAsyncEvent(IAsyncResult iar)
+        {
+            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
+            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+
+            try
+            {
+                invokedMethod.EndInvoke(iar);
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
             }
         }
     }
