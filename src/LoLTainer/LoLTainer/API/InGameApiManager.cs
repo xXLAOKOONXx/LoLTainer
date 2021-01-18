@@ -140,7 +140,7 @@ namespace LoLTainer.API
 
                 var eventListRequest = JObject.Parse(response);
 
-                this.OnGameEvent.Invoke(this, new EventData(eventListRequest));
+                this.OnGameEvent?.Invoke(this, new EventData(eventListRequest));
             }
         }
 

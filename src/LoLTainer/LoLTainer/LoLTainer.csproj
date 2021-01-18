@@ -89,6 +89,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="API\LCUEventMapper.cs" />
+    <Compile Include="IdentifiableObject.cs" />
     <Compile Include="Loggings\Logger.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />
     <Compile Include="SoundPlayer\NAudioPlayer.cs" />

@@ -110,7 +110,17 @@ namespace LoLTainer.API.Models.InGameAPI
             /// </summary>
             public int KillStreak
             {
-                get => int.Parse(_jToken["Killstreak"].ToString());
+                get => int.Parse(_jToken["KillStreak"].ToString());
+            }
+
+            /// <summary>
+            /// Method to provide the event data in a readable format.
+            /// Returns JToken.ToString()
+            /// </summary>
+            /// <returns>JToken.ToString()</returns>
+            public override string ToString()
+            {
+                return _jToken.ToString().Replace('\r', ' ').Replace('\n', ' ');
             }
         }
 

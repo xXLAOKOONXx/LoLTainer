@@ -45,7 +45,7 @@ namespace LoLTainer.API
 
         public InGameEventMapper(InGameApiManager inGameApiManager) : base()
         {
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Setting up InGameMapper", base.Id);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Setting up InGameEventMapper with OID "  + base.Id, base.Id);
             GetPlayerInformation(inGameApiManager).Wait();
             AddPlayerKillEvents(inGameApiManager);
             inGameApiManager.OnGameEvent += OnGameEvent;
@@ -142,11 +142,9 @@ namespace LoLTainer.API
                         {
                             PlayerAnyKill?.Invoke(null, null);
                             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Any Kill occured", base.Id);
-                            if (!eventData.Events.Select(x => x.EventID).Contains(ev.EventID + 1) ||
-                                eventData.Events.Where(e => e.EventID == ev.EventID + 1).First().EventName == EventData.EventNames.MultiKill ||
-                                eventData.Events.Where(e => e.EventID == ev.EventID + 1).First().EventName == EventData.EventNames.FirstBlood)
+                            if (IsSingleKill(eventData, ev))
                             {
-                                PlayerSingleKill.Invoke(null, null);
+                                PlayerSingleKill?.Invoke(null, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Single Kill occured", base.Id);
                             }
                         }
@@ -154,7 +152,7 @@ namespace LoLTainer.API
                     else
                     if (ev.EventName == EventData.EventNames.FirstBlood && ev.Recipient == _playerSummonerName)
                     {
-                        PlayerFirstBlood.Invoke(null, null);
+                        PlayerFirstBlood?.Invoke(null, null);
                         Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player First Blood occured", base.Id);
                     }
                     else
@@ -163,19 +161,19 @@ namespace LoLTainer.API
                         switch (ev.KillStreak)
                         {
                             case 2:
-                                PlayerDoubleKill.Invoke(null, null);
+                                PlayerDoubleKill?.Invoke(null, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Double Kill occured", base.Id);
                                 break;
                             case 3:
-                                PlayerTripleKill.Invoke(null, null);
+                                PlayerTripleKill?.Invoke(null, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Triple Kill occured", base.Id);
                                 break;
                             case 4:
-                                PlayerQuodraKill.Invoke(null, null);
+                                PlayerQuodraKill?.Invoke(null, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Quodra Kill occured", base.Id);
                                 break;
                             case 5:
-                                PlayerPentaKill.Invoke(null, null);
+                                PlayerPentaKill?.Invoke(null, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Penta Kill occured", base.Id);
                                 break;
                         }
@@ -201,6 +199,15 @@ namespace LoLTainer.API
                 }
             }
             _mostRecentEventData = eventData;
+        }
+
+        private static bool IsSingleKill(EventData eventData, EventData.Event ev)
+        {
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Checking whether event is single kill {0}", ev.ToString()));
+            return eventData.Events
+                .Where(item => item.EventTime == ev.EventTime)
+                .Where(item => item.EventName == EventData.EventNames.MultiKill || item.EventName == EventData.EventNames.FirstBlood)
+                .Count() == 1;
         }
         #endregion
     }

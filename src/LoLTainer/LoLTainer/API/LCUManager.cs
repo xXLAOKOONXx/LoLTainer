@@ -114,7 +114,7 @@ namespace LoLTainer.API
         private void OnGameFlowSession(object sender, JArray jArray)
         {
             var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
-            InGame.Invoke(this, b);
+            InGame?.Invoke(this, b);
             Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b?"InGame":"Not InGame"));
         } 
 
@@ -145,10 +145,10 @@ namespace LoLTainer.API
                     break;
                     */
                 case SummonerIconChangedEvent:
-                    SummonerChangedEventHandler.Invoke(sender, Messages);
+                    SummonerChangedEventHandler?.Invoke(sender, Messages);
                     break;
                 case GameEvent:
-                    GameFlowSessionEventHandler.Invoke(sender, Messages);
+                    GameFlowSessionEventHandler?.Invoke(sender, Messages);
                     break;
                 default:
                     break;

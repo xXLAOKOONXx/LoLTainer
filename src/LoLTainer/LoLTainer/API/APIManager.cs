@@ -58,7 +58,7 @@ namespace LoLTainer.API
         /// Constructor of <see cref="APIManager"/>
         /// </summary>
         /// <param name="settingsManager"><see cref="Interfaces.ISettingsManager"/> to draw the Settings from</param>
-        public  APIManager(Interfaces.ISettingsManager settingsManager)
+        public APIManager(Interfaces.ISettingsManager settingsManager)
         {
             _settingsManager = settingsManager;
             _soundPlayer = new SoundPlayer.NAudioPlayer();
@@ -145,9 +145,9 @@ namespace LoLTainer.API
 
         private void MakeIngameMapping()
         {
-            foreach(var setting in _settingsManager.GetAllSettings())
+            foreach (var setting in _settingsManager.GetAllSettings())
             {
-                _inGameEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec); };
+                _inGameEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec, setting.Volume, setting.PlayMode); };
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-InGame-Eventlistener set up: " + setting.Event.ToString());
             }
         }
@@ -156,8 +156,8 @@ namespace LoLTainer.API
         {
             foreach (var setting in _settingsManager.GetAllSettings())
             {
-                _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec,setting.Volume,setting.PlayMode); };
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Costum-LCU-Eventlistener set up: " + setting.Event.ToString());
+                _lCUEventMapper.GetEventHandler(setting.Event) += (s, e) => { _soundPlayer.PlaySound(setting.SoundPlayerGroup, setting.FileName, setting.PlayLengthInSec, setting.Volume, setting.PlayMode); };
+                Loggings.Logger.Log(Loggings.LogType.LCU, "Costum-LCU-Eventlistener set up: " + setting.Event.ToString());
             }
         }
 

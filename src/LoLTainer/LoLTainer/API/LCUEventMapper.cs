@@ -29,9 +29,9 @@ namespace LoLTainer.API
         public LCUEventMapper(LCUManager lCUManager)
         {
 
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Setting up LCUMapper");
+            Loggings.Logger.Log(Loggings.LogType.LCU, "Setting up LCUMapper");
             AddLCUGameFlowEvents(lCUManager);
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "LCUMapper set up");
+            Loggings.Logger.Log(Loggings.LogType.LCU, "LCUMapper set up");
         }
         #endregion
         #region public methods
@@ -61,7 +61,7 @@ namespace LoLTainer.API
         
         private void AddLCUGameFlowEvents(LCUManager lCUManager)
         {
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Adding LCUGameFlowEvents");
+            Loggings.Logger.Log(Loggings.LogType.LCU, "Adding LCUGameFlowEvents");
             lCUManager.GameFlowSessionEventHandler += OnGameFlowSession;
         }
 
