@@ -14,18 +14,28 @@ namespace LoLTainer.SoundPlayer
     /// Implementation of <see cref="ISoundPlayer"/> using Nugt Package NAudio.
     /// Used Version: 1.10.0
     /// </summary>
-    public class NAudioPlayer : ISoundPlayer
+    public class NAudioPlayer : IdentifiableObject, ISoundPlayer
     {
-        // Used to wait for other files to finish
+        /// <summary>
+        /// Amount of time in ms to wait after reasking whether an audio device is finished playing
+        /// </summary>
         private const int _delayTicks = 100;
 
         private Dictionary<int, WaveOutEvent> _playerIds = new Dictionary<int, WaveOutEvent>();
+
+        #region constructors
+        public NAudioPlayer() : base()
+        {
+
+        }
+        #endregion
+
         #region ISoundPlayer EndPoints
         public async Task ClearCaches()
         {
             await TerminateAllSounds();
             var keys = _playerIds.Keys.ToArray();
-            foreach(var key in keys)
+            foreach (var key in keys)
             {
                 _playerIds.Remove(key);
             }
@@ -47,12 +57,12 @@ namespace LoLTainer.SoundPlayer
             switch (playMode)
             {
                 case PlayMode.WaitPlaying:
-                    Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + playerId + " to finish; Initial State: " + outputDevice.PlaybackState.ToString());
+                    Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + playerId + " to finish; Initial State: " + outputDevice.PlaybackState.ToString(), base.Id);
                     while (outputDevice.PlaybackState == PlaybackState.Playing)
                     {
                         await Task.Delay(_delayTicks);
                     }
-                    Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + playerId + " ended");
+                    Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + playerId + " ended", base.Id);
 
                     break;
                 case PlayMode.StopPlaying:
@@ -63,7 +73,7 @@ namespace LoLTainer.SoundPlayer
                     break;
             }
 
-            Loggings.Logger.Log(Loggings.LogType.Sound, "Playing Sound in Player " + playerId + "");
+            Loggings.Logger.Log(Loggings.LogType.Sound, "Playing Sound in Player " + playerId + "", base.Id);
             outputDevice.Init(audioFile);
             outputDevice.Play();
             if (playLengthInSec >= 0)

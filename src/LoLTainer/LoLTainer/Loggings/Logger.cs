@@ -37,6 +37,10 @@ namespace LoLTainer.Loggings
                 WriteLineToLogFile(item, message);
             }
         }
+        public static void Log(LogType logType, string message, string objectID)
+        {
+            Log(logType, String.Format("{0} (OID:{1})", message, objectID));
+        }
 
         public static void WriteLineToLogFile(LogFile logFile, string message)
         {

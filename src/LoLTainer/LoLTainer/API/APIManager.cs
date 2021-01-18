@@ -123,7 +123,6 @@ namespace LoLTainer.API
                 _inGameApiManager.Close();
                 _inGameApiManager = null;
                 _inGameEventMapper = null;
-                _soundPlayer.TerminateAllSounds();
             }
         }
         /// <summary>

@@ -14,7 +14,7 @@ namespace LoLTainer.API
     /// Triggers public EventHandlers when they occure.
     /// Current Events supported: <see cref="InGameApiManager.OnGameEvent"/>
     /// </summary>
-    public class InGameApiManager
+    public class InGameApiManager : IdentifiableObject
     {
         public EventHandler<bool> OnConnectionStatusChange;
         public EventHandler<EventData> OnGameEvent;
@@ -41,10 +41,10 @@ namespace LoLTainer.API
         /// <summary>
         /// Constructor of <see cref="InGameApiManager"/>. Once initiated a loop fetching game action every 200ms starts.
         /// </summary>
-        public InGameApiManager()
+        public InGameApiManager() : base()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameApiManager started");
-            Task.Run(()=>
+            Task.Run(() =>
             GameActionLooper(TimeSpan.FromMilliseconds(200)));
         }
 
@@ -70,7 +70,7 @@ namespace LoLTainer.API
 
                 return response;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Task.Delay(1000).Wait();
                 if (!_gameActionCrawling)
@@ -103,16 +103,17 @@ namespace LoLTainer.API
 
         private async Task GameActionLooper(TimeSpan delay)
         {
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "GameActionLooper started with a delay in seconds: " + delay.TotalSeconds);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "GameActionLooper started with a delay in seconds: " + delay.TotalSeconds, base.Id);
             while (_gameActionCrawling)
             {
                 try
                 {
 
-                await GameActionRequester();
-                }catch(Exception ex)
+                    await GameActionRequester();
+                }
+                catch (Exception ex)
                 {
-                    Loggings.Logger.Log(Loggings.LogType.IngameAPI, "!!! Exception cought in GameActionLooper (InGameApiManager), loop continue anyway");
+                    Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("!!! Exception cought in GameActionLooper (InGameApiManager {0}), loop continue anyway, Exception: {1}", base.Id, ex.Message));
                 }
                 await Task.Delay(delay);
             }
@@ -126,9 +127,14 @@ namespace LoLTainer.API
 
             string response = GetHTTPResponse(URL);
 
-            if(response != _mostRecentGameEventList)
+            if (!_gameActionCrawling)
             {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "New InGame Event occured");
+                return;
+            }
+
+            if (response != _mostRecentGameEventList)
+            {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "New InGame Event occured", base.Id);
 
                 _mostRecentGameEventList = response;
 
@@ -144,6 +150,8 @@ namespace LoLTainer.API
         public void Close()
         {
             _gameActionCrawling = false;
+            OnGameEvent = null;
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Closing InGameApiManager",base.Id);
         }
     }
 }
