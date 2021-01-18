@@ -114,7 +114,7 @@ namespace LoLTainer.API
         private void OnGameFlowSession(object sender, JArray jArray)
         {
             var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
-            InGame?.Invoke(this, b);
+            InGame?.BeginInvoke(this, b, EndAsyncEvent<bool>, null);
             Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b ? "InGame" : "Not InGame"));
         }
 
@@ -145,10 +145,10 @@ namespace LoLTainer.API
                     break;
                     */
                 case SummonerIconChangedEvent:
-                    SummonerChangedEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent, null);
+                    SummonerChangedEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent<JArray>, null);
                     break;
                 case GameEvent:
-                    GameFlowSessionEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent, null);
+                    GameFlowSessionEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent<JArray>, null);
                     break;
                 default:
                     break;
@@ -218,7 +218,7 @@ namespace LoLTainer.API
             wb.Send("[5,\"" + SummonerIconChangedEvent + "\"]");
 
             _webSocket = wb;
-            WebSocketActivityChanged?.BeginInvoke(this, true, EndAsyncEvent, null);
+            WebSocketActivityChanged?.BeginInvoke(this, true, EndAsyncEvent<bool>, null);
 
             _token = token;
             _port = port;
@@ -228,8 +228,8 @@ namespace LoLTainer.API
 
         private void OnWebSocketClose(object sender, CloseEventArgs closeEventArgs)
         {
-            WebSocketActivityChanged?.BeginInvoke(this, false, EndAsyncEvent, null);
-            Connected?.BeginInvoke(this, false, EndAsyncEvent, null);
+            WebSocketActivityChanged?.BeginInvoke(this, false, EndAsyncEvent<bool>, null);
+            Connected?.BeginInvoke(this, false, EndAsyncEvent<bool>, null);
             InitiateClientConnection();
         }
 
@@ -258,7 +258,7 @@ namespace LoLTainer.API
             {
                 SetUpConnection(port: port, token: token);
                 Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Connection established");
-                Connected?.BeginInvoke(this, true, EndAsyncEvent, null);
+                Connected?.BeginInvoke(this, true, EndAsyncEvent<bool>, null);
                 UpdateSummonerInformation();
             }
             catch (Exception ex)
@@ -318,10 +318,10 @@ namespace LoLTainer.API
             }
         }
 
-        private void EndAsyncEvent(IAsyncResult iar)
+        private void EndAsyncEvent<T>(IAsyncResult iar)
         {
             var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+            var invokedMethod = (EventHandler<T>)ar.AsyncDelegate;
 
             try
             {

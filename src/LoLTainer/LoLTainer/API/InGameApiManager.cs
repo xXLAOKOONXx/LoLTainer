@@ -140,7 +140,7 @@ namespace LoLTainer.API
 
                 var eventListRequest = JObject.Parse(response);
 
-                this.OnGameEvent?.BeginInvoke(this, new EventData(eventListRequest), EndAsyncEvent, null);
+                this.OnGameEvent?.BeginInvoke(this, new EventData(eventListRequest), EndAsyncEvent<EventData>, null);
             }
         }
 
@@ -159,6 +159,21 @@ namespace LoLTainer.API
         {
             var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
             var invokedMethod = (EventHandler)ar.AsyncDelegate;
+
+            try
+            {
+                invokedMethod.EndInvoke(iar);
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
+            }
+        }
+
+        private void EndAsyncEvent<T>(IAsyncResult iar)
+        {
+            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
+            var invokedMethod = (EventHandler<T>)ar.AsyncDelegate;
 
             try
             {
