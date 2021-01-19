@@ -140,20 +140,20 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            PlayerAnyKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Any Kill occured", base.Id);
+                            PlayerAnyKill?.Invoke(null, null);
                             if (IsSingleKill(eventData, ev))
                             {
-                                PlayerSingleKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Single Kill occured", base.Id);
+                                PlayerSingleKill?.Invoke(null, null);
                             }
                         }
                     }
                     else
                     if (ev.EventName == EventData.EventNames.FirstBlood && ev.Recipient == _playerSummonerName)
                     {
-                        PlayerFirstBlood?.BeginInvoke(null, null, EndAsyncEvent, null);
                         Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player First Blood occured", base.Id);
+                        PlayerFirstBlood?.Invoke(null, null);
                     }
                     else
                     if (ev.EventName == EventData.EventNames.MultiKill && ev.KillerName == _playerSummonerName)
@@ -161,20 +161,20 @@ namespace LoLTainer.API
                         switch (ev.KillStreak)
                         {
                             case 2:
-                                PlayerDoubleKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Double Kill occured", base.Id);
+                                PlayerDoubleKill?.Invoke(null, null);
                                 break;
                             case 3:
-                                PlayerTripleKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Triple Kill occured", base.Id);
+                                PlayerTripleKill?.Invoke(null, null);
                                 break;
                             case 4:
-                                PlayerQuodraKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Quodra Kill occured", base.Id);
+                                PlayerQuodraKill?.Invoke(null, null);
                                 break;
                             case 5:
-                                PlayerPentaKill?.BeginInvoke(null, null, EndAsyncEvent, null);
                                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Penta Kill occured", base.Id);
+                                PlayerPentaKill?.Invoke(null, null);
                                 break;
                         }
                     }
@@ -183,8 +183,8 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            PlayerDragon?.BeginInvoke(null, null, EndAsyncEvent, null);
                             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Kill occured", base.Id);
+                            PlayerDragon?.Invoke(null, null);
                         }
                     }
                     else
@@ -192,8 +192,8 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            PlayerBaron?.BeginInvoke(null, null, EndAsyncEvent, null);
                             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Kill occured", base.Id);
+                            PlayerBaron?.Invoke(null, null);
                         }
                     }
                 }

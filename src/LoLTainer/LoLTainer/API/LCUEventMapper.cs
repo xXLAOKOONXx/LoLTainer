@@ -78,27 +78,27 @@ namespace LoLTainer.API
                     {
                         return;
                     }
-                    EnterGame?.BeginInvoke(null, null, EndAsyncEvent, null);
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
+                    EnterGame?.Invoke(null, null);
                     isInChampSelect = false;
                     isInGame = true;
-                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
                     return;
                 case inChampSelect_str:
                     if (isInChampSelect)
                     {
                         return;
                     }
-                    EnterChampSelect?.BeginInvoke(null, null, EndAsyncEvent, null);
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
+                    EnterChampSelect?.Invoke(null, null);
                     isInChampSelect = true;
                     isInGame = false;
-                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
                     return;
                 default:
                     if (isInGame)
                     {
-                        isInGame = false;
-                        EndGame?.BeginInvoke(null, null, EndAsyncEvent, null);
                         Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
+                        isInGame = false;
+                        EndGame?.Invoke(null, null);
                         return;
                     }
                     isInChampSelect = false;

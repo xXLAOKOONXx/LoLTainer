@@ -114,8 +114,8 @@ namespace LoLTainer.API
         private void OnGameFlowSession(object sender, JArray jArray)
         {
             var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
-            InGame?.BeginInvoke(this, b, EndAsyncEvent<bool>, null);
             Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b ? "InGame" : "Not InGame"));
+            InGame?.Invoke(this, b);
         }
 
         private void OnWebSocketMessage(object sender, MessageEventArgs e)
@@ -145,10 +145,10 @@ namespace LoLTainer.API
                     break;
                     */
                 case SummonerIconChangedEvent:
-                    SummonerChangedEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent<JArray>, null);
+                    SummonerChangedEventHandler?.Invoke(sender, Messages);
                     break;
                 case GameEvent:
-                    GameFlowSessionEventHandler?.BeginInvoke(sender, Messages, EndAsyncEvent<JArray>, null);
+                    GameFlowSessionEventHandler?.Invoke(sender, Messages);
                     break;
                 default:
                     break;
@@ -218,7 +218,7 @@ namespace LoLTainer.API
             wb.Send("[5,\"" + SummonerIconChangedEvent + "\"]");
 
             _webSocket = wb;
-            WebSocketActivityChanged?.BeginInvoke(this, true, EndAsyncEvent<bool>, null);
+            WebSocketActivityChanged?.Invoke(this, true);
 
             _token = token;
             _port = port;
@@ -228,8 +228,8 @@ namespace LoLTainer.API
 
         private void OnWebSocketClose(object sender, CloseEventArgs closeEventArgs)
         {
-            WebSocketActivityChanged?.BeginInvoke(this, false, EndAsyncEvent<bool>, null);
-            Connected?.BeginInvoke(this, false, EndAsyncEvent<bool>, null);
+            WebSocketActivityChanged?.Invoke(this, false);
+            Connected?.Invoke(this, false);
             InitiateClientConnection();
         }
 
@@ -258,7 +258,7 @@ namespace LoLTainer.API
             {
                 SetUpConnection(port: port, token: token);
                 Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Connection established");
-                Connected?.BeginInvoke(this, true, EndAsyncEvent<bool>, null);
+                Connected?.Invoke(this, true);
                 UpdateSummonerInformation();
             }
             catch (Exception ex)
