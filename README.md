@@ -3,6 +3,9 @@ Make your League of Legends games even more entaining. You performed a baron ste
 ## User Documentation
 [Shiny Walk Through](https://github.com/xXLaokoonXx/LoLTainer/blob/master/documentation/user/ShinyUseCase.md)  
 [Actions available](https://github.com/xXLaokoonXx/LoLTainer/blob/master/documentation/user/Actions.md)  
+  
+### [Video Guide](https://youtu.be/HYwCLpAhoSI)  
+  
 ## Developer Documentation
 Check out the /documentation/dev/ folder for some outline documentation.  
 Inside the code you should find a handful of inline documentation.  
