@@ -207,7 +207,7 @@ namespace LoLTainer.API
             return eventData.Events
                 .Where(item => item.EventTime == ev.EventTime)
                 .Where(item => item.EventName == EventData.EventNames.MultiKill || item.EventName == EventData.EventNames.FirstBlood)
-                .Count() == 1;
+                .Count() >= 0;
         }
         private void EndAsyncEvent(IAsyncResult iar)
         {
