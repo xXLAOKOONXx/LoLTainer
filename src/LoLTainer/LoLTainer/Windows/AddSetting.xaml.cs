@@ -244,12 +244,12 @@ namespace LoLTainer.Windows
 
         private void BTNAddSetting_Click(object sender, RoutedEventArgs e)
         {
-            if (AllValid(out int playLength, out int group))
+            if (AllValid(out int playLengthInSec, out int group))
             {
                 var set = new Setting(_event, _fileName);
                 set.SoundPlayerGroup = group;
                 set.Volume = (int)Math.Round(SLDVolume.Value, 0);
-                set.PlayLengthInSec = playLength;
+                set.PlayLength = TimeSpan.FromSeconds(playLengthInSec);
                 _action(set);
                 this.Close();
             }
@@ -265,17 +265,17 @@ namespace LoLTainer.Windows
             {
                 return;
             }
-            if (AllValid(out int playLength, out int group))
+            if (AllValid(out int playLengthInSec, out int group))
             {
                 _playingSound = true;
                 var set = new Setting(_event, _fileName);
                 set.SoundPlayerGroup = group;
                 set.Volume = (int)Math.Round(SLDVolume.Value, 0);
-                set.PlayLengthInSec = playLength;
+                set.PlayLength = TimeSpan.FromSeconds(playLengthInSec);
                 var t = new Task(async () =>
                 {
                     var soundplayer = APIManager.GetActiveManager().SoundPlayer;
-                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLengthInSec, set.Volume, _playMode);
+                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLength, set.Volume, _playMode);
                     _playingSound = false;
                 });
                 t.Start();

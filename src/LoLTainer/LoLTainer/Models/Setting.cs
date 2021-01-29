@@ -15,7 +15,7 @@ namespace LoLTainer.Models
     {
         private Misc.Event _event;
         private string _fileName;
-        private int _playLengthInSec = 10;
+        private TimeSpan? _playLength = TimeSpan.FromSeconds(10);
         private int _soundPlayerGroup = 0;
         private int _volume = -1;
         private PlayMode _playMode = PlayMode.StopPlaying;
@@ -34,12 +34,12 @@ namespace LoLTainer.Models
         /// <summary>
         /// Duration to play the sound (in seconds), default value is 10 seconds
         /// </summary>
-        public int PlayLengthInSec
+        public TimeSpan? PlayLength
         {
-            get => _playLengthInSec; set
+            get => _playLength; set
             {
                 NotifyPropertyChanged();
-                _playLengthInSec = value;
+                _playLength = value;
             }
         }
         /// <summary>

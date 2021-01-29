@@ -41,7 +41,7 @@ namespace LoLTainer.SoundPlayer
             }
         }
 
-        public async Task PlaySound(int playerId, string fileName, int playLengthInSec, int volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
+        public async Task PlaySound(int playerId, string fileName, TimeSpan? playLength, int volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
         {
 
             var audioFile = new AudioFileReader(fileName);
@@ -76,11 +76,11 @@ namespace LoLTainer.SoundPlayer
             Loggings.Logger.Log(Loggings.LogType.Sound, "Playing Sound in Player " + playerId + "", base.Id);
             outputDevice.Init(audioFile);
             outputDevice.Play();
-            if (playLengthInSec >= 0)
+            if (playLength != null)
             {
-                if (audioFile.TotalTime > TimeSpan.FromSeconds(playLengthInSec))
+                if (audioFile.TotalTime > playLength)
                 {
-                    StopSoundDelayed(playerId, TimeSpan.FromSeconds(playLengthInSec));
+                    StopSoundDelayed(playerId, (TimeSpan)playLength);
                 }
             }
         }

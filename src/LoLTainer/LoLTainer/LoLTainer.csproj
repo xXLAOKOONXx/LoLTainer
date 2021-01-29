@@ -93,7 +93,6 @@
     <Compile Include="Loggings\Logger.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />
     <Compile Include="SoundPlayer\NAudioPlayer.cs" />
-    <Compile Include="SoundPlayer\SoundPlayer.cs" />
     <Compile Include="Windows\AddSetting.xaml.cs">
       <DependentUpon>AddSetting.xaml</DependentUpon>
     </Compile>
