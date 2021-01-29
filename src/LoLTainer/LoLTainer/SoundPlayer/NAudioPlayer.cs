@@ -41,7 +41,7 @@ namespace LoLTainer.SoundPlayer
             }
         }
 
-        public async Task PlaySound(int playerId, string fileName, TimeSpan? playLength, float volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
+        public async Task PlaySound(int playerId, string fileName, TimeSpan? startTime = null, TimeSpan? playLength = null, float volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
         {
 
             var audioFile = new AudioFileReader(fileName);
@@ -74,9 +74,20 @@ namespace LoLTainer.SoundPlayer
             }
 
             Loggings.Logger.Log(Loggings.LogType.Sound, "Playing Sound in Player " + playerId + "", base.Id);
+            if(startTime != null && startTime.Value.TotalSeconds >= 0)
+            {
+                try
+                {
+                    audioFile.CurrentTime = startTime.Value;
+                } catch(Exception ex)
+                {
+                    Loggings.Logger.Log(Loggings.LogType.Sound, String.Format("Error setting startingtime. File:'{0}' StartTime:'{1}' Error:'{2}'",
+                        fileName, startTime.ToString(), ex.Message));
+                }
+            }
             outputDevice.Init(audioFile);
             outputDevice.Play();
-            if (playLength != null || playLength.Value.TotalSeconds >= 0)
+            if (playLength != null && playLength.Value.TotalSeconds >= 0)
             {
                 if (audioFile.TotalTime > playLength)
                 {

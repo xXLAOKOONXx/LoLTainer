@@ -275,7 +275,7 @@ namespace LoLTainer.Windows
                 var t = new Task(async () =>
                 {
                     var soundplayer = APIManager.GetActiveManager().SoundPlayer;
-                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.PlayLength, set.Volume, _playMode);
+                    await soundplayer.PlaySound(set.SoundPlayerGroup, set.FileName, set.StartTime, set.PlayLength, set.Volume, _playMode);
                     _playingSound = false;
                 });
                 t.Start();
