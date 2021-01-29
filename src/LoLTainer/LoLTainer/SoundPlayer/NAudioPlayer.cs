@@ -41,7 +41,7 @@ namespace LoLTainer.SoundPlayer
             }
         }
 
-        public async Task PlaySound(int playerId, string fileName, TimeSpan? playLength, int volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
+        public async Task PlaySound(int playerId, string fileName, TimeSpan? playLength, float volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
         {
 
             var audioFile = new AudioFileReader(fileName);
