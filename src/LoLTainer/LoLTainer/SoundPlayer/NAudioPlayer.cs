@@ -76,11 +76,11 @@ namespace LoLTainer.SoundPlayer
             Loggings.Logger.Log(Loggings.LogType.Sound, "Playing Sound in Player " + playerId + "", base.Id);
             outputDevice.Init(audioFile);
             outputDevice.Play();
-            if (playLength != null)
+            if (playLength != null || playLength.Value.TotalSeconds >= 0)
             {
                 if (audioFile.TotalTime > playLength)
                 {
-                    StopSoundDelayed(playerId, (TimeSpan)playLength);
+                    StopSoundDelayed(playerId, playLength.Value);
                 }
             }
         }
