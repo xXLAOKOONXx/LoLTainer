@@ -46,6 +46,21 @@ namespace LoLTainer.Misc
          EnterGame = 1020,
          EndGame = 1030
     }
+
+    public enum ActionManager
+    {
+        SoundPlayer = 0
+    }
+    
+    public enum PropertyType
+    {
+        @int = 0,
+        @float = 1,
+        @double = 2,
+        @string = 3,
+        @timspan = 4
+    }
+
     public enum PlayMode
     {
         /// <summary>

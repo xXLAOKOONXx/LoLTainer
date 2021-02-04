@@ -88,9 +88,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ActionAPIManagers\BaseActionAPIManager.cs" />
     <Compile Include="API\LCUEventMapper.cs" />
+    <Compile Include="EventAPIManagers\BaseEventAPIManager.cs" />
     <Compile Include="IdentifiableObject.cs" />
+    <Compile Include="Interfaces\IActionAPIManager.cs" />
+    <Compile Include="Interfaces\IActionWindow.cs" />
+    <Compile Include="Interfaces\IEventAPIManager.cs" />
     <Compile Include="Loggings\Logger.cs" />
+    <Compile Include="Models\PropertyBundle.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />
     <Compile Include="SoundPlayer\NAudioPlayer.cs" />
     <Compile Include="Windows\AddSetting.xaml.cs">
@@ -169,5 +175,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
