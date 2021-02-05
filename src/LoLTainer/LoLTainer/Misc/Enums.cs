@@ -52,13 +52,11 @@ namespace LoLTainer.Misc
         SoundPlayer = 0
     }
     
-    public enum PropertyType
+    public enum FilterType
     {
-        @int = 0,
-        @float = 1,
-        @double = 2,
-        @string = 3,
-        @timspan = 4
+        NoFilter = 0,
+        Champions = 10,
+        Queue = 20
     }
 
     public enum PlayMode

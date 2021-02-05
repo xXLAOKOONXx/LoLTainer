@@ -9,11 +9,22 @@ using System.Threading.Tasks;
 namespace LoLTainer.Models
 {
     [Serializable]
-    public class PropertyBundle : INotifyPropertyChanged
+    public class PropertyBundle : BaseBundle
     {
         public PropertyBundle()
         {
 
+        }
+
+        private FilterBundle _filterBundle;
+        public FilterBundle FilterBundle
+        {
+            get => _filterBundle;
+            set
+            {
+                _filterBundle = value;
+                NotifyPropertyChanged();
+            }
         }
 
         private Misc.ActionManager _actionManager;
@@ -26,20 +37,5 @@ namespace LoLTainer.Models
                 NotifyPropertyChanged();
             }
         }
-
-        private Dictionary<string, object> properties;
-
-        #region INotifyPropertyChanged implementation
-        [field: NonSerialized]
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-        #endregion
     }
 }

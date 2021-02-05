@@ -94,8 +94,17 @@
     <Compile Include="IdentifiableObject.cs" />
     <Compile Include="Interfaces\IActionAPIManager.cs" />
     <Compile Include="Interfaces\IActionWindow.cs" />
+    <Compile Include="Interfaces\IAppInformationProvider.cs" />
+    <Compile Include="Interfaces\IApplicationManager.cs" />
     <Compile Include="Interfaces\IEventAPIManager.cs" />
+    <Compile Include="Interfaces\IFilterManager.cs" />
+    <Compile Include="Interfaces\IFilterWindow.cs" />
+    <Compile Include="Interfaces\IIngameAPIInformationProvider.cs" />
+    <Compile Include="Interfaces\ILCUAPIInformationProvider.cs" />
     <Compile Include="Loggings\Logger.cs" />
+    <Compile Include="Models\EventActionSetting.cs" />
+    <Compile Include="Models\BaseBundle.cs" />
+    <Compile Include="Models\FilterBundle.cs" />
     <Compile Include="Models\PropertyBundle.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />
     <Compile Include="SoundPlayer\NAudioPlayer.cs" />
