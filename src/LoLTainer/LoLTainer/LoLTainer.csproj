@@ -104,6 +104,7 @@
     <Compile Include="Loggings\Logger.cs" />
     <Compile Include="Models\EventActionSetting.cs" />
     <Compile Include="Models\BaseBundle.cs" />
+    <Compile Include="Models\EventTriggeredEventArgs.cs" />
     <Compile Include="Models\FilterBundle.cs" />
     <Compile Include="Models\PropertyBundle.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />

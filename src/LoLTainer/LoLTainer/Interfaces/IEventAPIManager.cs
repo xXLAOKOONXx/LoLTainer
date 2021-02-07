@@ -10,7 +10,7 @@ namespace LoLTainer.Interfaces
     {
         IEnumerable<Misc.Event> GetSupportedEvents();
 
-        EventHandler<Misc.Event> GetEventHandler();
+        EventHandler<Models.EventTriggeredEventArgs> GetEventHandler();
 
         void Connect();
 

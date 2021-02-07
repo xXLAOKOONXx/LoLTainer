@@ -18,7 +18,7 @@ namespace LoLTainer.Interfaces
 
         bool IsValidPropertyBundle(PropertyBundle propertyBundle);
 
-        void PerformAction(PropertyBundle propertyBundle);
+        void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null);
 
         bool Connected
         {
