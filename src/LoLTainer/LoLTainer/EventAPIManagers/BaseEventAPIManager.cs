@@ -9,15 +9,15 @@ using LoLTainer.Misc;
 
 namespace LoLTainer.EventAPIManagers
 {
-    public abstract class BaseEventAPIManager : INotifyPropertyChanged, Interfaces.IEventAPIManager
+    public abstract class BaseEventAPIManager : IdentifiableObject, INotifyPropertyChanged, Interfaces.IEventAPIManager
     {
         private bool _connected = false;
 
         protected IEnumerable<Misc.Event> _activeEvents = null;
 
-        protected EventHandler<Event> _eventHandler;
+        protected EventHandler<Models.EventTriggeredEventArgs> _eventHandler;
 
-        protected void TriggerEvent(Event @event) => _eventHandler?.Invoke(this, @event);
+        protected void TriggerEvent(Event @event) => _eventHandler?.Invoke(this, new Models.EventTriggeredEventArgs(@event));
 
         protected BaseEventAPIManager()
         {
@@ -39,15 +39,12 @@ namespace LoLTainer.EventAPIManagers
 
         abstract public void DisConnect();
 
-        public EventHandler<Event> GetEventHandler()
+        public EventHandler<Models.EventTriggeredEventArgs> GetEventHandler()
         {
             return _eventHandler;
         }
 
-        public IEnumerable<Event> GetSupportedEvents()
-        {
-            throw new NotImplementedException();
-        }
+        abstract public IEnumerable<Event> GetSupportedEvents();
 
         public void RestartConnection()
         {

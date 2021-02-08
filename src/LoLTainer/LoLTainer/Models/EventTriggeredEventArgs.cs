@@ -9,6 +9,17 @@ namespace LoLTainer.Models
 {
     public class EventTriggeredEventArgs : BaseBundle
     {
+        public EventTriggeredEventArgs()
+        {
+
+        }
+
+        public EventTriggeredEventArgs(Event @event, Dictionary<string, object> EventArgs = null)
+        {
+            this._event = @event;
+            this.EventArgs = EventArgs;
+        }
+
         private Misc.Event _event;
 
         public Event Event

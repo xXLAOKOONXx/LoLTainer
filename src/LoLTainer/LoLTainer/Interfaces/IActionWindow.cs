@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.Interfaces
 {
-    interface IActionWindow
+    public interface IActionWindow
     {
         void Open(Action<PropertyBundle> finishedEditingAction, PropertyBundle propertyBundle);
     }

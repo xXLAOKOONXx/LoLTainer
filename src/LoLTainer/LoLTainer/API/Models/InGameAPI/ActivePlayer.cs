@@ -28,6 +28,10 @@ namespace LoLTainer.API.Models.InGameAPI
         {
             get
             {
+                if(_jObject == null)
+                {
+                    return "";
+                }
                 return _jObject["summonerName"].ToString();
             }
         }

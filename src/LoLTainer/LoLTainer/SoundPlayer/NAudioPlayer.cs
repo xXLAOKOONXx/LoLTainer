@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NAudio;
 using NAudio.Wave;
 using LoLTainer.Misc;
+using LoLTainer.Models;
 
 namespace LoLTainer.SoundPlayer
 {
@@ -14,14 +15,16 @@ namespace LoLTainer.SoundPlayer
     /// Implementation of <see cref="ISoundPlayer"/> using Nugt Package NAudio.
     /// Used Version: 1.10.0
     /// </summary>
-    public class NAudioPlayer : IdentifiableObject, ISoundPlayer
+    public class NAudioPlayer : ActionAPIManagers.BaseActionAPIManager, ISoundPlayer
     {
         /// <summary>
         /// Amount of time in ms to wait after reasking whether an audio device is finished playing
         /// </summary>
         private const int _delayTicks = 100;
 
-        private Dictionary<int, WaveOutEvent> _playerIds = new Dictionary<int, WaveOutEvent>();
+        private Dictionary<string, WaveOutEvent> _playerIds = new Dictionary<string, WaveOutEvent>();
+
+        public override Dictionary<string, Type> PropertyList => throw new NotImplementedException();
 
         #region constructors
         public NAudioPlayer() : base()
@@ -41,7 +44,7 @@ namespace LoLTainer.SoundPlayer
             }
         }
 
-        public async Task PlaySound(int playerId, string fileName, TimeSpan? startTime = null, TimeSpan? playLength = null, float volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
+        public async Task PlaySound(string playerId, string fileName, TimeSpan? startTime = null, TimeSpan? playLength = null, float volume = -1, PlayMode playMode = PlayMode.WaitPlaying)
         {
 
             var audioFile = new AudioFileReader(fileName);
@@ -96,7 +99,7 @@ namespace LoLTainer.SoundPlayer
             }
         }
 
-        public async Task StopSound(int playerId)
+        public async Task StopSound(string playerId)
         {
             if (!_playerIds.ContainsKey(playerId))
             {
@@ -113,13 +116,13 @@ namespace LoLTainer.SoundPlayer
         }
         #endregion
 
-        private async Task StopSoundDelayed(int playerId, TimeSpan delay)
+        private async Task StopSoundDelayed(string playerId, TimeSpan delay)
         {
             await Task.Delay(delay);
             await StopSound(playerId);
         }
 
-        private WaveOutEvent GetPlayer(int playerId)
+        private WaveOutEvent GetPlayer(string playerId)
         {
             if (!_playerIds.ContainsKey(playerId))
             {
@@ -129,7 +132,32 @@ namespace LoLTainer.SoundPlayer
             return _playerIds[playerId];
         }
 
+        public override IActionWindow GetActionWindow(Action<PropertyBundle> finishedEditingAction, PropertyBundle propertyBundle)
+        {
+            var window = new Windows.SetSoundSettings(this);
 
+            return window;
+        }
 
+        public async Task PlaySound(Services.PropertyBundleTranslator.SoundPlayerPropertyBundle propertyBundle) =>
+            await PlaySound(
+                playerId: propertyBundle.SoundPlayerGroup,
+                fileName: propertyBundle.FileName,
+                playLength: propertyBundle.PlayLength,
+                playMode: propertyBundle.PlayMode,
+                volume: propertyBundle.Volume,
+                startTime: propertyBundle.StartTime
+                );
+
+        public override async void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null)
+        {
+            var bundle = propertyBundle as Services.PropertyBundleTranslator.SoundPlayerPropertyBundle;
+            await this.PlaySound(bundle);
+        }
+
+        public override bool IsValidPropertyBundle(PropertyBundle propertyBundle)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

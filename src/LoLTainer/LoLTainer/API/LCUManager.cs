@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LoLTainer.Misc;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
 using System;
@@ -15,15 +16,11 @@ using WebSocketSharp;
 
 namespace LoLTainer.API
 {
-    public class LCUManager : IdentifiableObject, INotifyPropertyChanged
+    public class LCUManager : EventAPIManagers.BaseEventAPIManager, INotifyPropertyChanged
     {
-        public EventHandler<bool> Connected;
+        private bool _tryingToConnect = false;
+
         public EventHandler<bool> InGame;
-        public bool IsConnected
-        {
-            get;
-            private set;
-        }
 
         /// <summary>
         /// ID of the summoner icon the current summoner has equiped
@@ -61,12 +58,10 @@ namespace LoLTainer.API
 
         public LCUManager() : base()
         {
-            Connected += (o, b) => IsConnected = b;
-
             Loggings.Logger.Log(Loggings.LogType.LCU, "Setting up LCU Manager");
             WebsocketMessageEventHandler += OnWebSocketMessage;
             GameFlowSessionEventHandler += OnGameFlowSession;
-            InitiateClientConnection();
+            
             Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Manager set up");
             SummonerChangedEventHandler += OnSummonerChanged;
         }
@@ -229,7 +224,7 @@ namespace LoLTainer.API
         private void OnWebSocketClose(object sender, CloseEventArgs closeEventArgs)
         {
             WebSocketActivityChanged?.Invoke(this, false);
-            Connected?.Invoke(this, false);
+            Connected = false;
             InitiateClientConnection();
         }
 
@@ -252,13 +247,17 @@ namespace LoLTainer.API
                 {
                     // No Client found => retry in a few seconds
                     await Task.Delay(10000);
+                    if (!_tryingToConnect)
+                    {
+                        return;
+                    }
                 }
             }
             try
             {
                 SetUpConnection(port: port, token: token);
                 Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Connection established");
-                Connected?.Invoke(this, true);
+                Connected = true;
                 UpdateSummonerInformation();
             }
             catch (Exception ex)
@@ -331,6 +330,25 @@ namespace LoLTainer.API
             {
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
             }
+        }
+
+        public override void Connect()
+        {
+            _tryingToConnect = true;
+            InitiateClientConnection();
+        }
+
+        public override void DisConnect()
+        {
+            _tryingToConnect = false;
+            _clientWebSocket.Close();
+        }
+
+        public override IEnumerable<Event> GetSupportedEvents()
+        {
+            yield return Event.EndGame;
+            yield return Event.EnterChampSelect;
+            yield return Event.EnterGame;
         }
     }
 }

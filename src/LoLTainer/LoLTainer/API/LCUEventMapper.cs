@@ -19,6 +19,7 @@ namespace LoLTainer.API
         #region private properties
         private bool isInGame;
         private bool isInChampSelect;
+        private LCUManager _lCUManager;
         /// <summary>
         /// Eventhandler to hold Events not triggered by this EventMapper.
         /// </summary>
@@ -28,7 +29,7 @@ namespace LoLTainer.API
 
         public LCUEventMapper(LCUManager lCUManager) : base()
         {
-
+            _lCUManager = lCUManager;
             Loggings.Logger.Log(Loggings.LogType.LCU, "Setting up LCUMapper");
             AddLCUGameFlowEvents(lCUManager);
             Loggings.Logger.Log(Loggings.LogType.LCU, "LCUMapper set up");
@@ -65,6 +66,12 @@ namespace LoLTainer.API
             lCUManager.GameFlowSessionEventHandler += OnGameFlowSession;
         }
 
+        private void InvokeEvent(Misc.Event @event) => InvokeEvent(new LoLTainer.Models.EventTriggeredEventArgs(@event));
+        private void InvokeEvent(LoLTainer.Models.EventTriggeredEventArgs args)
+        {
+            _lCUManager.GetEventHandler()?.Invoke(this, args);
+        }
+
         private void OnGameFlowSession(object sender, JArray jArray)
         {
             const string inGame_str = "InProgress";
@@ -79,7 +86,7 @@ namespace LoLTainer.API
                         return;
                     }
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
-                    EnterGame?.Invoke(null, null);
+                    InvokeEvent(Misc.Event.EnterGame);
                     isInChampSelect = false;
                     isInGame = true;
                     return;
@@ -89,7 +96,7 @@ namespace LoLTainer.API
                         return;
                     }
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
-                    EnterChampSelect?.Invoke(null, null);
+                    InvokeEvent(Misc.Event.EnterChampSelect);
                     isInChampSelect = true;
                     isInGame = false;
                     return;
@@ -98,27 +105,11 @@ namespace LoLTainer.API
                     {
                         Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
                         isInGame = false;
-                        EndGame?.Invoke(null, null);
+                        InvokeEvent(Misc.Event.EndGame);
                         return;
                     }
                     isInChampSelect = false;
                     return;
-            }
-        }
-
-
-        private void EndAsyncEvent(IAsyncResult iar)
-        {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler)ar.AsyncDelegate;
-
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception ex)
-            {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
             }
         }
         #endregion

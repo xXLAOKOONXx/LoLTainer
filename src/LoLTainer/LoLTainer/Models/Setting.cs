@@ -17,7 +17,7 @@ namespace LoLTainer.Models
         private string _fileName;
         private TimeSpan? _startTime = null;
         private TimeSpan? _playLength = TimeSpan.FromSeconds(10);
-        private int _soundPlayerGroup = 0;
+        private string _soundPlayerGroup = "default";
         private float _volume = -1;
         private PlayMode _playMode = PlayMode.StopPlaying;
 
@@ -57,7 +57,7 @@ namespace LoLTainer.Models
         /// <summary>
         /// Group of the Sound. Sounds in the same group override each other, default value is 0;
         /// </summary>
-        public int SoundPlayerGroup
+        public string SoundPlayerGroup
         {
             get => _soundPlayerGroup; set
             {

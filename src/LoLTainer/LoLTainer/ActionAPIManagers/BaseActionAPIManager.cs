@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.ActionAPIManagers
 {
-    abstract class BaseActionAPIManager : INotifyPropertyChanged, IActionAPIManager
+    public abstract class BaseActionAPIManager : IdentifiableObject, INotifyPropertyChanged, IActionAPIManager
     {
         protected BaseActionAPIManager()
         {
@@ -34,12 +34,13 @@ namespace LoLTainer.ActionAPIManagers
             }
         }
 
-        abstract public IActionWindow GetActionWindow(Delegate successDelegate, Delegate cancelDelegate, PropertyBundle propertyBundle);
+        abstract public IActionWindow GetActionWindow(Action<PropertyBundle> finishedEditingAction, PropertyBundle propertyBundle);
+
+        abstract public void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null);
+        
 
         abstract public bool IsValidPropertyBundle(PropertyBundle propertyBundle);
-
-        abstract public void PerformAction(PropertyBundle propertyBundle);
-
+        
 
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
