@@ -16,7 +16,7 @@ namespace LoLTainer.Models
 
         }
 
-        private FilterBundle _filterBundle;
+        private FilterBundle _filterBundle = new FilterBundle();
         public FilterBundle FilterBundle
         {
             get => _filterBundle;
@@ -34,6 +34,17 @@ namespace LoLTainer.Models
             set
             {
                 _actionManager = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string _actionName = "";
+        public string ActionName
+        {
+            get => _actionName;
+            set
+            {
+                _actionName = value;
                 NotifyPropertyChanged();
             }
         }

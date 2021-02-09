@@ -8,11 +8,28 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.Models
 {
-    public class EventActionSetting
+    [Serializable]
+    public class EventActionSetting : INotifyPropertyChanged
     {
-        Dictionary<Misc.Event, List<PropertyBundle>> _settings;
+        public EventActionSetting()
+        {
+            
+        }
+        private string _fileName;
 
-        Dictionary<Misc.Event, List<PropertyBundle>> Settings
+        public string FileName
+        {
+            get => _fileName;
+            set
+            {
+                _fileName = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private Dictionary<Misc.Event, List<PropertyBundle>> _settings = new Dictionary<Misc.Event, List<PropertyBundle>>();
+
+        public Dictionary<Misc.Event, List<PropertyBundle>> Settings
         {
             get => _settings;
             set

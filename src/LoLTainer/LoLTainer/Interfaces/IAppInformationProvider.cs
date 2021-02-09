@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.Interfaces
 {
-    interface IAppInformationProvider
+    public interface IAppInformationProvider
     {
         ILCUAPIInformationProvider LCUAPIInformationProvider { get; }
         IIngameAPIInformationProvider IngameAPIInformationProvider { get; }

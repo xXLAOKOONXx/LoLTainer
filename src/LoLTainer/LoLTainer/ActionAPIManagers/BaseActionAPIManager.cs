@@ -34,12 +34,14 @@ namespace LoLTainer.ActionAPIManagers
             }
         }
 
-        abstract public IActionWindow GetActionWindow(Action<PropertyBundle> finishedEditingAction, PropertyBundle propertyBundle);
+        abstract public IActionWindow GetActionWindow();
 
         abstract public void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null);
         
 
         abstract public bool IsValidPropertyBundle(PropertyBundle propertyBundle);
+
+        abstract public void Connect();
         
 
         #region INotifyPropertyChanged implementation

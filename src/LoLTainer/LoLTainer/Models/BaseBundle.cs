@@ -16,7 +16,7 @@ namespace LoLTainer.Models
 
         }
 
-        private Dictionary<string, object> _properties;
+        private Dictionary<string, object> _properties = new Dictionary<string, object>();
 
         public Dictionary<string, object> Properties
         {

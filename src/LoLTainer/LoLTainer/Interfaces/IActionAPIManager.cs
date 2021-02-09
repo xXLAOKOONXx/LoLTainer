@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.Interfaces
 {
-    interface IActionAPIManager
+    public interface IActionAPIManager
     {
         Dictionary<string, Type> PropertyList
         {
             get;
         }
 
-        IActionWindow GetActionWindow(Action<PropertyBundle> finishedEditingAction, PropertyBundle propertyBundle);
+        IActionWindow GetActionWindow();
 
         bool IsValidPropertyBundle(PropertyBundle propertyBundle);
 
         void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null);
+        void Connect();
 
         bool Connected
         {

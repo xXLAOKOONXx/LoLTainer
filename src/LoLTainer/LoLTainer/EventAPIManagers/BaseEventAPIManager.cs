@@ -39,9 +39,17 @@ namespace LoLTainer.EventAPIManagers
 
         abstract public void DisConnect();
 
-        public EventHandler<Models.EventTriggeredEventArgs> GetEventHandler()
+        public EventHandler<Models.EventTriggeredEventArgs> EventHandler
         {
-            return _eventHandler;
+            get
+            {
+                return _eventHandler;
+            }
+            set
+            {
+                _eventHandler = value;
+                NotifyPropertyChanged();
+            }
         }
 
         abstract public IEnumerable<Event> GetSupportedEvents();

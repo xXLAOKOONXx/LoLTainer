@@ -69,7 +69,7 @@ namespace LoLTainer.API
         private void InvokeEvent(Misc.Event @event) => InvokeEvent(new LoLTainer.Models.EventTriggeredEventArgs(@event));
         private void InvokeEvent(LoLTainer.Models.EventTriggeredEventArgs args)
         {
-            _lCUManager.GetEventHandler()?.Invoke(this, args);
+            _lCUManager.EventHandler?.Invoke(this, args);
         }
 
         private void OnGameFlowSession(object sender, JArray jArray)

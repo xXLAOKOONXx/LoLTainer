@@ -29,7 +29,7 @@ namespace LoLTainer.SoundPlayer
         #region constructors
         public NAudioPlayer() : base()
         {
-
+            Connected = true;
         }
         #endregion
 
@@ -132,7 +132,7 @@ namespace LoLTainer.SoundPlayer
             return _playerIds[playerId];
         }
 
-        public override IActionWindow GetActionWindow(Action<PropertyBundle> finishedEditingAction, PropertyBundle propertyBundle)
+        public override IActionWindow GetActionWindow()
         {
             var window = new Windows.SetSoundSettings(this);
 
@@ -151,13 +151,33 @@ namespace LoLTainer.SoundPlayer
 
         public override async void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null)
         {
-            var bundle = propertyBundle as Services.PropertyBundleTranslator.SoundPlayerPropertyBundle;
+            var bundle = new Services.PropertyBundleTranslator.SoundPlayerPropertyBundle(propertyBundle);
             await this.PlaySound(bundle);
+        }
+
+        public override void Connect()
+        {
+            
         }
 
         public override bool IsValidPropertyBundle(PropertyBundle propertyBundle)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var soundBundle = new Services.PropertyBundleTranslator.SoundPlayerPropertyBundle(propertyBundle);
+                var x1 = soundBundle.FileName;
+                var x2 = soundBundle.Volume;
+                var x3 = soundBundle.PlayLength;
+                var x4 = soundBundle.PlayMode;
+                var x5 = soundBundle.SoundPlayerGroup;
+                var x6 = soundBundle.StartTime;
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

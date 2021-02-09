@@ -16,7 +16,7 @@ using WebSocketSharp;
 
 namespace LoLTainer.API
 {
-    public class LCUManager : EventAPIManagers.BaseEventAPIManager, INotifyPropertyChanged
+    public class LCUManager : EventAPIManagers.BaseEventAPIManager, INotifyPropertyChanged, Interfaces.ILCUAPIInformationProvider
     {
         private bool _tryingToConnect = false;
 
@@ -56,11 +56,14 @@ namespace LoLTainer.API
             }
         }
 
+        private LCUEventMapper _lCUEventMapper;
+
         public LCUManager() : base()
         {
             Loggings.Logger.Log(Loggings.LogType.LCU, "Setting up LCU Manager");
             WebsocketMessageEventHandler += OnWebSocketMessage;
             GameFlowSessionEventHandler += OnGameFlowSession;
+            _lCUEventMapper = new LCUEventMapper(this);
             
             Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Manager set up");
             SummonerChangedEventHandler += OnSummonerChanged;
@@ -104,6 +107,10 @@ namespace LoLTainer.API
         public EventHandler<JArray> LobbyChangedEventHandler { get; private set; }
         */
         public EventHandler<JArray> SummonerChangedEventHandler { get; private set; }
+
+        public string Queue => throw new NotImplementedException();
+
+        public string ChampionName => throw new NotImplementedException();
         #endregion
 
         private void OnGameFlowSession(object sender, JArray jArray)

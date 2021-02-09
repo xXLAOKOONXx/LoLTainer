@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.Interfaces
 {
-    interface IIngameAPIInformationProvider
+    public interface IIngameAPIInformationProvider
     {
         string ChampionName { get; }
 

@@ -56,8 +56,10 @@ namespace LoLTainer.API
         public InGameApiManager() : base()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameApiManager started");
+            /*
             Task.Run(() =>
             GameActionLooper(TimeSpan.FromMilliseconds(200)));
+            */
             _inGameEventMapper = new InGameEventMapper(this);
         }
 

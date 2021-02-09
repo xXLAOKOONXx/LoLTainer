@@ -58,8 +58,6 @@ namespace LoLTainer.API
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Setting up InGameEventMapper with OID " + base.Id, base.Id);
             _inGameApiManager = inGameApiManager;
-            GetPlayerInformation(inGameApiManager).Wait();
-            AddPlayerKillEvents(inGameApiManager);
             inGameApiManager.OnGameEvent += OnGameEvent;
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameMapper set up", base.Id);
         }
@@ -143,14 +141,15 @@ namespace LoLTainer.API
         }
 
         private void InvokeEvent(Misc.Event @event, Dictionary<string, object> eventArgs = null) =>
-                            _inGameApiManager.GetEventHandler()?.Invoke(this, new LoLTainer.Models.EventTriggeredEventArgs(@event, eventArgs));
+                            _inGameApiManager.EventHandler?.Invoke(this, new LoLTainer.Models.EventTriggeredEventArgs(@event, eventArgs));
 
-        private void CheckAndResolveNewGame(EventData eventData)
+        private async Task CheckAndResolveNewGame(EventData eventData)
         {
             if(eventData.Events.Count() == 0 ||
                 eventData.Events.Count() < _mostRecentEventData.Events.Count())
             {
                 _mostRecentEventData = null;
+                await GetPlayerInformation(_inGameApiManager);
             }
         }
 
@@ -158,7 +157,7 @@ namespace LoLTainer.API
         {
             if (_potentialNewGame)
             {
-                CheckAndResolveNewGame(eventData);
+                CheckAndResolveNewGame(eventData).Wait();
             }
 
             foreach (var ev in eventData.Events)

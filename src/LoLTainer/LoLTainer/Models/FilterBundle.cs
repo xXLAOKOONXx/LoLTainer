@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.Models
 {
+    [Serializable]
     public class FilterBundle : BaseBundle
     {
         private Misc.FilterType _actionManager;

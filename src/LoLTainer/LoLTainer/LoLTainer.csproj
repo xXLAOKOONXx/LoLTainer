@@ -90,6 +90,7 @@
     </ApplicationDefinition>
     <Compile Include="ActionAPIManagers\BaseActionAPIManager.cs" />
     <Compile Include="API\LCUEventMapper.cs" />
+    <Compile Include="Application\ApplicationManager.cs" />
     <Compile Include="EventAPIManagers\BaseEventAPIManager.cs" />
     <Compile Include="IdentifiableObject.cs" />
     <Compile Include="Interfaces\IActionAPIManager.cs" />
@@ -110,17 +111,22 @@
     <Compile Include="Services\PropertyBundleTranslator.cs" />
     <Compile Include="SettingsManager\SettingsManager.cs" />
     <Compile Include="SoundPlayer\NAudioPlayer.cs" />
+    <Compile Include="Windows\AddEvent.xaml.cs">
+      <DependentUpon>AddEvent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\EditEvent.xaml.cs">
+      <DependentUpon>EditEvent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SelectActionManager.xaml.cs">
+      <DependentUpon>SelectActionManager.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SetSoundSettings.xaml.cs">
       <DependentUpon>SetSoundSettings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\AddSetting.xaml.cs">
-      <DependentUpon>AddSetting.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="API\APIManager.cs" />
     <Compile Include="API\InGameEventMapper.cs" />
     <Compile Include="API\InGameApiManager.cs" />
     <Compile Include="API\LCUManager.cs" />
@@ -138,13 +144,21 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\AddEvent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EditEvent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SelectActionManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\SetSoundSettings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\AddSetting.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

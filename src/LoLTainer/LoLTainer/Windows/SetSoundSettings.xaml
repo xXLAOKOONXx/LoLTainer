@@ -13,6 +13,10 @@
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="1">
+            <StackPanel Orientation="Horizontal">
+                <Label Name="LBLActionName" Content="Action Name:" FontSize="20" Margin="0,0,30,0"/>
+                <TextBox Name="TXTActionName" Text="Sound Action" Width="300" Padding="5" FontSize="20"/>
+            </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,5">
                 <Label Name="LBLFileName" Content="File Name"/>
                 <Button Name="BTNFileName" Content="Select File" Padding="20,0,20,0" Click="BTNFileName_Click" BorderThickness="0"/>
@@ -26,6 +30,10 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5">
                 <Label Name="LBLDurationExplain" Content="Play Duration in seconds (-1 = play file to end): "/>
                 <TextBox Name="TXTDuration" Width="150" Padding="5" Text="-1" BorderThickness="0" HorizontalContentAlignment="Right"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5">
+                <Label Name="LBLStartExplain" Content="Start time in seconds (-1 = play file to end): "/>
+                <TextBox Name="TXTStart" Width="150" Padding="5" Text="-1" BorderThickness="0" HorizontalContentAlignment="Right"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5">
                 <Label Name="LBLGroupExplain" Content="Group ID (number):"/>
@@ -43,7 +51,7 @@
             </Grid>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                 <Button Name="BTNPlaySound" Content="Test Sound" Width="200" HorizontalAlignment="Left" Margin="20" Click="BTNPlaySound_Click" BorderThickness="0" Height="25"/>
-                <Button Name="BTNAddSetting" Content="Add" Width="200" HorizontalAlignment="Right" Margin="20" Click="BTNAddSetting_Click" BorderThickness="0" Height="25"/>
+                <Button Name="BTNSave" Content="Save" Width="200" HorizontalAlignment="Right" Margin="20" Click="BTNAddSetting_Click" BorderThickness="0" Height="25"/>
             </StackPanel>
         </StackPanel>
     </Grid>
