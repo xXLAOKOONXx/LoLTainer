@@ -9,7 +9,7 @@ An Event API Manager manages a specific API that might trigger events.
 An example is the LCU API, which might trigger Events such as EnterChampionSelect.
 A Event API Manager comes with some core functions:
 - GetSupportedEvents: Returns all Events that can be triggered by the API
-- GetEventListener: Returns the EventListener that gets triggered when any Event accures from the API
+- GetEventHandler: Returns the EventListener that gets triggered when any Event accures from the API
 - Connect: Connects to the API
 - DisConnect: Disconnects from the API
 - RestartCennection: Restarts the connection to the API
@@ -21,7 +21,6 @@ An Action API Manager manages a specific API that offers actions to be performed
 An example is the SoundPlayer, which can play sound.
 A Action API Manager comes with some core functions:
 - PropertyList: readonly Dictionary with string as name of the Property and an enum type of the regarding Property
-- ActionList: readonly ist of all available Actions of this API Manager
 - ActionWindow: Window with an implementation of IActionWindow to edit a specific Action
 - IsValidPropertyBundle: Receives a PropertyBundle and checks whether it is Valid
 - PerformAtion: Receives a PropertyBundle and performs the Action as described in the PropertyBundle
@@ -49,3 +48,8 @@ It has following core functions:
 - IEnumerable of all Event API Managers
 - EventActionSetting
 - AllAvailableEvents: returns all Events currently available
+
+### IFilterManager
+A FilterManager holds the ability to give response on whether Filtercriterias are met or not.
+It has following core functions:
+- CheckFilter: recieves a FilterBundle
