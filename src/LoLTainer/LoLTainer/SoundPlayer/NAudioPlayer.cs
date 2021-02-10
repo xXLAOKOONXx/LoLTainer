@@ -157,7 +157,11 @@ namespace LoLTainer.SoundPlayer
 
         public override void Connect()
         {
-            
+
+        }
+        public override void DisConnect()
+        {
+            TerminateAllSounds().Wait();
         }
 
         public override bool IsValidPropertyBundle(PropertyBundle propertyBundle)

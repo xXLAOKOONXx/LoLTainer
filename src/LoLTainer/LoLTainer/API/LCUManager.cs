@@ -64,7 +64,7 @@ namespace LoLTainer.API
             WebsocketMessageEventHandler += OnWebSocketMessage;
             GameFlowSessionEventHandler += OnGameFlowSession;
             _lCUEventMapper = new LCUEventMapper(this);
-            
+
             Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Manager set up");
             SummonerChangedEventHandler += OnSummonerChanged;
         }
@@ -348,7 +348,11 @@ namespace LoLTainer.API
         public override void DisConnect()
         {
             _tryingToConnect = false;
-            _clientWebSocket.Close();
+            if (_clientWebSocket != null)
+            {
+                _clientWebSocket.Close();
+            }
+
         }
 
         public override IEnumerable<Event> GetSupportedEvents()

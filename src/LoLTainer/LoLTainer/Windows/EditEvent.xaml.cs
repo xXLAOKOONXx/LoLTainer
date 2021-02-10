@@ -80,9 +80,11 @@ namespace LoLTainer.Windows
         private UIElement GetUIElement(PropertyBundle propertyBundle)
         {
             var magicWrap = new StackPanel();
+            magicWrap.Margin = new Thickness(0, 0, 0, 1);
             var head = new Button();
             head.Content = String.Format("{0} - {1}", propertyBundle.ActionManager.ToString(), propertyBundle.ActionName);
             magicWrap.Children.Add(head);
+            head.BorderThickness = new Thickness(0);
 
             var body = new Grid();
             try
@@ -103,6 +105,7 @@ namespace LoLTainer.Windows
             var bnd = new Binding("ActionName");
             bnd.Source = propertyBundle;
             lbl1.SetBinding(Label.ContentProperty, bnd);
+            lbl1.BorderThickness = new Thickness(0);
 
             lbl1.HorizontalContentAlignment = HorizontalAlignment.Right;
             lbl1.FlowDirection = FlowDirection.RightToLeft;
@@ -112,6 +115,7 @@ namespace LoLTainer.Windows
 
             // Edit Button
             var btn = new Button();
+            btn.BorderThickness = new Thickness(0);
             btn.Content = "Edit";
             Grid.SetColumn(btn, 1);
             btn.Click += (s, e) =>
@@ -145,6 +149,7 @@ namespace LoLTainer.Windows
 
 
             var BTNDelete = new Button();
+            BTNDelete.BorderThickness = new Thickness(0);
             BTNDelete.Content = "Delete";
             body.Children.Add(BTNDelete);
             SetBackgroundFromSettings(BTNDelete, "BTNDeleteItemBackgroundColor");

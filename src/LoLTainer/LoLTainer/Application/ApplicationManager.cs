@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using LoLTainer.Interfaces;
@@ -10,7 +12,7 @@ using LoLTainer.Models;
 
 namespace LoLTainer
 {
-    public class ApplicationManager : Interfaces.IApplicationManager, IAppInformationProvider
+    public class ApplicationManager : Interfaces.IApplicationManager, IAppInformationProvider, INotifyPropertyChanged
     {
         #region Private Properties
         ISettingsManager _settingsManager;
@@ -18,8 +20,35 @@ namespace LoLTainer
         API.LCUManager _lCUManager;
         SoundPlayer.NAudioPlayer _nAudioPlayer;
         private EventHandler<Models.EventTriggeredEventArgs> eventHandler;
+        private bool _appOn = true;
         #endregion
         #region Public Properties
+        public bool AppOn
+        {
+            get => _appOn;
+            set
+            {
+                _appOn = value;
+                ApplyAppOnOff(_appOn);
+                NotifyPropertyChanged();
+            }
+        }
+
+        private void ApplyAppOnOff(bool appOn)
+        {
+            if (appOn)
+            {
+                _lCUManager.Connect();
+                _nAudioPlayer.Connect();
+            }
+            else
+            {
+                _lCUManager.DisConnect();
+                _inGameApiManager.DisConnect();
+                _nAudioPlayer.DisConnect();
+            }
+        }
+
         public EventActionSetting EventActionSetting
         {
             get => _settingsManager.EventActionSetting;
@@ -140,5 +169,18 @@ namespace LoLTainer
         {
             _settingsManager.Save();
         }
+
+        #region INotifyPropertyChanged implementation
+        [field: NonSerialized]
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        #endregion
     }
 }

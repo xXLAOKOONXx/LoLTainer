@@ -42,6 +42,12 @@ namespace LoLTainer.ActionAPIManagers
         abstract public bool IsValidPropertyBundle(PropertyBundle propertyBundle);
 
         abstract public void Connect();
+        abstract public void DisConnect();
+        public void ReConnect()
+        {
+            DisConnect();
+            Connect();
+        }
         
 
         #region INotifyPropertyChanged implementation

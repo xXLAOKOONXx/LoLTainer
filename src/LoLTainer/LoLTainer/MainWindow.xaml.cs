@@ -59,6 +59,7 @@ namespace LoLTainer
 
             SetBackgroundFromSettings(this, "BackgroundColor");
             SetBackgroundFromSettings(BTNAddEvent, "BTNAddEventBackgroundColor");
+            BTNAddEvent.BorderThickness = new Thickness(0);
 
             Brush tmpBrush;
             try
@@ -70,6 +71,8 @@ namespace LoLTainer
             {
                 Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Error getting Color from UISettings; Color:{0}, ErrorMessage:{1}", "TXTBLKRiotLegalBackgroundColor", ex.Message));
             }
+
+            DrawBTNAppStatus();
         }
         private void SetBackgroundFromSettings(Control control, string colorName)
         {
@@ -99,8 +102,11 @@ namespace LoLTainer
         private UIElement GetUIElement(KeyValuePair<Misc.Event, List<Models.PropertyBundle>> setting)
         {
             var magicWrap = new StackPanel();
+            magicWrap.Margin = new Thickness(0, 0, 0, 1);
             var head = new Button();
             head.Content = setting.Key.ToString();
+            var headBorderThickness = new Thickness(0);
+            head.BorderThickness = headBorderThickness;
             magicWrap.Children.Add(head);
 
             var body = new Grid();
@@ -108,7 +114,7 @@ namespace LoLTainer
             body.ColumnDefinitions.Add(new ColumnDefinition());
             body.ColumnDefinitions.Add(new ColumnDefinition());
             body.ColumnDefinitions.Add(new ColumnDefinition());
-            
+            body.Height = 25;
 
             // Edit Button
             var btn = new Button();
@@ -118,8 +124,9 @@ namespace LoLTainer
             {
                 ChangeSetting(setting);
             };
+            btn.BorderThickness = new Thickness(0);
             body.Children.Add(btn);
-            
+
 
 
             magicWrap.Children.Add(body);
@@ -151,7 +158,7 @@ namespace LoLTainer
             {
                 this.RemoveSetting(setting);
             };
-
+            BTNDelete.BorderThickness = new Thickness(0);
             Grid.SetColumn(BTNDelete, 2);
 
             return magicWrap;
@@ -191,13 +198,33 @@ namespace LoLTainer
         void AddingEventCompleted(Misc.Event? @event)
         {
             this.IsEnabled = true;
-            if(@event != null && 
+            if (@event != null &&
                 !_applicationManager.EventActionSetting.Settings.ContainsKey((Misc.Event)@event))
             {
                 _applicationManager.EventActionSetting.Settings.Add((Misc.Event)@event, new List<PropertyBundle>());
             }
             _applicationManager.SaveChanges();
             DrawList();
+        }
+
+        private void BTNAppStatus_Click(object sender, RoutedEventArgs e)
+        {
+            _applicationManager.AppOn = !_applicationManager.AppOn;
+            DrawBTNAppStatus();
+        }
+
+        private void DrawBTNAppStatus()
+        {
+            if (_applicationManager.AppOn)
+            {
+                SetBackgroundFromSettings(BTNAppStatus, "BTNAppStatusOnBackgroundColor");
+                BTNAppStatus.Content = "On";
+            }
+            else
+            {
+                SetBackgroundFromSettings(BTNAppStatus, "BTNAppStatusOffBackgroundColor");
+                BTNAppStatus.Content = "Off";
+            }
         }
     }
 }

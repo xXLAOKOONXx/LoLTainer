@@ -20,6 +20,8 @@ namespace LoLTainer.Interfaces
 
         void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null);
         void Connect();
+        void DisConnect();
+        void ReConnect();
 
         bool Connected
         {
