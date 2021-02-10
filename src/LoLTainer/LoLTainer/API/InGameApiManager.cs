@@ -33,7 +33,7 @@ namespace LoLTainer.API
         /// <summary>
         /// Defines whether the gameActionCrawling should be done or not, once set on false the next iteration will break the loop. setting to true again will not reactivate the loop.
         /// </summary>
-        private bool _gameActionCrawling = true;
+        private bool _gameActionCrawling = false;
         private string _mostRecentGameEventList;
         private InGameEventMapper _inGameEventMapper;
         private TimeSpan OnNoResponseDelayTime = TimeSpan.FromMilliseconds(1000);
@@ -235,6 +235,8 @@ namespace LoLTainer.API
 
         public override void Connect()
         {
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Connecting with inGame API", base.Id);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Presets are Connected:{0} Crawling:{1}",this.Connected,_gameActionCrawling), base.Id);
             if (!this.Connected && !_gameActionCrawling)
             {
                 this._gameActionCrawling = true;
@@ -244,6 +246,7 @@ namespace LoLTainer.API
 
         public override void DisConnect()
         {
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Disconnecting with inGame API", base.Id);
             _gameActionCrawling = false;
         }
 

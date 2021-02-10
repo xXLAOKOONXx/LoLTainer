@@ -37,7 +37,7 @@ namespace LoLTainer
             eventHandler += EventTriggered;
             eventHandler += InGameListener;
 
-            foreach(var manager in EventAPIManagers)
+            foreach (var manager in EventAPIManagers)
             {
                 manager.EventHandler += eventHandler;
             }
@@ -51,32 +51,38 @@ namespace LoLTainer
         #region EventHandling
         private async void EventTriggered(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
         {
-            var sets = _settingsManager.EventActionSetting.Settings[eventTriggeredEventArgs.Event];
-            foreach(var item in sets)
+            if (_settingsManager.EventActionSetting.Settings.ContainsKey(eventTriggeredEventArgs.Event))
             {
-                GetActionAPIManager(item.ActionManager).PerformAction(item, eventTriggeredEventArgs);
+                var sets = _settingsManager.EventActionSetting.Settings[eventTriggeredEventArgs.Event];
+                foreach (var item in sets)
+                {
+                    GetActionAPIManager(item.ActionManager).PerformAction(item, eventTriggeredEventArgs);
+                }
             }
         }
 
         private void InGameListener(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
-        {
+        {            
             if (eventTriggeredEventArgs.Event == Event.EnterGame)
             {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Detected EnterGame, connecting to ingame");
                 _inGameApiManager.Connect();
             }
-            if(eventTriggeredEventArgs.Event == Event.EndGame)
+            if (eventTriggeredEventArgs.Event == Event.EndGame)
             {
                 _inGameApiManager.DisConnect();
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Detected EndGame, disconnecting from ingame");
             }
         }
 
         public IActionAPIManager GetActionAPIManager(ActionManager actionManager)
         {
-            switch(actionManager){
+            switch (actionManager)
+            {
                 case ActionManager.SoundPlayer:
-                        return _nAudioPlayer;
+                    return _nAudioPlayer;
                 default:
-                        return null;
+                    return null;
             }
         }
         #endregion
@@ -98,12 +104,13 @@ namespace LoLTainer
             }
         }
 
-        public IEnumerable<Event> AllAvailableEvents {
+        public IEnumerable<Event> AllAvailableEvents
+        {
             get
             {
-                foreach(var manager in EventAPIManagers)
+                foreach (var manager in EventAPIManagers)
                 {
-                    foreach(var ev in manager.GetSupportedEvents())
+                    foreach (var ev in manager.GetSupportedEvents())
                     {
                         yield return ev;
                     }
