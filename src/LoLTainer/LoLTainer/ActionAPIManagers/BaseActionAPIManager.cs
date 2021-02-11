@@ -10,20 +10,27 @@ using System.Threading.Tasks;
 
 namespace LoLTainer.ActionAPIManagers
 {
+    /// <summary>
+    /// Abstract class implementing basic functionality for Action API Managers.
+    /// </summary>
     public abstract class BaseActionAPIManager : IdentifiableObject, INotifyPropertyChanged, IActionAPIManager
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         protected BaseActionAPIManager()
         {
 
         }
-
-        abstract public Dictionary<string, Type> PropertyList
-        {
-            get;
-        }
-
+        
+        /// <summary>
+        /// Use <see cref="Connected"/> to modify; Private variable to store whether the manager is connected or not.
+        /// </summary>
         private bool _connect = false;
 
+        /// <summary>
+        /// WHether the Manager is connected to the API or not.
+        /// </summary>
         public bool Connected
         {
             get => _connect;

@@ -12,8 +12,8 @@ namespace LoLTainer.API
 {
     /// <summary>
     /// Connection to InGame API and observer of InGameActivities.
-    /// Triggers public EventHandlers when they occure.
-    /// Current Events supported: <see cref="InGameApiManager.OnGameEvent"/>
+    /// Triggers public EventHandler when they occure.
+    /// With the help of <see cref="InGameEventMapper"/> translates the Activities into <see cref="Event"/> and triggers EventHandler with it.
     /// </summary>
     public class InGameApiManager : EventAPIManagers.BaseEventAPIManager, Interfaces.IIngameAPIInformationProvider
     {
