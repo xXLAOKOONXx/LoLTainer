@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using LoLTainer.Interfaces;
 using LoLTainer.Models;
 using OBSWebsocketDotNet;
@@ -47,7 +48,14 @@ namespace LoLTainer.ActionAPIManagers
 
         public override void Connect()
         {
-            _oBSWebsocket.Connect(_url, _psw);
+            try
+            {
+                _oBSWebsocket.Connect(_url, _psw);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("You need to use default websocket setup right now:\rurl: ws://localhost:4444\rand set no password\r btw the ui is bugged, OBS is not on yet, press twice on the button to retry.");
+            }
         }
 
         public override void DisConnect()
