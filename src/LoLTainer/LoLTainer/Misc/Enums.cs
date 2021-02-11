@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LoLTainer.Misc
 {
+    public enum ConnectionStatus
+    {
+        Disconnected = 0,
+        [Description("Trying to connect")]
+        TryingToConnect = 100,
+        Connected = 200
+    }
+
     /// <summary>
     /// Events that are supported in this application.
     /// Implementation for support can be found in <see cref="API.InGameEventMapper"/> or <see cref="API.LCUEventMapper"/>.
@@ -42,21 +51,29 @@ namespace LoLTainer.Misc
         /*
          * --LCU--
          */
-         EnterChampSelect = 1010,
-         EnterGame = 1020,
-         EndGame = 1030
+        EnterChampSelect = 1010,
+        EnterGame = 1020,
+        EndGame = 1030
     }
 
     public enum ActionManager
     {
-        SoundPlayer = 0
+        SoundPlayer = 0,
+        OBS = 50
     }
-    
+
     public enum FilterType
     {
         NoFilter = 0,
         Champions = 10,
         Queue = 20
+    }
+
+    public enum OBSActionType
+    {
+        Scene = 10,
+        ItemVisibility = 20,
+        FilterVisibility = 30
     }
 
     public enum PlayMode

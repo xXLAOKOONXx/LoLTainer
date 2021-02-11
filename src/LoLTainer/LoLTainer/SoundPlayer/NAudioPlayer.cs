@@ -24,8 +24,6 @@ namespace LoLTainer.SoundPlayer
 
         private Dictionary<string, WaveOutEvent> _playerIds = new Dictionary<string, WaveOutEvent>();
 
-        public override Dictionary<string, Type> PropertyList => throw new NotImplementedException();
-
         #region constructors
         public NAudioPlayer() : base()
         {
@@ -151,17 +149,22 @@ namespace LoLTainer.SoundPlayer
 
         public override async void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null)
         {
+            if (!Connected)
+            {
+                return;
+            }
             var bundle = new Services.PropertyBundleTranslator.SoundPlayerPropertyBundle(propertyBundle);
             await this.PlaySound(bundle);
         }
 
         public override void Connect()
         {
-
+            Connected = true;
         }
         public override void DisConnect()
         {
             TerminateAllSounds().Wait();
+            Connected = false;
         }
 
         public override bool IsValidPropertyBundle(PropertyBundle propertyBundle)

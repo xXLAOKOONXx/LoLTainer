@@ -19,8 +19,10 @@ namespace LoLTainer
         API.InGameApiManager _inGameApiManager;
         API.LCUManager _lCUManager;
         SoundPlayer.NAudioPlayer _nAudioPlayer;
+        private ActionAPIManagers.OBSActionManager _oBSActionManager;
         private EventHandler<Models.EventTriggeredEventArgs> eventHandler;
         private bool _appOn = true;
+        private bool _obsOn = false;
         #endregion
         #region Public Properties
         public bool AppOn
@@ -34,6 +36,29 @@ namespace LoLTainer
             }
         }
 
+        public bool OBSOn
+        {
+            get => _obsOn;
+            set
+            {
+                _obsOn = value;
+                ApplyOBSOnOff(_obsOn);
+                NotifyPropertyChanged();
+            }
+        }
+
+
+        private void ApplyOBSOnOff(bool obsOn)
+        {
+            if (obsOn)
+            {
+                _oBSActionManager.Connect();
+            }
+            else
+            {
+                _oBSActionManager.DisConnect();
+            }
+        }
         private void ApplyAppOnOff(bool appOn)
         {
             if (appOn)
@@ -62,6 +87,7 @@ namespace LoLTainer
             _lCUManager = new API.LCUManager();
             _inGameApiManager = new API.InGameApiManager();
             _nAudioPlayer = new SoundPlayer.NAudioPlayer();
+            _oBSActionManager = new ActionAPIManagers.OBSActionManager();
 
             eventHandler += EventTriggered;
             eventHandler += InGameListener;
@@ -91,7 +117,7 @@ namespace LoLTainer
         }
 
         private void InGameListener(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
-        {            
+        {
             if (eventTriggeredEventArgs.Event == Event.EnterGame)
             {
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Detected EnterGame, connecting to ingame");
@@ -110,6 +136,8 @@ namespace LoLTainer
             {
                 case ActionManager.SoundPlayer:
                     return _nAudioPlayer;
+                case ActionManager.OBS:
+                    return _oBSActionManager;
                 default:
                     return null;
             }
@@ -163,6 +191,7 @@ namespace LoLTainer
         public IEnumerable<Misc.ActionManager> GetAvailableActionManagers()
         {
             yield return Misc.ActionManager.SoundPlayer;
+            yield return ActionManager.OBS;
         }
 
         public void SaveChanges()

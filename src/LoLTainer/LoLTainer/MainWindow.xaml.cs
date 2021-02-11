@@ -73,6 +73,7 @@ namespace LoLTainer
             }
 
             DrawBTNAppStatus();
+            DrawBTNOBSStatus();
         }
         private void SetBackgroundFromSettings(Control control, string colorName)
         {
@@ -217,14 +218,34 @@ namespace LoLTainer
         {
             if (_applicationManager.AppOn)
             {
-                SetBackgroundFromSettings(BTNAppStatus, "BTNAppStatusOnBackgroundColor");
+                SetBackgroundFromSettings(BTNAppStatus, "BTNStatusOnBackgroundColor");
                 BTNAppStatus.Content = "On";
             }
             else
             {
-                SetBackgroundFromSettings(BTNAppStatus, "BTNAppStatusOffBackgroundColor");
+                SetBackgroundFromSettings(BTNAppStatus, "BTNStatusOffBackgroundColor");
                 BTNAppStatus.Content = "Off";
             }
         }
+
+        private void BTNOBSStatus_Click(object sender, RoutedEventArgs e)
+        {
+            _applicationManager.OBSOn = !_applicationManager.OBSOn;
+            DrawBTNOBSStatus();
+        }
+        private void DrawBTNOBSStatus()
+        {
+            if (_applicationManager.OBSOn)
+            {
+                SetBackgroundFromSettings(BTNOBSStatus, "BTNStatusOnBackgroundColor");
+                BTNOBSStatus.Content = "On";
+            }
+            else
+            {
+                SetBackgroundFromSettings(BTNOBSStatus, "BTNStatusOffBackgroundColor");
+                BTNOBSStatus.Content = "Off";
+            }
+        }
+
     }
 }

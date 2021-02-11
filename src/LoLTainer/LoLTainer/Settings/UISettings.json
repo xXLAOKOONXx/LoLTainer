@@ -7,8 +7,8 @@
     "BTNDeleteBackgroundColor": "#ff7043",
     "BTNheadBackgroundColor": "#1e88e5",
     "TXTBLKRiotLegalBackgroundColor": "#cccccc",
-    "BTNAppStatusOnBackgroundColor": "#43a047",
-    "BTNAppStatusOffBackgroundColor": "#ff7043"
+    "BTNStatusOnBackgroundColor": "#43a047",
+    "BTNStatusOffBackgroundColor": "#ff7043"
   },
   "AddEvent": {
     "BackgroundColor": "#dddddd",
@@ -36,6 +36,15 @@
   "SelectActionManager": {
     "BackgroundColor": "#dddddd",
     "BTNActionManagerBackgroundColor": "#cccccc"
+  },
+  "SetOBSSetting": {
+    "BackgroundColor": "#dddddd",
+    "BTNSaveBackgroundColor": "#43a047",
+    "BTNActionTypeBackgroundColor": "#cccccc",
+    "BTNActionTypeSelectedBackgroundColor": "#6ab7ff",
+    "ErrorBorderColor": "#c62828",
+    "BTNOnBackgroundColor": "#43a047",
+    "BTNOffBackgroundColor": "#ff7043"
   }
 
 }

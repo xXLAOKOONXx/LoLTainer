@@ -77,6 +77,9 @@ namespace LoLTainer.Windows
         private void BuildOption(Misc.ActionManager actionManager)
         {
             Button button = new Button();
+            button.Margin = new Thickness(5);
+            button.Padding = new Thickness(2);
+            button.Width = 200;
             button.Content = actionManager.ToString();
             button.Click += (s, o) => {
                 _action(actionManager);

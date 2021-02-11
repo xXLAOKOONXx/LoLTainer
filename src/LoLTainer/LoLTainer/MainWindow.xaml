@@ -26,8 +26,15 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                    <Label Content="App Status" Grid.Column="0"/>
-                    <Button Name="BTNAppStatus" Content="-" BorderThickness="0" Width="100" Margin="10,0,10,0" Grid.Column="1" Click="BTNAppStatus_Click"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="App Status" Grid.Column="0" Grid.Row="0"/>
+                        <Button Name="BTNAppStatus" Content="-" BorderThickness="0" Width="100" Margin="10,0,10,0" Grid.Column="1" Click="BTNAppStatus_Click" Grid.Row="0"/>
+                        <Label Content="OBS Status" Grid.Column="0" Grid.Row="1"/>
+                        <Button Name="BTNOBSStatus" Content="-" BorderThickness="0" Width="100" Margin="10,0,10,0" Grid.Column="1" Grid.Row="1" Click="BTNOBSStatus_Click"/>
                     </Grid>
                 </StackPanel>
                 <StackPanel Name="ClientUpdateFrame">

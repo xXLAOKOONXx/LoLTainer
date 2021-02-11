@@ -76,5 +76,87 @@ namespace LoLTainer.Services.PropertyBundleTranslator
     }
 
     #endregion
+
+    #region OBSTranslation
+
+    public class OBSPropertyBundle
+    {
+        public const string ACTION_TYPE = "ActionType";
+        public const string SCENE_NAME = "SceneName";
+        public const string ITEM_NAME = "ItemName";
+        public const string FILTER_NAME = "FilterName";
+        public const string ACTION_DURATION = "ActionDuration";
+        public const string VISIBILITY_TOGGLE_ONLY = "ToggleOnly";
+        public const string VISIBILITY_TARGET_VALUE = "TargetValue";
+
+        public OBSPropertyBundle(PropertyBundle propertyBundle)
+        {
+            _propertyBundle = propertyBundle;
+        }
+
+        private PropertyBundle _propertyBundle;
+        public PropertyBundle PropertyBundle => _propertyBundle;
+
+        public Misc.OBSActionType ActionType
+        {
+            get => (Misc.OBSActionType)_propertyBundle.Properties[ACTION_TYPE];
+            set
+            {
+                _propertyBundle.Properties[ACTION_TYPE] = value;
+            }
+        }
+        public string SceneName
+        {
+            get => _propertyBundle.Properties[SCENE_NAME] as string;
+            set
+            {
+                _propertyBundle.Properties[SCENE_NAME] = value;
+            }
+        }
+        public string ItemName
+        {
+            get => _propertyBundle.Properties[ITEM_NAME] as string;
+            set
+            {
+                _propertyBundle.Properties[ITEM_NAME] = value;
+            }
+        }
+        public string FilterName
+        {
+            get => _propertyBundle.Properties[FILTER_NAME] as string;
+            set
+            {
+                _propertyBundle.Properties[FILTER_NAME] = value;
+            }
+        }
+
+        public TimeSpan? ActionDuration
+        {
+            get => _propertyBundle.Properties[ACTION_DURATION] as TimeSpan?;
+            set
+            {
+                _propertyBundle.Properties[ACTION_DURATION] = value;
+            }
+        }
+
+        public bool VisibilityToggleOnly
+        {
+            get => (bool)_propertyBundle.Properties[VISIBILITY_TOGGLE_ONLY];
+            set
+            {
+                _propertyBundle.Properties[VISIBILITY_TOGGLE_ONLY] = value;
+            }
+        }
+        public bool VisibilityTargetValue
+        {
+            get => (bool)_propertyBundle.Properties[VISIBILITY_TARGET_VALUE];
+            set
+            {
+                _propertyBundle.Properties[VISIBILITY_TARGET_VALUE] = value;
+            }
+        }
+    }
+
+    #endregion
 }
 
