@@ -78,6 +78,7 @@ namespace LoLTainer.API
             const string inChampSelect_str = "ChampSelect";
 
             var phase = jArray[2]["data"]["phase"].ToString();
+            Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("GameFlow Change to phase: {0}", phase));
             switch (phase)
             {
                 case inGame_str:

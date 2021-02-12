@@ -34,6 +34,7 @@ namespace LoLTainer.Windows
             ActionTypeChanged += OnActionTypeChanged;
             DrawUISettings();
             DrawSelectActionType();
+            this.Closing += OnWindowClose;
         }
         private void DrawUISettings()
         {

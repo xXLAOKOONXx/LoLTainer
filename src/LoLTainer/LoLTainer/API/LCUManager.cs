@@ -125,6 +125,11 @@ namespace LoLTainer.API
             Loggings.Logger.Log(Loggings.LogType.LCU, "WebSocket Message received");
             var Messages = JArray.Parse(e.Data);
 
+            /*
+            Console.WriteLine(Messages.ToString());
+            Loggings.Logger.Log(Loggings.LogType.LCU, String.Format("WebSocketMessage received: {0}", Messages.ToString()));
+            */
+
             int MessageType = 0;
             if (!int.TryParse(Messages[0].ToString(), out MessageType) || MessageType != 8)
                 return;

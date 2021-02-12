@@ -97,7 +97,7 @@ namespace LoLTainer.Windows
             lbl.Content = @event.ToString();
             lbl.VerticalAlignment = VerticalAlignment.Center;
             lbl.Width = 150;
-            SetBackgroundFromSettings(lbl, "LBLQueueBackgroundColor");
+            SetBackgroundFromSettings(lbl, "LBLEventBackgroundColor");
             lbl.MouseDown += (sender, e) =>
             {
                 _event = @event;

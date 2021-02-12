@@ -45,6 +45,12 @@
     "ErrorBorderColor": "#c62828",
     "BTNOnBackgroundColor": "#43a047",
     "BTNOffBackgroundColor": "#ff7043"
+  },
+  "AddEvent": {
+    "BackgroundColor": "#dddddd",
+    "BTNAddEventBackgroundColor": "#43a047",
+    "LBLEventBackgroundColor": "#cccccc",
+    "LBLEventSelectedBackgroundColor": "#6ab7ff"
   }
 
 }
