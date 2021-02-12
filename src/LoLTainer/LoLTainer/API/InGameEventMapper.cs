@@ -145,7 +145,7 @@ namespace LoLTainer.API
 
         private async Task CheckAndResolveNewGame(EventData eventData)
         {
-            if(eventData.Events.Count() == 0 ||
+            if (eventData.Events.Count() == 0 ||
                 eventData.Events.Count() < _mostRecentEventData.Events.Count())
             {
                 _mostRecentEventData = null;
@@ -211,8 +211,16 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Kill occured", base.Id);
-                            InvokeEvent(Misc.Event.PlayerDragonKill);
+                            if (ev.Stolen && _inGameApiManager.ActiveEvents.Contains(Misc.Event.PlayerDragonSteal))
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Steal occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerDragonSteal);
+                            }
+                            else
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Kill occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerDragonKill);
+                            }
                         }
                     }
                     else
@@ -220,8 +228,16 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Kill occured", base.Id);
-                            InvokeEvent(Misc.Event.PlayerBaronKill);
+                            if (ev.Stolen && _inGameApiManager.ActiveEvents.Contains(Misc.Event.PlayerBaronSteal))
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Steal occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerBaronSteal);
+                            }
+                            else
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Kill occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerBaronKill);
+                            }
                         }
                     }
                 }

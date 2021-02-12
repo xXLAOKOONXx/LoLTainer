@@ -44,8 +44,8 @@ namespace LoLTainer.Misc
         PlayerBaronKill = 52,
         //PlayerDragonKillAssist = 53,
         //PlayerBaronKillAssist = 54,
-        //PlayerDragonSteal = 55,
-        //PlayerBaronSteal = 56,
+        PlayerDragonSteal = 55,
+        PlayerBaronSteal = 56,
         //TeamDragonSteal = 57,
         //TeamBaronSteal = 58
         /*

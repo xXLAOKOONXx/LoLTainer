@@ -56,10 +56,6 @@ namespace LoLTainer.API
         public InGameApiManager() : base()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameApiManager started");
-            /*
-            Task.Run(() =>
-            GameActionLooper(TimeSpan.FromMilliseconds(200)));
-            */
             _inGameEventMapper = new InGameEventMapper(this);
         }
 
@@ -202,37 +198,6 @@ namespace LoLTainer.API
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Closing InGameApiManager", base.Id);
         }
 
-
-        private void EndAsyncEvent(IAsyncResult iar)
-        {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler)ar.AsyncDelegate;
-
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception ex)
-            {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
-            }
-        }
-
-        private void EndAsyncEvent<T>(IAsyncResult iar)
-        {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler<T>)ar.AsyncDelegate;
-
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception ex)
-            {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
-            }
-        }
-
         public override void Connect()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Connecting with inGame API", base.Id);
@@ -261,6 +226,8 @@ namespace LoLTainer.API
             // Objectivekills
             yield return Event.PlayerBaronKill;
             yield return Event.PlayerDragonKill;
+            yield return Event.PlayerDragonSteal;
+            yield return Event.PlayerBaronSteal;
 
             yield return Event.PlayerAnyKill;
             yield return Event.PlayerFirstBlood;

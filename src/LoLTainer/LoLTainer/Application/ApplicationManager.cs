@@ -196,6 +196,10 @@ namespace LoLTainer
 
         public void SaveChanges()
         {
+            foreach(var manager in EventAPIManagers)
+            {
+                manager.SetActiveEvents(_settingsManager.EventActionSetting.Settings.Keys.AsEnumerable());
+            }
             _settingsManager.Save();
         }
 

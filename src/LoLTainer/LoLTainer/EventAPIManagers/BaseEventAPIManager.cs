@@ -15,6 +15,8 @@ namespace LoLTainer.EventAPIManagers
 
         protected IEnumerable<Misc.Event> _activeEvents = null;
 
+        public IEnumerable<Misc.Event> ActiveEvents => _activeEvents;
+
         protected EventHandler<Models.EventTriggeredEventArgs> _eventHandler;
 
         protected void TriggerEvent(Event @event) => _eventHandler?.Invoke(this, new Models.EventTriggeredEventArgs(@event));
