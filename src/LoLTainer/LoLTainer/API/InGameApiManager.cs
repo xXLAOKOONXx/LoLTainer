@@ -229,6 +229,10 @@ namespace LoLTainer.API
             yield return Event.PlayerDragonSteal;
             yield return Event.PlayerBaronSteal;
 
+            yield return Event.AnyNexusDestroyed;
+            yield return Event.EnemyTeamNexusDestroyed;
+            yield return Event.TeamNexusDestroyed;
+
             yield return Event.PlayerAnyKill;
             yield return Event.PlayerFirstBlood;
             // Multikills

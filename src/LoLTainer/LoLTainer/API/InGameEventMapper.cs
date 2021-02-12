@@ -240,17 +240,38 @@ namespace LoLTainer.API
                             }
                         }
                     }
+                    else
+                    if (ev.EventName == EventData.EventNames.GameEnd)
+                    {
+                        if(ev.Result && _inGameApiManager.ActiveEvents.Contains(Misc.Event.EnemyTeamNexusDestroyed))
+                        {
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Enemy Team Nexus Destroyed occured", base.Id);
+                            InvokeEvent(Misc.Event.EnemyTeamNexusDestroyed);
+                        }
+                        else
+                        if(!ev.Result && _inGameApiManager.ActiveEvents.Contains(Misc.Event.TeamNexusDestroyed))
+                        {
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Team Nexus Destroyed occured", base.Id);
+                            InvokeEvent(Misc.Event.TeamNexusDestroyed);
+                        }
+                        else
+                        {
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Any Nexus Destroyed occured", base.Id);
+                            InvokeEvent(Misc.Event.AnyNexusDestroyed);
+                        }
+                    }
                 }
             }
             _mostRecentEventData = eventData;
         }
 
-        private static bool IsSingleKill(EventData eventData, EventData.Event ev)
+        private bool IsSingleKill(EventData eventData, EventData.Event ev)
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Checking whether event is single kill {0}", ev.ToString()));
             return eventData.Events
                 .Where(item => item.EventTime == ev.EventTime)
-                .Where(item => item.EventName == EventData.EventNames.MultiKill || item.EventName == EventData.EventNames.FirstBlood)
+                .Where(item => item.EventName == EventData.EventNames.MultiKill ||
+                (_inGameApiManager.ActiveEvents.Contains(Misc.Event.PlayerFirstBlood) && item.EventName == EventData.EventNames.FirstBlood))
                 .Count() == 0;
         }
         #endregion
