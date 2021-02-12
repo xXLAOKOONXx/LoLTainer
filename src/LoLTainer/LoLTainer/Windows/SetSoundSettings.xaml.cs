@@ -198,6 +198,7 @@ namespace LoLTainer.Windows
                 _propertyBundle.PropertyBundle.ActionName = TXTActionName.Text;
 
                 _action(_propertyBundle.PropertyBundle);
+                _manualClose = false;
                 this.Close();
             }
             else
@@ -255,12 +256,16 @@ namespace LoLTainer.Windows
                 TXTDuration.Text = _propertyBundle.PlayLength.Value.TotalSeconds.ToString();
                 TXTGroup.Text = _propertyBundle.SoundPlayerGroup;
                 TXTStart.Text = _propertyBundle.StartTime.Value.TotalSeconds.ToString();
+                SLDVolume.Value = _propertyBundle.Volume;
                 LBLFileName.Content = _propertyBundle.FileName;
             }
 
             this.Closed += (s, o) =>
             {
-                finishedEditingAction(null);
+                if (_manualClose)
+                {
+                    finishedEditingAction(null);
+                }
             };
 
             this.Show();
