@@ -9,6 +9,7 @@ using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -108,7 +109,16 @@ namespace LoLTainer.API
         */
         public EventHandler<JArray> SummonerChangedEventHandler { get; private set; }
 
-        public string Queue => throw new NotImplementedException();
+        private int _queue = -1;
+        public int QueueId
+        {
+            get => _queue;
+            set
+            {
+                _queue = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         public string ChampionName => throw new NotImplementedException();
         #endregion
@@ -320,7 +330,7 @@ namespace LoLTainer.API
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void NotifyPropertyChanged(string info)
+        private void NotifyPropertyChanged([CallerMemberName]string info = "")
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
@@ -365,6 +375,8 @@ namespace LoLTainer.API
             yield return Event.EndGame;
             yield return Event.EnterChampSelect;
             yield return Event.EnterGame;
+            yield return Event.EnterLobby;
+            yield return Event.EnterMatchmaking;
         }
     }
 }

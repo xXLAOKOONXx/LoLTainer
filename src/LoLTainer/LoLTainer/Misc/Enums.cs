@@ -56,7 +56,9 @@ namespace LoLTainer.Misc
          */
         EnterChampSelect = 1010,
         EnterGame = 1020,
-        EndGame = 1030
+        EndGame = 1030,
+        EnterMatchmaking = 1040,
+        EnterLobby = 1050
     }
 
     public enum ActionManager

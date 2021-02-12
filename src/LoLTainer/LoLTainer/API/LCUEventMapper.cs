@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -72,46 +73,77 @@ namespace LoLTainer.API
             _lCUManager.EventHandler?.Invoke(this, args);
         }
 
+        private ClientPhase _clientPhase = ClientPhase.None;
         private void OnGameFlowSession(object sender, JArray jArray)
         {
-            const string inGame_str = "InProgress";
-            const string inChampSelect_str = "ChampSelect";
-
-            var phase = jArray[2]["data"]["phase"].ToString();
-            Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("GameFlow Change to phase: {0}", phase));
-            switch (phase)
+            try
             {
-                case inGame_str:
-                    if (isInGame)
-                    {
-                        return;
-                    }
+                var qid = int.Parse(jArray[2]["data"]["gameData"]["queue"]["id"].ToString());
+                _lCUManager.QueueId = qid;
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("Exception in getting QueueId from Phase Event: {0}", ex.Message));
+            }
+
+            var prevClientPhase = _clientPhase;
+            var phase = jArray[2]["data"]["phase"].ToString();
+            foreach (ClientPhase clientPhase in Enum.GetValues(typeof(ClientPhase)))
+            {
+                if (clientPhase.ToString() == phase)
+                {
+                    _clientPhase = clientPhase;
+                }
+            }
+            if (_clientPhase == prevClientPhase)
+            {
+                return;
+            }
+            Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("New GameFlow Phase: {0}", phase));
+            if (prevClientPhase == ClientPhase.InProgress)
+            {
+                Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
+                InvokeEvent(Misc.Event.EndGame);
+            }
+            switch (_clientPhase)
+            {
+                case ClientPhase.InProgress:
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
                     InvokeEvent(Misc.Event.EnterGame);
-                    isInChampSelect = false;
-                    isInGame = true;
-                    return;
-                case inChampSelect_str:
-                    if (isInChampSelect)
-                    {
-                        return;
-                    }
+                    break;
+                case ClientPhase.ChampSelect:
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
                     InvokeEvent(Misc.Event.EnterChampSelect);
-                    isInChampSelect = true;
-                    isInGame = false;
-                    return;
+                    break;
+                case ClientPhase.Lobby:
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Lobby occured");
+                    InvokeEvent(Misc.Event.EnterLobby);
+                    break;
+                case ClientPhase.Matchmaking:
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Matchmaking occured");
+                    InvokeEvent(Misc.Event.EnterMatchmaking);
+                    break;
+                case ClientPhase.None:
+                case ClientPhase.Unidentified:
                 default:
-                    if (isInGame)
-                    {
-                        Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
-                        isInGame = false;
-                        InvokeEvent(Misc.Event.EndGame);
-                        return;
-                    }
-                    isInChampSelect = false;
-                    return;
+                    break;
             }
+        }
+
+        private enum ClientPhase
+        {
+            [Description("None")]
+            None,
+            [Description("InProgress")]
+            InProgress,
+            [Description("Lobby")]
+            Lobby,
+            [Description("Champselect")]
+            ChampSelect,
+            [Description("Matchmaking")]
+            Matchmaking,
+            Unidentified
+
         }
         #endregion
     }

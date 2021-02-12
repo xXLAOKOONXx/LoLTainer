@@ -9,7 +9,7 @@ namespace LoLTainer.Interfaces
 {
     public interface ILCUAPIInformationProvider : INotifyPropertyChanged
     {
-        string Queue { get; }
+        int QueueId { get; }
         string ChampionName { get; }
         string CurrentSummonerName { get; }
     }
