@@ -3,7 +3,7 @@
     "BackgroundColor": "#dddddd",
     "QueueBodyBackgroundColor": "#424242",
     "BTNAddEventBackgroundColor": "#43a047",
-    "BTNChangeImgBackgroundColor": "#6ab7ff",
+    "BTNEditEventBackgroundColor": "#6ab7ff",
     "BTNDeleteBackgroundColor": "#ff7043",
     "BTNheadBackgroundColor": "#1e88e5",
     "TXTBLKRiotLegalBackgroundColor": "#cccccc",
@@ -25,7 +25,8 @@
     "BackgroundColor": "#dddddd",
     "BTNFileNameBackgroundColor": "#6ab7ff",
     "LBLFileNameBackgroundColor": "#cccccc",
-    "LBLFileNameMouseOverBackgroundColor": "#c62828"
+    "LBLFileNameMouseOverBackgroundColor": "#c62828",
+    "BTNTestSoundBackgroundColor": "#cccccc"
   },
   "EditEvent": {
     "BackgroundColor": "#dddddd",

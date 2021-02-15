@@ -80,6 +80,8 @@ namespace LoLTainer.Windows
             button.Margin = new Thickness(5);
             button.Padding = new Thickness(2);
             button.Width = 200;
+            button.FontSize = 20;
+            button.BorderThickness = new Thickness(0);
             button.Content = actionManager.ToString();
             button.Click += (s, o) => {
                 _action(actionManager);

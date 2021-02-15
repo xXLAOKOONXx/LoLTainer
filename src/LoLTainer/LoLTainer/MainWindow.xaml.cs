@@ -118,15 +118,16 @@ namespace LoLTainer
             body.Height = 25;
 
             // Edit Button
-            var btn = new Button();
-            btn.Content = "Edit";
-            Grid.SetColumn(btn, 1);
-            btn.Click += (s, e) =>
+            var editButton = new Button();
+            editButton.Content = "Edit";
+            Grid.SetColumn(editButton, 0);
+            editButton.Click += (s, e) =>
             {
                 ChangeSetting(setting);
             };
-            btn.BorderThickness = new Thickness(0);
-            body.Children.Add(btn);
+            editButton.BorderThickness = new Thickness(0);
+            body.Children.Add(editButton);
+            SetBackgroundFromSettings(editButton, "BTNEditEventBackgroundColor");
 
 
 

@@ -46,7 +46,7 @@
                         <TextBox Name="TXTStart" Width="150" Padding="5" Text="-1" BorderThickness="0" HorizontalContentAlignment="Right"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,5">
-                        <Label Name="LBLGroupExplain" Content="Group ID (number):"/>
+                        <Label Name="LBLGroupExplain" Content="Group ID:"/>
                         <TextBox Name="TXTGroup" Width="150" Padding="5" Text="default" BorderThickness="0" HorizontalContentAlignment="Right" CharacterCasing="Lower"/>
                     </StackPanel>
                     <Grid Margin="5,0,0,0">
