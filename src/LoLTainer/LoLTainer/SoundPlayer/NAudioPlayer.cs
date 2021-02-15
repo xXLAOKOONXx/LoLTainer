@@ -137,15 +137,34 @@ namespace LoLTainer.SoundPlayer
             return window;
         }
 
-        public async Task PlaySound(Services.PropertyBundleTranslator.SoundPlayerPropertyBundle propertyBundle) =>
+        public async Task PlaySound(Services.PropertyBundleTranslator.SoundPlayerPropertyBundle propertyBundle)
+        {
+            if(propertyBundle.FileNames == null || propertyBundle.FileNames.Count() == 0)
+            {
+                switch (propertyBundle.PlayMode)
+                {
+                    case PlayMode.StopAllPlaying:
+                        await TerminateAllSounds();
+                        return;
+                    case PlayMode.StopPlaying:
+                        await StopSound(propertyBundle.SoundPlayerGroup);
+                        return;
+                    default:
+                        return;
+                }
+            }
+            var rnd = new Random();
+            var index = rnd.Next(propertyBundle.FileNames.Count());
             await PlaySound(
                 playerId: propertyBundle.SoundPlayerGroup,
-                fileName: propertyBundle.FileName,
+                fileName: propertyBundle.FileNames[index],
                 playLength: propertyBundle.PlayLength,
                 playMode: propertyBundle.PlayMode,
                 volume: propertyBundle.Volume,
                 startTime: propertyBundle.StartTime
                 );
+        }
+            
 
         public override async void PerformAction(PropertyBundle propertyBundle, EventTriggeredEventArgs eventTriggeredEventArgs = null)
         {
@@ -172,7 +191,7 @@ namespace LoLTainer.SoundPlayer
             try
             {
                 var soundBundle = new Services.PropertyBundleTranslator.SoundPlayerPropertyBundle(propertyBundle);
-                var x1 = soundBundle.FileName;
+                var x1 = soundBundle.FileNames;
                 var x2 = soundBundle.Volume;
                 var x3 = soundBundle.PlayLength;
                 var x4 = soundBundle.PlayMode;

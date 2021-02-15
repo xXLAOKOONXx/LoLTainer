@@ -11,7 +11,7 @@ namespace LoLTainer.Services.PropertyBundleTranslator
 
     public class SoundPlayerPropertyBundle
     {
-        public const string SOUNDPLAYER_FILENAME = "FileName";
+        public const string SOUNDPLAYER_FILENAMES = "FileNames";
         public const string SOUNDPLAYER_PLAYLENGTH = "PlayLength";
         public const string SOUNDPLAYER_PLAYMODE = "PlayMode";
         public const string SOUNDPLAYER_SOUNDPLAYERGROUP = "SoundPlayerGroup";
@@ -25,12 +25,12 @@ namespace LoLTainer.Services.PropertyBundleTranslator
 
         private PropertyBundle _propertyBundle;
         public PropertyBundle PropertyBundle => _propertyBundle;
-        public string FileName
+        public List<string> FileNames
         {
-            get => _propertyBundle.Properties[SOUNDPLAYER_FILENAME] as string;
+            get => _propertyBundle.Properties[SOUNDPLAYER_FILENAMES] as List<string>;
             set
             {
-                _propertyBundle.Properties[SOUNDPLAYER_FILENAME] = value;
+                _propertyBundle.Properties[SOUNDPLAYER_FILENAMES] = value;
             }
         }
         public string SoundPlayerGroup

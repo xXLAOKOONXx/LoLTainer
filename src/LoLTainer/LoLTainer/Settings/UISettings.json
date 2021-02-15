@@ -23,7 +23,9 @@
     "LBLPlayModeSelectedBackgroundColor": "#6ab7ff",
     "ErrorBorderColor": "#c62828",
     "BackgroundColor": "#dddddd",
-    "BTNFileNameBackgroundColor": "#6ab7ff"
+    "BTNFileNameBackgroundColor": "#6ab7ff",
+    "LBLFileNameBackgroundColor": "#cccccc",
+    "LBLFileNameMouseOverBackgroundColor": "#c62828"
   },
   "EditEvent": {
     "BackgroundColor": "#dddddd",
