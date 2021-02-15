@@ -34,10 +34,6 @@ namespace LoLTainer.API
 
         private EventData _mostRecentEventData;
 
-        private List<TimeSpan> _playerKills = new List<TimeSpan>();
-        private int _playerMultikill = 0;
-
-
         private bool _potentialNewGame = true;
         /// <summary>
         /// Eventhandler to hold Events not triggered by this EventMapper.

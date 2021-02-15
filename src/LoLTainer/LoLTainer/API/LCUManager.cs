@@ -72,8 +72,8 @@ namespace LoLTainer.API
         /// <summary>
         /// EventArgument = Websocket is active;
         /// </summary>
-        private EventHandler<bool> WebSocketActivityChanged;
-        private WebSocket _clientWebSocket;
+        private EventHandler<bool> WebSocketActivityChanged = null;
+        private WebSocket _clientWebSocket = null;
 
 
         #region private constants
@@ -247,6 +247,8 @@ namespace LoLTainer.API
         {
             WebSocketActivityChanged?.Invoke(this, false);
             Connected = false;
+
+            // Fire and Forget
             InitiateClientConnection();
         }
 
@@ -265,7 +267,7 @@ namespace LoLTainer.API
                     successfulGetAuth = true;
                     Loggings.Logger.Log(Loggings.LogType.LCU, String.Format("LCU Port: {0}, Token: {1}", port, token));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // No Client found => retry in a few seconds
                     await Task.Delay(10000);
@@ -284,7 +286,7 @@ namespace LoLTainer.API
             }
             catch (Exception ex)
             {
-
+                Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("Uncaught Exception raised in InitiateClientConnection; Message: {0}", ex.Message));
             }
         }
         private void UpdateSummonerInformation(JToken jToken)
@@ -307,7 +309,6 @@ namespace LoLTainer.API
         private void UpdateSummonerInformation()
         {
             string partialUrl = "/lol-summoner/v1/current-summoner";
-            string body = "";
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback +=
@@ -325,18 +326,6 @@ namespace LoLTainer.API
             this.CurrentSummonerIconId = int.Parse(jArray["profileIconId"].ToString());
             this.CurrentSummonerId = jArray["summonerId"].ToString();
             this.CurrentSummonerName = jArray["displayName"].ToString();
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName]string info = "")
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(info));
-            }
         }
 
         private void EndAsyncEvent<T>(IAsyncResult iar)
@@ -357,6 +346,8 @@ namespace LoLTainer.API
         public override void Connect()
         {
             _tryingToConnect = true;
+
+            // Fire and Forget
             InitiateClientConnection();
         }
 

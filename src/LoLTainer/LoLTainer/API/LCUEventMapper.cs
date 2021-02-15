@@ -18,8 +18,6 @@ namespace LoLTainer.API
         #endregion
 
         #region private properties
-        private bool isInGame;
-        private bool isInChampSelect;
         private LCUManager _lCUManager;
         /// <summary>
         /// Eventhandler to hold Events not triggered by this EventMapper.

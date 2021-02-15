@@ -133,7 +133,7 @@ namespace LoLTainer.Windows
                     var tmp = _oBSPropertyBundle.VisibilityToggleOnly;
                     _toggleOnly = tmp;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -142,7 +142,7 @@ namespace LoLTainer.Windows
                     var tmp = _oBSPropertyBundle.VisibilityTargetValue;
                     _targetValue = tmp;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -151,7 +151,7 @@ namespace LoLTainer.Windows
                     var tmp = _oBSPropertyBundle.SceneName;
                     TXTSceneName.Text = tmp;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -160,7 +160,7 @@ namespace LoLTainer.Windows
                     var tmp = _oBSPropertyBundle.ItemName;
                     TXTSourceName.Text = tmp;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -169,7 +169,7 @@ namespace LoLTainer.Windows
                     var tmp = _oBSPropertyBundle.FilterName;
                     TXTFilterName.Text = tmp;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -186,7 +186,7 @@ namespace LoLTainer.Windows
                         TXTActionDuration.Text = "0";
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }

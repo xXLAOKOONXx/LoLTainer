@@ -92,7 +92,7 @@ namespace LoLTainer.SoundPlayer
             {
                 if (audioFile.TotalTime > playLength)
                 {
-                    StopSoundDelayed(playerId, playLength.Value);
+                    await StopSoundDelayed(playerId, playLength.Value);
                 }
             }
         }
@@ -200,7 +200,7 @@ namespace LoLTainer.SoundPlayer
 
                 return true;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return false;
             }

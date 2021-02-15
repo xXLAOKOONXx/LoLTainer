@@ -64,7 +64,7 @@ namespace LoLTainer.Windows
             SetBackgroundFromSettings(this, "BackgroundColor");
             SetBackgroundFromSettings(BTNSave, "BTNSaveBackgroundColor");
             SetBackgroundFromSettings(BTNFileName, "BTNFileNameBackgroundColor");
-            SetBackgroundFromSettings(BTNPlaySound, "BTNPlaySoundBackground");
+            SetBackgroundFromSettings(BTNPlaySound, "BTNPlaySoundBackgroundColor");
 
             SetBorderFromSettings(BTNFileName, "ErrorBorderColor");
             SetBorderFromSettings(TXTDuration, "ErrorBorderColor");
@@ -242,7 +242,7 @@ namespace LoLTainer.Windows
             }
         }
 
-        private async void BTNPlaySound_Click(object sender, RoutedEventArgs e)
+        private void BTNPlaySound_Click(object sender, RoutedEventArgs e)
         {
             if (_playingSound)
             {
@@ -292,8 +292,9 @@ namespace LoLTainer.Windows
                 TXTGroup.Text = _propertyBundle.SoundPlayerGroup;
                 TXTStart.Text = _propertyBundle.StartTime.Value.TotalSeconds.ToString();
                 SLDVolume.Value = _propertyBundle.Volume;
-                LBLFileName.Content = _propertyBundle.FileNames;
+                _playMode = _propertyBundle.PlayMode;
             }
+            UpdatePlayModeLabels();
 
             this.Closed += (s, o) =>
             {

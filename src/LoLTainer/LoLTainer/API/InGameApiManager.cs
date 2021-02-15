@@ -68,6 +68,7 @@ namespace LoLTainer.API
             }
             catch (Exception ex)
             {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Exception getting ActivePlayer from '{0}'; Message: {1}", _activePlayerUrl, ex.Message));
                 return new ActivePlayer(null);
             }
         }
@@ -94,6 +95,7 @@ namespace LoLTainer.API
             catch (Exception ex)
             {
                 Connected = false;
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Exception on GET '{0}'; Message: {1}", url, ex.Message));
                 _inGameEventMapper.PotentialNewGame = true;
                 Task.Delay(OnNoResponseDelayTime).Wait();
                 if (!_gameActionCrawling || retrys == 0)
@@ -201,10 +203,12 @@ namespace LoLTainer.API
         public override void Connect()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Connecting with inGame API", base.Id);
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Presets are Connected:{0} Crawling:{1}",this.Connected,_gameActionCrawling), base.Id);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Presets are Connected:{0} Crawling:{1}", this.Connected, _gameActionCrawling), base.Id);
             if (!this.Connected && !_gameActionCrawling)
             {
                 this._gameActionCrawling = true;
+
+                // Fire and Forget
                 GameActionLooper(TimeSpan.FromMilliseconds(200));
             }
         }

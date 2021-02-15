@@ -52,8 +52,9 @@ namespace LoLTainer.ActionAPIManagers
             {
                 _oBSWebsocket.Connect(_url, _psw);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                Loggings.Logger.Log(Loggings.LogType.OBS, String.Format("Exception connecting to OBS WebSocket; Message: {0}", ex.Message));
                 MessageBox.Show("You need to use default websocket setup right now:\rurl: ws://localhost:4444\rand set no password\r btw the ui is bugged, OBS is not on yet, press twice on the button to retry.");
             }
         }

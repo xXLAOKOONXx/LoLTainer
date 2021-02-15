@@ -104,7 +104,7 @@ namespace LoLTainer
         #endregion
 
         #region EventHandling
-        private async void EventTriggered(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
+        private void EventTriggered(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
         {
             if (_settingsManager.EventActionSetting.Settings.ContainsKey(eventTriggeredEventArgs.Event))
             {
