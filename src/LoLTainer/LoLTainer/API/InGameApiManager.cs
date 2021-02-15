@@ -222,10 +222,7 @@ namespace LoLTainer.API
         public override IEnumerable<Event> GetSupportedEvents()
         {
             // GameAccurances
-            //yield return Event.GameStart; //TODO: Implement GameStartEvent Trigger
-            //yield return Event.NexusFall; //TODO: Implement NexusFall Trigger + CHeck how accurate it is
-            // enemynexus / teamnexus
-
+            yield return Event.StartGame;
 
             // Objectivekills
             yield return Event.PlayerBaronKill;

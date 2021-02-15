@@ -142,6 +142,7 @@ namespace LoLTainer.API.Models.InGameAPI
             public const string TurretKilled = "TurretKilled";
             public const string InhibKilled = "InhibKilled";
             public const string GameEnd = "GameEnd";
+            public const string GameStart = "GameStart";
         }
 
     }

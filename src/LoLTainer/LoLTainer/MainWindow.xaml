@@ -51,7 +51,7 @@
                 <StackPanel Name="SettingsPanel">
 
                 </StackPanel>
-                <Button Name="BTNAddEvent" Content="Add Mapping" FontSize="20" FontWeight="Bold" Click="BTNAddMapping_Click"/>
+                <Button Name="BTNAddEvent" Content="Add Event" FontSize="20" FontWeight="Bold" Click="BTNAddMapping_Click"/>
 
             </StackPanel>
         </ScrollViewer>

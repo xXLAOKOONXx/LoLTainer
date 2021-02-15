@@ -169,7 +169,10 @@ namespace LoLTainer
                 {
                     foreach (var ev in manager.GetSupportedEvents())
                     {
-                        yield return ev;
+                        if (!_settingsManager.EventActionSetting.Settings.Keys.AsEnumerable().Contains(ev))
+                        {
+                            yield return ev;
+                        }
                     }
                 }
             }
@@ -196,7 +199,7 @@ namespace LoLTainer
 
         public void SaveChanges()
         {
-            foreach(var manager in EventAPIManagers)
+            foreach (var manager in EventAPIManagers)
             {
                 manager.SetActiveEvents(_settingsManager.EventActionSetting.Settings.Keys.AsEnumerable());
             }

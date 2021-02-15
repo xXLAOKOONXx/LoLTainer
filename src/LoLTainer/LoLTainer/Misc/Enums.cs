@@ -51,6 +51,8 @@ namespace LoLTainer.Misc
         PlayerBaronSteal = 56,
         //TeamDragonSteal = 57,
         //TeamBaronSteal = 58
+
+        StartGame = 900,
         /*
          * --LCU--
          */

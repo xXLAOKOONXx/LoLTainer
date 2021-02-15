@@ -256,6 +256,12 @@ namespace LoLTainer.API
                             InvokeEvent(Misc.Event.AnyNexusDestroyed);
                         }
                     }
+                    else
+                        if(ev.EventName == EventData.EventNames.GameStart)
+                    {
+                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Game Start occured"), base.Id);
+                        InvokeEvent(Misc.Event.StartGame);
+                    }
                 }
             }
             _mostRecentEventData = eventData;
