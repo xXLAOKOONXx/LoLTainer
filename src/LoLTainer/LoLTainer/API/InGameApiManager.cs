@@ -79,6 +79,8 @@ namespace LoLTainer.API
         {
             try
             {
+                Console.WriteLine("Trying HTTPRequest with url " + url);
+
                 string response;
 
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; }; // automatically trust the certificate
@@ -90,6 +92,7 @@ namespace LoLTainer.API
                     response = Response.Content.ReadAsStringAsync().Result;
                 }
 
+                Console.WriteLine("Successful HTTPRequest with url " + url);
                 return response;
             }
             catch (Exception ex)

@@ -62,7 +62,7 @@ namespace LoLTainer.API
         private void AddLCUGameFlowEvents(LCUManager lCUManager)
         {
             Loggings.Logger.Log(Loggings.LogType.LCU, "Adding LCUGameFlowEvents");
-            lCUManager.GameFlowSessionEventHandler += OnGameFlowSession;
+            lCUManager.GameFlowSessionEventHandler += PREVOnGameFlowSession;
         }
 
         private void InvokeEvent(Misc.Event @event) => InvokeEvent(new LoLTainer.Models.EventTriggeredEventArgs(@event));
@@ -71,13 +71,20 @@ namespace LoLTainer.API
             _lCUManager.EventHandler?.Invoke(this, args);
         }
 
-        private ClientPhase _clientPhase = ClientPhase.None;
+        private string _clientPhase = "";
+        private const string PHASE_NONE = "None";
+        private const string PHASE_IN_PROGRESS = "InProgress";
+        private const string PHASE_LOBBY = "Lobby";
+        private const string PHASE_CHAMP_SELECT = "Champselect";
+        private const string PHASE_MATCHMAKING = "Matchmaking";
         private void OnGameFlowSession(object sender, JArray jArray)
         {
+            Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("GameFlowSession changed"));
             try
             {
                 var qid = int.Parse(jArray[2]["data"]["gameData"]["queue"]["id"].ToString());
                 _lCUManager.QueueId = qid;
+                Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("Identified Queue {0}", qid));
             }
             catch (Exception ex)
             {
@@ -92,49 +99,145 @@ namespace LoLTainer.API
             }
             catch (Exception ex)
             {
-
+                Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("Exception on reading phase; {0}", ex.Message));
             }
-            foreach (ClientPhase clientPhase in Enum.GetValues(typeof(ClientPhase)))
-            {
-                if (clientPhase.ToString() == phase)
-                {
-                    _clientPhase = clientPhase;
-                }
-            }
-            if (_clientPhase == prevClientPhase)
+            if (prevClientPhase == phase)
             {
                 return;
             }
+            _clientPhase = phase;
             Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("New GameFlow Phase: {0}", phase));
-            if (prevClientPhase == ClientPhase.InProgress)
+            if (prevClientPhase == PHASE_IN_PROGRESS)
             {
                 Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
                 InvokeEvent(Misc.Event.EndGame);
             }
             switch (_clientPhase)
             {
-                case ClientPhase.InProgress:
+                case PHASE_IN_PROGRESS:
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
                     InvokeEvent(Misc.Event.EnterGame);
                     break;
-                case ClientPhase.ChampSelect:
+                case PHASE_CHAMP_SELECT:
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
                     InvokeEvent(Misc.Event.EnterChampSelect);
                     break;
-                case ClientPhase.Lobby:
+                case PHASE_LOBBY:
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Lobby occured");
                     InvokeEvent(Misc.Event.EnterLobby);
                     break;
-                case ClientPhase.Matchmaking:
+                case PHASE_MATCHMAKING:
                     Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Matchmaking occured");
                     InvokeEvent(Misc.Event.EnterMatchmaking);
                     break;
-                case ClientPhase.None:
-                case ClientPhase.Unidentified:
                 default:
                     break;
             }
         }
+        // PREV
+        private bool PREVisInGame = false;
+        private bool PREVisInChampSelect = false;
+        private ClientPhase PREVclientPhase = ClientPhase.None;
+        private void PREVOnGameFlowSession(object sender, JArray jArray)
+        {
+            const string inGame_str = "InProgress";
+            const string inChampSelect_str = "ChampSelect";
+
+            var phase = jArray[2]["data"]["phase"].ToString();
+            Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("GameFlow Change to phase: {0}", phase));
+            switch (phase)
+            {
+                case inGame_str:
+                    if (PREVclientPhase == ClientPhase.InProgress)
+                    {
+                        return;
+                    }
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
+                    InvokeEvent(Misc.Event.EnterGame);
+                    PREVclientPhase = ClientPhase.InProgress;
+                    return;
+                case inChampSelect_str:
+                    if (PREVclientPhase == ClientPhase.ChampSelect)
+                    {
+                        return;
+                    }
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
+                    InvokeEvent(Misc.Event.EnterChampSelect);
+                    PREVclientPhase = ClientPhase.ChampSelect;
+                    return;
+                case PHASE_LOBBY:
+                    if(PREVclientPhase == ClientPhase.Lobby)
+                    {
+                        return;
+                    }
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Lobby occured");
+                    InvokeEvent(Misc.Event.EnterLobby);
+                    PREVclientPhase = ClientPhase.Lobby;
+                    return;
+                case PHASE_MATCHMAKING:
+                    if (PREVclientPhase == ClientPhase.Matchmaking)
+                    {
+                        return;
+                    }
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Matchmaking occured");
+                    InvokeEvent(Misc.Event.EnterMatchmaking);
+                    PREVclientPhase = ClientPhase.Matchmaking;
+                    return;
+
+                default:
+                    if (PREVclientPhase == ClientPhase.InProgress)
+                    {
+                        Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
+                        PREVclientPhase = ClientPhase.None;
+                        InvokeEvent(Misc.Event.EndGame);
+                        return;
+                    }
+                    PREVclientPhase = ClientPhase.None;
+                    return;
+            }
+            /*
+             * const string inGame_str = "InProgress";
+            const string inChampSelect_str = "ChampSelect";
+
+            var phase = jArray[2]["data"]["phase"].ToString();
+            Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("GameFlow Change to phase: {0}", phase));
+            switch (phase)
+            {
+                case inGame_str:
+                    if (PREVisInGame)
+                    {
+                        return;
+                    }
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter Game occured");
+                    InvokeEvent(Misc.Event.EnterGame);
+                    PREVisInChampSelect = false;
+                    PREVisInGame = true;
+                    return;
+                case inChampSelect_str:
+                    if (PREVisInChampSelect)
+                    {
+                        return;
+                    }
+                    Loggings.Logger.Log(Loggings.LogType.LCU, "Enter ChampSelect occured");
+                    InvokeEvent(Misc.Event.EnterChampSelect);
+                    PREVisInChampSelect = true;
+                    PREVisInGame = false;
+                    return;
+                default:
+                    if (PREVisInGame)
+                    {
+                        Loggings.Logger.Log(Loggings.LogType.LCU, "End Game occured");
+                        PREVisInGame = false;
+                        InvokeEvent(Misc.Event.EndGame);
+                        return;
+                    }
+                    PREVisInChampSelect = false;
+                    return;
+            }
+            */
+        }
+
+        // ENDPREV
 
         private enum ClientPhase
         {
