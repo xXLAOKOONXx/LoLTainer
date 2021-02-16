@@ -85,7 +85,15 @@ namespace LoLTainer.API
             }
 
             var prevClientPhase = _clientPhase;
-            var phase = jArray[2]["data"]["phase"].ToString();
+            string phase = prevClientPhase.ToString();
+            try
+            {
+                phase = jArray[2]["data"]["phase"].ToString();
+            }
+            catch (Exception ex)
+            {
+
+            }
             foreach (ClientPhase clientPhase in Enum.GetValues(typeof(ClientPhase)))
             {
                 if (clientPhase.ToString() == phase)

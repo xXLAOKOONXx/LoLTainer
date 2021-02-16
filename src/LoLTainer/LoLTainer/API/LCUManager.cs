@@ -125,9 +125,16 @@ namespace LoLTainer.API
 
         private void OnGameFlowSession(object sender, JArray jArray)
         {
-            var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
-            Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b ? "InGame" : "Not InGame"));
-            InGame?.Invoke(this, b);
+            try
+            {
+                var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
+                Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b ? "InGame" : "Not InGame"));
+                InGame?.Invoke(this, b);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private void OnWebSocketMessage(object sender, MessageEventArgs e)
