@@ -95,6 +95,7 @@ namespace LoLTainer
             foreach (var manager in EventAPIManagers)
             {
                 manager.EventHandler += eventHandler;
+                manager.SetActiveEvents(_settingsManager.EventActionSetting.Settings.Keys.AsEnumerable());
             }
 
             _lCUManager.Connect();
