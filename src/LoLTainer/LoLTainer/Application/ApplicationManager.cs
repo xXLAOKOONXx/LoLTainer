@@ -112,7 +112,26 @@ namespace LoLTainer
                 var sets = _settingsManager.EventActionSetting.Settings[eventTriggeredEventArgs.Event];
                 foreach (var item in sets)
                 {
-                    GetActionAPIManager(item.ActionManager).PerformAction(item, eventTriggeredEventArgs);
+                    try
+                    {
+                        GetActionAPIManager(item.ActionManager).PerformAction(item, eventTriggeredEventArgs);
+                    }
+                    catch (Exception ex)
+                    {
+                        var message = String.Format("Exception performing action '{0}'; message: {1}", item.ToString(), ex.Message);
+                        switch (item.ActionManager)
+                        {
+                            case ActionManager.OBS:
+                                Loggings.Logger.Log(Loggings.LogType.OBS, message);
+                                break;
+                            case ActionManager.SoundPlayer:
+                                Loggings.Logger.Log(Loggings.LogType.Sound, message);
+                                break;
+                            default:
+                                Loggings.Logger.Log(Loggings.LogType.LCU, "Exception with unknown Actionmanager: " + item.ActionManager + " " + message);
+                                break;
+                        }
+                    }
                 }
             }
         }
