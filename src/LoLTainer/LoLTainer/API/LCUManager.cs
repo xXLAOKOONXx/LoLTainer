@@ -255,8 +255,11 @@ namespace LoLTainer.API
             WebSocketActivityChanged?.Invoke(this, false);
             Connected = false;
 
-            // Fire and Forget
-            InitiateClientConnection();
+            if (_tryingToConnect)
+            {
+                // Fire and Forget
+                InitiateClientConnection();
+            }
         }
 
 
