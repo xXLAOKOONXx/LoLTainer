@@ -1,0 +1,47 @@
+﻿<Window x:Class="LoLTainer.Windows.SetOBSSetting"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LoLTainer.Windows"
+        mc:Ignorable="d"
+        Title="SetOBSSettings" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/><!--Row 0-->
+            <RowDefinition Height="auto"/><!--Row 1-->
+            <RowDefinition Height="auto"/><!--Row 2-->
+            <RowDefinition Height="auto"/><!--Row 3-->
+            <RowDefinition Height="auto"/><!--Row 4-->
+            <RowDefinition Height="auto"/><!--Row 5-->
+            <RowDefinition Height="auto"/><!--Row 6-->
+            <RowDefinition Height="auto"/><!--Row 7-->
+            <RowDefinition Height="*"/><!--Row 8-->
+            <RowDefinition Height="auto"/><!--Row 9-->
+        </Grid.RowDefinitions>
+        <Label Name="LBLActionName" FontSize="25" Grid.Column="0" Grid.Row="0" Content="Action Name" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Name="TXTActionName" FontSize="25" Grid.Column="1" Grid.Row="0" Padding="5" Width="350" HorizontalAlignment="Right" Margin="5"/>
+        <Label Name="LBLActionType" Grid.Column="0" Grid.Row="1" Content="Action Type" Margin="5" VerticalAlignment="Center"/>
+        <StackPanel Name="STKActionType" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" />
+        <Label Name="LBLSceneName" Grid.Column="0" Grid.Row="2" Content="Scene Name" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Name="TXTSceneName" Grid.Column="1" Grid.Row="2" Width="250" Padding="5" HorizontalAlignment="Right" Margin="5"/>
+        <Label Name="LBLSourceName" Grid.Column="0" Grid.Row="3" Content="Source Name" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Name="TXTSourceName" Grid.Column="1" Grid.Row="3" Width="250" Padding="5" HorizontalAlignment="Right" Margin="5"/>
+        <Label Name="LBLFilterName" Grid.Column="0" Grid.Row="4" Content="Filter Name" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Name="TXTFilterName" Grid.Column="1" Grid.Row="4" Width="250" Padding="5" HorizontalAlignment="Right" Margin="5" />
+        <Label Name="LBLActionDuration" Grid.Column="0" Grid.Row="5" Content="Duration in seconds (negative value or '0' for no reverting)" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Name="TXTActionDuration" Grid.Column="1" Grid.Row="5" Width="250" Padding="5" HorizontalAlignment="Right" Margin="5"/>
+        <Label Name="LBLToggleOnly" Grid.Column="0" Grid.Row="6" Content="Toggle (this will switch the visibility to the opposite when triggered)" VerticalAlignment="Center" Margin="5"/>
+        <Button Name="BTNToggleOnly" Grid.Column="1" Grid.Row="6" Width="150" Padding="5" HorizontalAlignment="Right" Margin="5" Click="BTNToggleOnly_Click"/>
+        <Label Name="LBLTargetValue" Grid.Column="0" Grid.Row="7" Content="Target Value" VerticalAlignment="Center" Margin="5"/>
+        <Button Name="BTNTargetValue" Grid.Column="1" Grid.Row="7" Width="150" Padding="5" HorizontalAlignment="Right" Margin="5" Click="BTNTargetValue_Click"/>
+
+        <Button Name="BTNSave" Grid.Column="1" Grid.Row="9" Width="250" VerticalAlignment="Center" Margin="20" Content="Save" Click="BTNSave_Click"/>
+        <Button Name="BTNTest" Grid.Column="0" Grid.Row="9" Width="250" VerticalAlignment="Center" Margin="20" Content="Test" IsEnabled="False"/>
+
+    </Grid>
+</Window>

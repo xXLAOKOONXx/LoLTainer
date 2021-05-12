@@ -71,7 +71,7 @@ namespace LoLTainer.Windows
 
         public void DrawPickList(IEnumerable<Event> availableEvents)
         {
-            if (availableEvents.Count() == 0)
+            if (availableEvents == null || availableEvents.Count() == 0)
             {
 
                 var msgbx = MessageBox.Show("Check your settings list, you already have every available Event in your list.");
@@ -96,8 +96,8 @@ namespace LoLTainer.Windows
             var lbl = new Label();
             lbl.Content = @event.ToString();
             lbl.VerticalAlignment = VerticalAlignment.Center;
-            lbl.Width = 150;
-            SetBackgroundFromSettings(lbl, "LBLQueueBackgroundColor");
+            lbl.Width = 350;
+            SetBackgroundFromSettings(lbl, "LBLEventBackgroundColor");
             lbl.MouseDown += (sender, e) =>
             {
                 _event = @event;

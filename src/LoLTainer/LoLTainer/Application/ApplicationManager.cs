@@ -19,8 +19,10 @@ namespace LoLTainer
         API.InGameApiManager _inGameApiManager;
         API.LCUManager _lCUManager;
         SoundPlayer.NAudioPlayer _nAudioPlayer;
+        private ActionAPIManagers.OBSActionManager _oBSActionManager;
         private EventHandler<Models.EventTriggeredEventArgs> eventHandler;
         private bool _appOn = true;
+        private bool _obsOn = false;
         #endregion
         #region Public Properties
         public bool AppOn
@@ -34,6 +36,29 @@ namespace LoLTainer
             }
         }
 
+        public bool OBSOn
+        {
+            get => _obsOn;
+            set
+            {
+                _obsOn = value;
+                ApplyOBSOnOff(_obsOn);
+                NotifyPropertyChanged();
+            }
+        }
+
+
+        private void ApplyOBSOnOff(bool obsOn)
+        {
+            if (obsOn)
+            {
+                _oBSActionManager.Connect();
+            }
+            else
+            {
+                _oBSActionManager.DisConnect();
+            }
+        }
         private void ApplyAppOnOff(bool appOn)
         {
             if (appOn)
@@ -62,6 +87,7 @@ namespace LoLTainer
             _lCUManager = new API.LCUManager();
             _inGameApiManager = new API.InGameApiManager();
             _nAudioPlayer = new SoundPlayer.NAudioPlayer();
+            _oBSActionManager = new ActionAPIManagers.OBSActionManager();
 
             eventHandler += EventTriggered;
             eventHandler += InGameListener;
@@ -69,6 +95,7 @@ namespace LoLTainer
             foreach (var manager in EventAPIManagers)
             {
                 manager.EventHandler += eventHandler;
+                manager.SetActiveEvents(_settingsManager.EventActionSetting.Settings.Keys.AsEnumerable());
             }
 
             _lCUManager.Connect();
@@ -78,20 +105,39 @@ namespace LoLTainer
         #endregion
 
         #region EventHandling
-        private async void EventTriggered(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
+        private void EventTriggered(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
         {
             if (_settingsManager.EventActionSetting.Settings.ContainsKey(eventTriggeredEventArgs.Event))
             {
                 var sets = _settingsManager.EventActionSetting.Settings[eventTriggeredEventArgs.Event];
                 foreach (var item in sets)
                 {
-                    GetActionAPIManager(item.ActionManager).PerformAction(item, eventTriggeredEventArgs);
+                    try
+                    {
+                        GetActionAPIManager(item.ActionManager).PerformAction(item, eventTriggeredEventArgs);
+                    }
+                    catch (Exception ex)
+                    {
+                        var message = String.Format("Exception performing action '{0}'; message: {1}", item.ToString(), ex.Message);
+                        switch (item.ActionManager)
+                        {
+                            case ActionManager.OBS:
+                                Loggings.Logger.Log(Loggings.LogType.OBS, message);
+                                break;
+                            case ActionManager.SoundPlayer:
+                                Loggings.Logger.Log(Loggings.LogType.Sound, message);
+                                break;
+                            default:
+                                Loggings.Logger.Log(Loggings.LogType.LCU, "Exception with unknown Actionmanager: " + item.ActionManager + " " + message);
+                                break;
+                        }
+                    }
                 }
             }
         }
 
         private void InGameListener(object sender, EventTriggeredEventArgs eventTriggeredEventArgs)
-        {            
+        {
             if (eventTriggeredEventArgs.Event == Event.EnterGame)
             {
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Detected EnterGame, connecting to ingame");
@@ -110,6 +156,8 @@ namespace LoLTainer
             {
                 case ActionManager.SoundPlayer:
                     return _nAudioPlayer;
+                case ActionManager.OBS:
+                    return _oBSActionManager;
                 default:
                     return null;
             }
@@ -141,7 +189,10 @@ namespace LoLTainer
                 {
                     foreach (var ev in manager.GetSupportedEvents())
                     {
-                        yield return ev;
+                        if (!_settingsManager.EventActionSetting.Settings.Keys.AsEnumerable().Contains(ev))
+                        {
+                            yield return ev;
+                        }
                     }
                 }
             }
@@ -163,10 +214,15 @@ namespace LoLTainer
         public IEnumerable<Misc.ActionManager> GetAvailableActionManagers()
         {
             yield return Misc.ActionManager.SoundPlayer;
+            yield return ActionManager.OBS;
         }
 
         public void SaveChanges()
         {
+            foreach (var manager in EventAPIManagers)
+            {
+                manager.SetActiveEvents(_settingsManager.EventActionSetting.Settings.Keys.AsEnumerable());
+            }
             _settingsManager.Save();
         }
 

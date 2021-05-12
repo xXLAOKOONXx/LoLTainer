@@ -56,10 +56,6 @@ namespace LoLTainer.API
         public InGameApiManager() : base()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameApiManager started");
-            /*
-            Task.Run(() =>
-            GameActionLooper(TimeSpan.FromMilliseconds(200)));
-            */
             _inGameEventMapper = new InGameEventMapper(this);
         }
 
@@ -72,6 +68,7 @@ namespace LoLTainer.API
             }
             catch (Exception ex)
             {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Exception getting ActivePlayer from '{0}'; Message: {1}", _activePlayerUrl, ex.Message));
                 return new ActivePlayer(null);
             }
         }
@@ -82,6 +79,8 @@ namespace LoLTainer.API
         {
             try
             {
+                Console.WriteLine("Trying HTTPRequest with url " + url);
+
                 string response;
 
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; }; // automatically trust the certificate
@@ -93,11 +92,13 @@ namespace LoLTainer.API
                     response = Response.Content.ReadAsStringAsync().Result;
                 }
 
+                Console.WriteLine("Successful HTTPRequest with url " + url);
                 return response;
             }
             catch (Exception ex)
             {
                 Connected = false;
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Exception on GET '{0}'; Message: {1}", url, ex.Message));
                 _inGameEventMapper.PotentialNewGame = true;
                 Task.Delay(OnNoResponseDelayTime).Wait();
                 if (!_gameActionCrawling || retrys == 0)
@@ -202,44 +203,15 @@ namespace LoLTainer.API
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Closing InGameApiManager", base.Id);
         }
 
-
-        private void EndAsyncEvent(IAsyncResult iar)
-        {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler)ar.AsyncDelegate;
-
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception ex)
-            {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
-            }
-        }
-
-        private void EndAsyncEvent<T>(IAsyncResult iar)
-        {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler<T>)ar.AsyncDelegate;
-
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception ex)
-            {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
-            }
-        }
-
         public override void Connect()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Connecting with inGame API", base.Id);
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Presets are Connected:{0} Crawling:{1}",this.Connected,_gameActionCrawling), base.Id);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Presets are Connected:{0} Crawling:{1}", this.Connected, _gameActionCrawling), base.Id);
             if (!this.Connected && !_gameActionCrawling)
             {
                 this._gameActionCrawling = true;
+
+                // Fire and Forget
                 GameActionLooper(TimeSpan.FromMilliseconds(200));
             }
         }
@@ -253,14 +225,17 @@ namespace LoLTainer.API
         public override IEnumerable<Event> GetSupportedEvents()
         {
             // GameAccurances
-            //yield return Event.GameStart; //TODO: Implement GameStartEvent Trigger
-            //yield return Event.NexusFall; //TODO: Implement NexusFall Trigger + CHeck how accurate it is
-            // enemynexus / teamnexus
-
+            yield return Event.StartGame;
 
             // Objectivekills
             yield return Event.PlayerBaronKill;
             yield return Event.PlayerDragonKill;
+            yield return Event.PlayerDragonSteal;
+            yield return Event.PlayerBaronSteal;
+
+            yield return Event.AnyNexusDestroyed;
+            yield return Event.EnemyTeamNexusDestroyed;
+            yield return Event.TeamNexusDestroyed;
 
             yield return Event.PlayerAnyKill;
             yield return Event.PlayerFirstBlood;

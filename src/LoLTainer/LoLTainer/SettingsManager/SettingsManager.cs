@@ -29,6 +29,7 @@ namespace LoLTainer.SettingsManager
                 }
                 catch (Exception ex)
                 {
+                    Loggings.Logger.Log(Loggings.LogType.Settings, string.Format("Exception reading from existing Settingsfile; Message: {0}", ex.Message));
                     _eventActionSetting = new EventActionSetting();
                     _eventActionSetting.FileName = _settingsPath;
                 }
@@ -55,6 +56,7 @@ namespace LoLTainer.SettingsManager
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
             _eventActionSetting = (EventActionSetting)formatter.Deserialize(stream);
+            _eventActionSetting.FileName = fileName;
             stream.Close();
             Loggings.Logger.Log(Loggings.LogType.Settings, "Settings read from file");
         }
@@ -89,7 +91,7 @@ namespace LoLTainer.SettingsManager
         {
             WriteSettingsToFile();
         }
-        
+
         public bool CheckFileExists(EventActionSetting eventActionSetting)
         {
             return File.Exists(eventActionSetting.FileName);

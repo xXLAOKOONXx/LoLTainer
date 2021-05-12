@@ -19,7 +19,14 @@ namespace LoLTainer.Models
 
         public string FileName
         {
-            get => _fileName;
+            get
+            {
+                if(_fileName == null)
+                {
+                    return AppContext.BaseDirectory + "soundsettings.lt";
+                }
+                return _fileName;
+            }
             set
             {
                 _fileName = value;

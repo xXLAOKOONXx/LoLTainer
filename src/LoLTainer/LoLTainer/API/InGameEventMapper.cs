@@ -34,10 +34,6 @@ namespace LoLTainer.API
 
         private EventData _mostRecentEventData;
 
-        private List<TimeSpan> _playerKills = new List<TimeSpan>();
-        private int _playerMultikill = 0;
-
-
         private bool _potentialNewGame = true;
         /// <summary>
         /// Eventhandler to hold Events not triggered by this EventMapper.
@@ -100,38 +96,45 @@ namespace LoLTainer.API
 
         private async Task GetPlayerInformation(InGameApiManager inGameApiManager)
         {
+            try
+            {
+                _playerSummonerName = (await inGameApiManager.GetActivePlayer(retrys: -1)).SummonerName;
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Summoner identified: '{0}'", _playerSummonerName), base.Id);
+                var playerList = await inGameApiManager.GetPlayerList();
+                foreach (var p in playerList.Players)
+                {
+                    if (p.SummonerName == _playerSummonerName)
+                    {
+                        _playerTeamSide = p.Team;
+                        break;
+                    }
+                }
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Identified Summoner Side: '{0}'", _playerTeamSide), base.Id);
+                var teamMateSummonerNames = new List<string>();
+                var enemySummonerNames = new List<string>();
+                foreach (var p in playerList.Players)
+                {
+                    if (p.SummonerName == _playerSummonerName) { }
+                    else
+                    if (p.Team == _playerTeamSide)
+                    {
+                        teamMateSummonerNames.Add(p.SummonerName);
+                    }
+                    else
+                    {
+                        enemySummonerNames.Add(p.SummonerName);
+                    }
+                }
+                _teamMateSummonerNames = teamMateSummonerNames;
+                _enemySummonerNames = enemySummonerNames;
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Allies identified: '{0}'", _teamMateSummonerNames.ToString()), base.Id);
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Enemies identified: '{0}'", _enemySummonerNames.ToString()), base.Id);
 
-            _playerSummonerName = (await inGameApiManager.GetActivePlayer()).SummonerName;
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Summoner identified: '{0}'", _playerSummonerName), base.Id);
-            var playerList = await inGameApiManager.GetPlayerList();
-            foreach (var p in playerList.Players)
-            {
-                if (p.SummonerName == _playerSummonerName)
-                {
-                    _playerTeamSide = p.Team;
-                    break;
-                }
             }
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Identified Summoner Side: '{0}'", _playerTeamSide), base.Id);
-            var teamMateSummonerNames = new List<string>();
-            var enemySummonerNames = new List<string>();
-            foreach (var p in playerList.Players)
+            catch (Exception ex)
             {
-                if (p.SummonerName == _playerSummonerName) { }
-                else
-                if (p.Team == _playerTeamSide)
-                {
-                    teamMateSummonerNames.Add(p.SummonerName);
-                }
-                else
-                {
-                    enemySummonerNames.Add(p.SummonerName);
-                }
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("GetPlayerInformation failed"));
             }
-            _teamMateSummonerNames = teamMateSummonerNames;
-            _enemySummonerNames = enemySummonerNames;
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Allies identified: '{0}'", _teamMateSummonerNames.ToString()), base.Id);
-            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Enemies identified: '{0}'", _enemySummonerNames.ToString()), base.Id);
         }
 
         private void AddPlayerKillEvents(InGameApiManager inGameApiManager)
@@ -145,11 +148,14 @@ namespace LoLTainer.API
 
         private async Task CheckAndResolveNewGame(EventData eventData)
         {
-            if(eventData.Events.Count() == 0 ||
+            if (eventData.Events.Count() == 0 ||
+                _mostRecentEventData == null ||
                 eventData.Events.Count() < _mostRecentEventData.Events.Count())
             {
                 _mostRecentEventData = null;
+                Console.WriteLine("CheckAndResolveNewGame started");
                 await GetPlayerInformation(_inGameApiManager);
+                Console.WriteLine("CheckAndResolveNewGame ended");
             }
         }
 
@@ -211,8 +217,16 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Kill occured", base.Id);
-                            InvokeEvent(Misc.Event.PlayerDragonKill);
+                            if (ev.Stolen && _inGameApiManager.ActiveEvents.Contains(Misc.Event.PlayerDragonSteal))
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Steal occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerDragonSteal);
+                            }
+                            else
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Dragon Kill occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerDragonKill);
+                            }
                         }
                     }
                     else
@@ -220,21 +234,56 @@ namespace LoLTainer.API
                     {
                         if (ev.KillerName == _playerSummonerName)
                         {
-                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Kill occured", base.Id);
-                            InvokeEvent(Misc.Event.PlayerBaronKill);
+                            if (ev.Stolen && _inGameApiManager.ActiveEvents.Contains(Misc.Event.PlayerBaronSteal))
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Steal occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerBaronSteal);
+                            }
+                            else
+                            {
+                                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Player Baron Kill occured", base.Id);
+                                InvokeEvent(Misc.Event.PlayerBaronKill);
+                            }
                         }
+                    }
+                    else
+                    if (ev.EventName == EventData.EventNames.GameEnd)
+                    {
+                        if (ev.Result && _inGameApiManager.ActiveEvents.Contains(Misc.Event.EnemyTeamNexusDestroyed))
+                        {
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Enemy Team Nexus Destroyed occured", base.Id);
+                            InvokeEvent(Misc.Event.EnemyTeamNexusDestroyed);
+                        }
+                        else
+                        if (!ev.Result && _inGameApiManager.ActiveEvents.Contains(Misc.Event.TeamNexusDestroyed))
+                        {
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Team Nexus Destroyed occured", base.Id);
+                            InvokeEvent(Misc.Event.TeamNexusDestroyed);
+                        }
+                        else
+                        {
+                            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Any Nexus Destroyed occured", base.Id);
+                            InvokeEvent(Misc.Event.AnyNexusDestroyed);
+                        }
+                    }
+                    else
+                        if (ev.EventName == EventData.EventNames.GameStart)
+                    {
+                        Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Game Start occured"), base.Id);
+                        InvokeEvent(Misc.Event.StartGame);
                     }
                 }
             }
             _mostRecentEventData = eventData;
         }
 
-        private static bool IsSingleKill(EventData eventData, EventData.Event ev)
+        private bool IsSingleKill(EventData eventData, EventData.Event ev)
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Checking whether event is single kill {0}", ev.ToString()));
             return eventData.Events
                 .Where(item => item.EventTime == ev.EventTime)
-                .Where(item => item.EventName == EventData.EventNames.MultiKill || item.EventName == EventData.EventNames.FirstBlood)
+                .Where(item => item.EventName == EventData.EventNames.MultiKill ||
+                (_inGameApiManager.ActiveEvents.Contains(Misc.Event.PlayerFirstBlood) && item.EventName == EventData.EventNames.FirstBlood))
                 .Count() == 0;
         }
         #endregion

@@ -73,6 +73,7 @@ namespace LoLTainer
             }
 
             DrawBTNAppStatus();
+            DrawBTNOBSStatus();
         }
         private void SetBackgroundFromSettings(Control control, string colorName)
         {
@@ -117,15 +118,16 @@ namespace LoLTainer
             body.Height = 25;
 
             // Edit Button
-            var btn = new Button();
-            btn.Content = "Edit";
-            Grid.SetColumn(btn, 1);
-            btn.Click += (s, e) =>
+            var editButton = new Button();
+            editButton.Content = "Edit";
+            Grid.SetColumn(editButton, 0);
+            editButton.Click += (s, e) =>
             {
                 ChangeSetting(setting);
             };
-            btn.BorderThickness = new Thickness(0);
-            body.Children.Add(btn);
+            editButton.BorderThickness = new Thickness(0);
+            body.Children.Add(editButton);
+            SetBackgroundFromSettings(editButton, "BTNEditEventBackgroundColor");
 
 
 
@@ -217,14 +219,34 @@ namespace LoLTainer
         {
             if (_applicationManager.AppOn)
             {
-                SetBackgroundFromSettings(BTNAppStatus, "BTNAppStatusOnBackgroundColor");
+                SetBackgroundFromSettings(BTNAppStatus, "BTNStatusOnBackgroundColor");
                 BTNAppStatus.Content = "On";
             }
             else
             {
-                SetBackgroundFromSettings(BTNAppStatus, "BTNAppStatusOffBackgroundColor");
+                SetBackgroundFromSettings(BTNAppStatus, "BTNStatusOffBackgroundColor");
                 BTNAppStatus.Content = "Off";
             }
         }
+
+        private void BTNOBSStatus_Click(object sender, RoutedEventArgs e)
+        {
+            _applicationManager.OBSOn = !_applicationManager.OBSOn;
+            DrawBTNOBSStatus();
+        }
+        private void DrawBTNOBSStatus()
+        {
+            if (_applicationManager.OBSOn)
+            {
+                SetBackgroundFromSettings(BTNOBSStatus, "BTNStatusOnBackgroundColor");
+                BTNOBSStatus.Content = "On";
+            }
+            else
+            {
+                SetBackgroundFromSettings(BTNOBSStatus, "BTNStatusOffBackgroundColor");
+                BTNOBSStatus.Content = "Off";
+            }
+        }
+
     }
 }

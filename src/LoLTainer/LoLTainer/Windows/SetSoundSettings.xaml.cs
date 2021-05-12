@@ -27,13 +27,13 @@ namespace LoLTainer.Windows
     public partial class SetSoundSettings : Window, IActionWindow
     {
         private bool _manualClose = true;
-        private Event _event;
-        private string _fileName = "";
+        //private string _fileName = "";
         private Action<PropertyBundle> _action;
         private bool _playingSound = false;
         private PlayMode _playMode = PlayMode.StopPlaying;
         private ISoundPlayer _soundPlayer;
         private Services.PropertyBundleTranslator.SoundPlayerPropertyBundle _propertyBundle;
+        private List<string> _fileNames = new List<string>();
         public SetSoundSettings(Interfaces.ISoundPlayer soundPlayer)
         {
             InitializeComponent();
@@ -64,11 +64,44 @@ namespace LoLTainer.Windows
             SetBackgroundFromSettings(this, "BackgroundColor");
             SetBackgroundFromSettings(BTNSave, "BTNSaveBackgroundColor");
             SetBackgroundFromSettings(BTNFileName, "BTNFileNameBackgroundColor");
-            SetBackgroundFromSettings(BTNPlaySound, "BTNPlaySoundBackground");
+            SetBackgroundFromSettings(BTNPlaySound, "BTNPlaySoundBackgroundColor");
 
             SetBorderFromSettings(BTNFileName, "ErrorBorderColor");
             SetBorderFromSettings(TXTDuration, "ErrorBorderColor");
             SetBorderFromSettings(TXTGroup, "ErrorBorderColor");
+        }
+
+        private void DrawFilesList()
+        {
+            STKFileNames.Children.Clear();
+            foreach (var fileName in _fileNames)
+            {
+                STKFileNames.Children.Add(DrawFileName(fileName));
+            }
+        }
+
+        private UIElement DrawFileName(string fileName)
+        {
+            var label = new Label();
+            label.MouseEnter += (s, o) =>
+            {
+                SetBackgroundFromSettings(label, "LBLFileNameMouseOverBackgroundColor");
+            };
+            label.MouseLeave += (s, o) =>
+            {
+                SetBackgroundFromSettings(label, "LBLFileNameBackgroundColor");
+            };
+            label.MouseDown += (s, a) =>
+            {
+                _fileNames.Remove(fileName);
+                DrawFilesList();
+            };
+            var tinyText = fileName.Split('\\').Last();
+            label.Content = tinyText;
+            SetBackgroundFromSettings(label, "LBLFileNameBackgroundColor");
+            label.Margin = new Thickness(5);
+
+            return label;
         }
 
         private void SetBackgroundFromSettings(Control control, string colorName)
@@ -140,6 +173,7 @@ namespace LoLTainer.Windows
         private bool AllValid(out int playLength, out int startTime)
         {
             var success = true;
+            /*
             if (!File.Exists(_fileName))
             {
                 BTNFileName.BorderThickness = new Thickness(2);
@@ -149,6 +183,7 @@ namespace LoLTainer.Windows
             {
                 BTNFileName.BorderThickness = new Thickness(0);
             }
+            */
             ExtractInt(TXTDuration, out playLength, ref success);
             ExtractInt(TXTStart, out startTime, ref success);
             return success;
@@ -180,8 +215,8 @@ namespace LoLTainer.Windows
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                _fileName = dialog.FileName;
-                this.LBLFileName.Content = _fileName;
+                _fileNames.Add(dialog.FileName);
+                DrawFilesList();
             }
         }
 
@@ -189,7 +224,7 @@ namespace LoLTainer.Windows
         {
             if (AllValid(out int playLengthInSec, out int startTimeInSec))
             {
-                _propertyBundle.FileName = _fileName;
+                _propertyBundle.FileNames = _fileNames;
                 _propertyBundle.SoundPlayerGroup = TXTGroup.Text;
                 _propertyBundle.PlayMode = _playMode;
                 _propertyBundle.Volume = (int)Math.Round(SLDVolume.Value, 0);
@@ -198,6 +233,7 @@ namespace LoLTainer.Windows
                 _propertyBundle.PropertyBundle.ActionName = TXTActionName.Text;
 
                 _action(_propertyBundle.PropertyBundle);
+                _manualClose = false;
                 this.Close();
             }
             else
@@ -206,7 +242,7 @@ namespace LoLTainer.Windows
             }
         }
 
-        private async void BTNPlaySound_Click(object sender, RoutedEventArgs e)
+        private void BTNPlaySound_Click(object sender, RoutedEventArgs e)
         {
             if (_playingSound)
             {
@@ -217,7 +253,7 @@ namespace LoLTainer.Windows
                 var bundle = new Services.PropertyBundleTranslator.SoundPlayerPropertyBundle(new PropertyBundle());
 
                 _playingSound = true;
-                bundle.FileName = _fileName;
+                bundle.FileNames = _fileNames;
                 bundle.SoundPlayerGroup = TXTGroup.Text;
                 bundle.PlayMode = _playMode;
                 bundle.Volume = (int)Math.Round(SLDVolume.Value, 0);
@@ -250,17 +286,22 @@ namespace LoLTainer.Windows
             else
             {
                 _propertyBundle = new SoundPlayerPropertyBundle(propertyBundle);
-                _fileName = _propertyBundle.FileName;
+                _fileNames = _propertyBundle.FileNames.ToList();
                 TXTActionName.Text = _propertyBundle.PropertyBundle.ActionName;
                 TXTDuration.Text = _propertyBundle.PlayLength.Value.TotalSeconds.ToString();
                 TXTGroup.Text = _propertyBundle.SoundPlayerGroup;
                 TXTStart.Text = _propertyBundle.StartTime.Value.TotalSeconds.ToString();
-                LBLFileName.Content = _propertyBundle.FileName;
+                SLDVolume.Value = _propertyBundle.Volume;
+                _playMode = _propertyBundle.PlayMode;
             }
+            UpdatePlayModeLabels();
 
             this.Closed += (s, o) =>
             {
-                finishedEditingAction(null);
+                if (_manualClose)
+                {
+                    finishedEditingAction(null);
+                }
             };
 
             this.Show();

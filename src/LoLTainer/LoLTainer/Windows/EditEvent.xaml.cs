@@ -40,7 +40,6 @@ namespace LoLTainer.Windows
         }
         private void DrawUISettings()
         {
-            //TODO
             var filePath = System.IO.Path.Combine(AppContext.BaseDirectory, "Settings", "UISettings.json");
 
             var jsontext = System.IO.File.ReadAllText(filePath);
@@ -51,6 +50,7 @@ namespace LoLTainer.Windows
 
             SetBackgroundFromSettings(this, "BackgroundColor");
             SetBackgroundFromSettings(BTNAddAction, "BTNAddActionBackgroundColor");
+            BTNAddAction.BorderThickness = new Thickness(0);
         }
         private void SetBackgroundFromSettings(Control control, string colorName)
         {
@@ -63,7 +63,7 @@ namespace LoLTainer.Windows
             }
             catch (Exception ex)
             {
-                Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Error getting Color from UISettings; Color:{0}, ErrorMessage:{1}", colorName, ex.Message));
+                Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Exception getting Color {0} for 'EditEvent'; ErrorMessage:{1}", colorName, ex.Message));
             }
         }
 
@@ -93,7 +93,7 @@ namespace LoLTainer.Windows
             }
             catch (Exception ex)
             {
-
+                Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Exception reading UI Setting 'ItemBodyBackgroundColor' for 'EditEvents'; Errormessage:{0}", ex.Message));
             }
 
             body.ColumnDefinitions.Add(new ColumnDefinition());
@@ -166,13 +166,16 @@ namespace LoLTainer.Windows
         private void EditPropertyBundle(PropertyBundle propertyBundle)
         {
             this.IsEnabled = false;
+            string actionAPIManagerValue = "";
             try
             {
+                actionAPIManagerValue = propertyBundle.ActionManager.ToString();
                 var actionWindow = _applicationManager.GetActionAPIManager(propertyBundle.ActionManager).GetActionWindow();
                 actionWindow.Open(EditPropertyBundleFinished, propertyBundle);
             }
             catch (Exception ex)
             {
+                Loggings.Logger.Log(Loggings.LogType.Settings, string.Format("Exception Opening Action Editor '{0}'; Message: {1}", actionAPIManagerValue, ex.Message));
                 MessageBox.Show("Error Opening Action Editor");
                 this.IsEnabled = true;
             }

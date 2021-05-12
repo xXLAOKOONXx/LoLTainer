@@ -15,6 +15,8 @@ namespace LoLTainer.EventAPIManagers
 
         protected IEnumerable<Misc.Event> _activeEvents = null;
 
+        public IEnumerable<Misc.Event> ActiveEvents => _activeEvents;
+
         protected EventHandler<Models.EventTriggeredEventArgs> _eventHandler;
 
         protected void TriggerEvent(Event @event) => _eventHandler?.Invoke(this, new Models.EventTriggeredEventArgs(@event));
@@ -68,7 +70,7 @@ namespace LoLTainer.EventAPIManagers
         #region INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             if (PropertyChanged != null)
             {

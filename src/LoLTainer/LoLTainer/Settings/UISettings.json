@@ -3,18 +3,18 @@
     "BackgroundColor": "#dddddd",
     "QueueBodyBackgroundColor": "#424242",
     "BTNAddEventBackgroundColor": "#43a047",
-    "BTNChangeImgBackgroundColor": "#6ab7ff",
+    "BTNEditEventBackgroundColor": "#6ab7ff",
     "BTNDeleteBackgroundColor": "#ff7043",
     "BTNheadBackgroundColor": "#1e88e5",
     "TXTBLKRiotLegalBackgroundColor": "#cccccc",
-    "BTNAppStatusOnBackgroundColor": "#43a047",
-    "BTNAppStatusOffBackgroundColor": "#ff7043"
+    "BTNStatusOnBackgroundColor": "#43a047",
+    "BTNStatusOffBackgroundColor": "#ff7043"
   },
   "AddEvent": {
     "BackgroundColor": "#dddddd",
     "BTNAddEventBackgroundColor": "#43a047",
-    "LBLEventBackground": "#cccccc",
-    "LBLEventSelectedBackground": "#6ab7ff"
+    "LBLEventBackgroundColor": "#cccccc",
+    "LBLEventSelectedBackgroundColor": "#6ab7ff"
   },
   "SetSoundSetting": {
     "BTNPlaySoundBackgroundColor": "#bbbbbb",
@@ -23,7 +23,10 @@
     "LBLPlayModeSelectedBackgroundColor": "#6ab7ff",
     "ErrorBorderColor": "#c62828",
     "BackgroundColor": "#dddddd",
-    "BTNFileNameBackgroundColor": "#6ab7ff"
+    "BTNFileNameBackgroundColor": "#6ab7ff",
+    "LBLFileNameBackgroundColor": "#cccccc",
+    "LBLFileNameMouseOverBackgroundColor": "#c62828",
+    "BTNTestSoundBackgroundColor": "#cccccc"
   },
   "EditEvent": {
     "BackgroundColor": "#dddddd",
@@ -36,6 +39,15 @@
   "SelectActionManager": {
     "BackgroundColor": "#dddddd",
     "BTNActionManagerBackgroundColor": "#cccccc"
+  },
+  "SetOBSSetting": {
+    "BackgroundColor": "#dddddd",
+    "BTNSaveBackgroundColor": "#43a047",
+    "BTNActionTypeBackgroundColor": "#cccccc",
+    "BTNActionTypeSelectedBackgroundColor": "#6ab7ff",
+    "ErrorBorderColor": "#c62828",
+    "BTNOnBackgroundColor": "#43a047",
+    "BTNOffBackgroundColor": "#ff7043"
   }
 
 }
