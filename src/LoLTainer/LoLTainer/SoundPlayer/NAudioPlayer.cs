@@ -8,6 +8,7 @@ using NAudio;
 using NAudio.Wave;
 using LoLTainer.Misc;
 using LoLTainer.Models;
+using LoLTainer.Services.PropertyBundleTranslator;
 
 namespace LoLTainer.SoundPlayer
 {
@@ -22,7 +23,7 @@ namespace LoLTainer.SoundPlayer
         /// </summary>
         private const int _delayTicks = 100;
 
-        private Dictionary<string, WaveOutEvent> _playerIds = new Dictionary<string, WaveOutEvent>();
+        private Dictionary<string, OutputDeviceWrapper> _playerIds = new Dictionary<string, OutputDeviceWrapper>();
 
         #region constructors
         public NAudioPlayer() : base()
@@ -47,31 +48,25 @@ namespace LoLTainer.SoundPlayer
 
             var audioFile = new AudioFileReader(fileName);
             var outputDevice = GetPlayer(playerId);
+            switch (playMode)
+            {
+                case PlayMode.WaitPlaying:
+                    outputDevice.WaitForPlayer(_delayTicks);
+                    break;
+                case PlayMode.StopPlaying:
+                    outputDevice.CancelAndStop();
+                    break;
+                case PlayMode.StopAllPlaying:
+                    await TerminateAllSounds();
+                    break;
+            }
             if (volume >= 0)
             {
                 if (volume > 100)
                 {
                     volume = 100;
                 }
-                outputDevice.Volume = 0.01f * volume;
-            }
-            switch (playMode)
-            {
-                case PlayMode.WaitPlaying:
-                    Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + playerId + " to finish; Initial State: " + outputDevice.PlaybackState.ToString(), base.Id);
-                    while (outputDevice.PlaybackState == PlaybackState.Playing)
-                    {
-                        await Task.Delay(_delayTicks);
-                    }
-                    Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + playerId + " ended", base.Id);
-
-                    break;
-                case PlayMode.StopPlaying:
-                    outputDevice.Stop();
-                    break;
-                case PlayMode.StopAllPlaying:
-                    await TerminateAllSounds();
-                    break;
+                outputDevice.OutputDevice.Volume = 0.01f * volume;
             }
 
             Loggings.Logger.Log(Loggings.LogType.Sound, "Playing Sound in Player " + playerId + "", base.Id);
@@ -86,8 +81,8 @@ namespace LoLTainer.SoundPlayer
                         fileName, startTime.ToString(), ex.Message));
                 }
             }
-            outputDevice.Init(audioFile);
-            outputDevice.Play();
+            outputDevice.OutputDevice.Init(audioFile);
+            outputDevice.OutputDevice.Play();
             if (playLength != null && playLength.Value.TotalSeconds >= 0)
             {
                 if (audioFile.TotalTime > playLength)
@@ -103,13 +98,13 @@ namespace LoLTainer.SoundPlayer
             {
                 return;
             }
-            GetPlayer(playerId).Stop();
+            GetPlayer(playerId).CancelAndStop();
         }
         public async Task TerminateAllSounds()
         {
             foreach (var v in _playerIds)
             {
-                v.Value.Stop();
+                v.Value.CancelAndStop();
             }
         }
         #endregion
@@ -120,11 +115,11 @@ namespace LoLTainer.SoundPlayer
             await StopSound(playerId);
         }
 
-        private WaveOutEvent GetPlayer(string playerId)
+        private OutputDeviceWrapper GetPlayer(string playerId)
         {
             if (!_playerIds.ContainsKey(playerId))
             {
-                var player = new WaveOutEvent();
+                var player = new OutputDeviceWrapper(new WaveOutEvent());
                 _playerIds.Add(playerId, player);
             }
             return _playerIds[playerId];
@@ -203,6 +198,51 @@ namespace LoLTainer.SoundPlayer
             catch(Exception)
             {
                 return false;
+            }
+        }
+
+
+        public class OutputDeviceWrapper
+        {
+            WaveOutEvent outputDevice;
+
+            public WaveOutEvent OutputDevice
+            {
+                get => outputDevice;
+            }
+
+            public OutputDeviceWrapper(WaveOutEvent waveOutEvent)
+            {
+                outputDevice = waveOutEvent;
+            }
+
+            public bool WaitForPlayer(int delayTicks)
+            {
+                _cancel = false;
+
+                Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + " to finish; Initial State: " + outputDevice.PlaybackState.ToString());
+                while (outputDevice.PlaybackState == PlaybackState.Playing)
+                {
+                    Task.Delay(delayTicks).Wait();
+                    if (_cancel)
+                    {
+                        return false;
+                    }
+                }
+                Loggings.Logger.Log(Loggings.LogType.Sound, "Waiting for Player " + " ended");
+
+                return true;
+            }
+            bool _cancel = false;
+            public void CancelWaiting()
+            {
+                _cancel = true;
+            }
+
+            public void CancelAndStop()
+            {
+                CancelWaiting();
+                outputDevice.Stop();
             }
         }
     }
