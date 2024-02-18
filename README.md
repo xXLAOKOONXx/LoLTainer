@@ -3,6 +3,10 @@
 Starting with the idea to play your favorite song when you score a Penta Kill this project shifted towards a more complex application. It will / does support more Actions such as switching the scene in OBS.  
 You can find all available Events and Actions in the documentation for users '/documentation/user/'.
 
+## ARCHIVED
+
+This repository is archived in order to properly display the status of a no longer maintained project. Feel free to download the code if it helps you :)
+
 ## User Documentation
 [Shiny Walk Through](https://github.com/xXLaokoonXx/LoLTainer/blob/master/documentation/user/ShinyUseCase.md)  
 [Events available](https://github.com/xXLaokoonXx/LoLTainer/blob/master/documentation/user/Actions.md)  
