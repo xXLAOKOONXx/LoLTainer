@@ -70,8 +70,9 @@ namespace LoLTainer.Loggings
                 using (StreamWriter streamWriter = new StreamWriter(filePath, append: true))
                     await streamWriter.WriteLineAsync(text);
             }
-            catch (IOException ioex)
+            catch (IOException ex)
             {
+                Loggings.Logger.Log(LogType.Settings, String.Format("Exception writing log line to file '{0}'; Message: {1}", filePath, ex.Message));
                 await WriteTextAsync(filePath, text);
             }
             /*
@@ -109,6 +110,9 @@ namespace LoLTainer.Loggings
                 case LogType.UI:
                     logFiles.Add(LogFile.UI);
                     break;
+                case LogType.OBS:
+                    logFiles.Add(LogFile.OBS);
+                    break;
                 default:
                     break;
             }
@@ -141,6 +145,9 @@ namespace LoLTainer.Loggings
                 case LogFile.InGame:
                     fileName = "InGame.log";
                     break;
+                case LogFile.OBS:
+                    fileName = "OBS.log";
+                    break;
                 default:
                     return null;
             }
@@ -154,7 +161,8 @@ namespace LoLTainer.Loggings
         UI,
         IngameAPI,
         LCU,
-        Sound
+        Sound,
+        OBS
     }
 
     public enum LogFile
@@ -165,6 +173,7 @@ namespace LoLTainer.Loggings
         IngameAPI,
         LCU,
         Sound,
-        InGame
+        InGame,
+        OBS
     }
 }

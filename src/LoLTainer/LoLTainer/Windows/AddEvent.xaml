@@ -1,0 +1,21 @@
+﻿<Window x:Class="LoLTainer.Windows.AddEvent"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LoLTainer.Windows"
+        mc:Ignorable="d"
+        Title="Add Event" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <ScrollViewer Grid.Column="0">
+            <StackPanel Name="EventPicker" />
+        </ScrollViewer>
+        <Button Grid.Column="1" Name="BTNAddEvent" Content="Add" Width="200" HorizontalAlignment="Right" Margin="20" Click="BTNAddEvent_Click" BorderThickness="0" Height="25"/>
+
+    </Grid>
+</Window>

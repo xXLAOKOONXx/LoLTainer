@@ -1,4 +1,5 @@
 ﻿using LoLTainer.API.Models.InGameAPI;
+using LoLTainer.Misc;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,10 @@ namespace LoLTainer.API
 {
     /// <summary>
     /// Connection to InGame API and observer of InGameActivities.
-    /// Triggers public EventHandlers when they occure.
-    /// Current Events supported: <see cref="InGameApiManager.OnGameEvent"/>
+    /// Triggers public EventHandler when they occure.
+    /// With the help of <see cref="InGameEventMapper"/> translates the Activities into <see cref="Event"/> and triggers EventHandler with it.
     /// </summary>
-    public class InGameApiManager : IdentifiableObject
+    public class InGameApiManager : EventAPIManagers.BaseEventAPIManager, Interfaces.IIngameAPIInformationProvider
     {
         public EventHandler<bool> OnConnectionStatusChange;
         public EventHandler<EventData> OnGameEvent;
@@ -24,6 +25,7 @@ namespace LoLTainer.API
         private const string _gameEventUrl = "/liveclientdata/eventdata";
         private const string _activePlayerUrl = "/liveclientdata/activeplayer";
         private const string _playerListUrl = "/liveclientdata/playerlist";
+        private const string _allGameDataUrl = "/liveclientdata/allgamedata";
         #endregion
 
         #region private properties
@@ -31,8 +33,18 @@ namespace LoLTainer.API
         /// <summary>
         /// Defines whether the gameActionCrawling should be done or not, once set on false the next iteration will break the loop. setting to true again will not reactivate the loop.
         /// </summary>
-        private bool _gameActionCrawling = true;
+        private bool _gameActionCrawling = false;
         private string _mostRecentGameEventList;
+        private InGameEventMapper _inGameEventMapper;
+        private TimeSpan OnNoResponseDelayTime = TimeSpan.FromMilliseconds(1000);
+
+        public string ChampionName
+        {
+            get
+            {
+                return this.GetActivePlayer().Result.SummonerName;
+            }
+        }
         #endregion
 
 
@@ -44,40 +56,56 @@ namespace LoLTainer.API
         public InGameApiManager() : base()
         {
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "InGameApiManager started");
-            Task.Run(() =>
-            GameActionLooper(TimeSpan.FromMilliseconds(200)));
+            _inGameEventMapper = new InGameEventMapper(this);
         }
 
         #region Endpoint Rquests
-        public async Task<ActivePlayer> GetActivePlayer() => new ActivePlayer(await GetJObject(_activePlayerUrl));
-        public async Task<PlayerList> GetPlayerList() => new PlayerList(await GetJArray(_playerListUrl));
-        #endregion
-
-        private string GetHTTPResponse(string url)
+        public async Task<ActivePlayer> GetActivePlayer(int retrys = 5)
         {
             try
             {
+                return new ActivePlayer(await GetJObject(_activePlayerUrl));
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Exception getting ActivePlayer from '{0}'; Message: {1}", _activePlayerUrl, ex.Message));
+                return new ActivePlayer(null);
+            }
+        }
+        public async Task<PlayerList> GetPlayerList() => new PlayerList(await GetJArray(_playerListUrl));
+        #endregion
+
+        private async Task<string> GetHTTPResponse(string url, int retrys = -1)
+        {
+            try
+            {
+                Console.WriteLine("Trying HTTPRequest with url " + url);
+
                 string response;
 
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; }; // automatically trust the certificate
                 using (HttpClient Client = new HttpClient())
                 {
-                    HttpResponseMessage Response = Client.GetAsync(url).Result;
+                    HttpResponseMessage Response = await Client.GetAsync(url);
                     Response.EnsureSuccessStatusCode();
 
                     response = Response.Content.ReadAsStringAsync().Result;
                 }
 
+                Console.WriteLine("Successful HTTPRequest with url " + url);
                 return response;
             }
             catch (Exception ex)
             {
-                Task.Delay(1000).Wait();
-                if (!_gameActionCrawling)
+                Connected = false;
+                Loggings.Logger.Log(Loggings.LogType.IngameAPI, string.Format("Exception on GET '{0}'; Message: {1}", url, ex.Message));
+                _inGameEventMapper.PotentialNewGame = true;
+                Task.Delay(OnNoResponseDelayTime).Wait();
+                if (!_gameActionCrawling || retrys == 0)
                 {
                     return null;
                 }
-                return GetHTTPResponse(url);
+                return await GetHTTPResponse(url, retrys - 1);
             }
         }
         private async Task<JObject> GetJObject(string partialUrl)
@@ -86,7 +114,12 @@ namespace LoLTainer.API
 
             string URL = _baseUrl + partialUrl;
 
-            string response = GetHTTPResponse(URL);
+            string response = await GetHTTPResponse(URL);
+
+            if (response == null)
+            {
+                return null;
+            }
 
             return JObject.Parse(response);
         }
@@ -96,7 +129,12 @@ namespace LoLTainer.API
 
             string URL = _baseUrl + partialUrl;
 
-            string response = GetHTTPResponse(URL);
+            string response = await GetHTTPResponse(URL);
+
+            if (response == null)
+            {
+                return null;
+            }
 
             return JArray.Parse(response);
         }
@@ -108,8 +146,8 @@ namespace LoLTainer.API
             {
                 try
                 {
-
                     await GameActionRequester();
+                    Connected = true;
                 }
                 catch (Exception ex)
                 {
@@ -117,6 +155,8 @@ namespace LoLTainer.API
                 }
                 await Task.Delay(delay);
             }
+            Connected = false;
+            _inGameEventMapper.PotentialNewGame = true;
         }
 
         private async Task GameActionRequester()
@@ -124,8 +164,17 @@ namespace LoLTainer.API
             Console.WriteLine("Iteration of GameActionCrawler");
 
             string URL = _baseUrl + _gameEventUrl;
-
-            string response = GetHTTPResponse(URL);
+            string response;
+            try
+            {
+                response = await GetHTTPResponse(URL);
+            }
+            catch (Exception ex)
+            {
+                Connected = false;
+                _inGameEventMapper.PotentialNewGame = true;
+                throw ex;
+            }
 
             if (!_gameActionCrawling)
             {
@@ -154,35 +203,48 @@ namespace LoLTainer.API
             Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Closing InGameApiManager", base.Id);
         }
 
-
-        private void EndAsyncEvent(IAsyncResult iar)
+        public override void Connect()
         {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Connecting with inGame API", base.Id);
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, String.Format("Presets are Connected:{0} Crawling:{1}", this.Connected, _gameActionCrawling), base.Id);
+            if (!this.Connected && !_gameActionCrawling)
+            {
+                this._gameActionCrawling = true;
 
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception ex)
-            {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
+                // Fire and Forget
+                GameActionLooper(TimeSpan.FromMilliseconds(200));
             }
         }
 
-        private void EndAsyncEvent<T>(IAsyncResult iar)
+        public override void DisConnect()
         {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler<T>)ar.AsyncDelegate;
+            Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Disconnecting with inGame API", base.Id);
+            _gameActionCrawling = false;
+        }
 
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception ex)
-            {
-                Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
-            }
+        public override IEnumerable<Event> GetSupportedEvents()
+        {
+            // GameAccurances
+            yield return Event.StartGame;
+
+            // Objectivekills
+            yield return Event.PlayerBaronKill;
+            yield return Event.PlayerDragonKill;
+            yield return Event.PlayerDragonSteal;
+            yield return Event.PlayerBaronSteal;
+
+            yield return Event.AnyNexusDestroyed;
+            yield return Event.EnemyTeamNexusDestroyed;
+            yield return Event.TeamNexusDestroyed;
+
+            yield return Event.PlayerAnyKill;
+            yield return Event.PlayerFirstBlood;
+            // Multikills
+            yield return Event.PlayerSingleKill;
+            yield return Event.PlayerDoubleKill;
+            yield return Event.PlayerTripleKill;
+            yield return Event.PlayerQuodraKill;
+            yield return Event.PlayerPentaKill;
         }
     }
 }

@@ -8,8 +8,8 @@
         Title="LoLTainer" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
@@ -20,6 +20,23 @@
             <StackPanel Name="LeftPanel" Grid.Row="0" Orientation="Vertical">
                 <Image Name="IMGCurrentSummonerIcon" Width="150px" Height="150px" Margin="5,5,5,5"/>
                 <Label Name="LBLSummonerName" HorizontalAlignment="Center" Content="SummonerName" FontSize="20"/>
+                <StackPanel Name="APIConnectionsPanel" Orientation="Vertical">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="App Status" Grid.Column="0" Grid.Row="0"/>
+                        <Button Name="BTNAppStatus" Content="-" BorderThickness="0" Width="100" Margin="10,0,10,0" Grid.Column="1" Click="BTNAppStatus_Click" Grid.Row="0"/>
+                        <Label Content="OBS Status" Grid.Column="0" Grid.Row="1"/>
+                        <Button Name="BTNOBSStatus" Content="-" BorderThickness="0" Width="100" Margin="10,0,10,0" Grid.Column="1" Grid.Row="1" Click="BTNOBSStatus_Click"/>
+                    </Grid>
+                </StackPanel>
                 <StackPanel Name="ClientUpdateFrame">
                     <Label Name="LBLClientStatus" />
                 </StackPanel>
@@ -34,7 +51,7 @@
                 <StackPanel Name="SettingsPanel">
 
                 </StackPanel>
-                <Button Name="BTNAddMapping" Content="Add Mapping" FontSize="20" FontWeight="Bold" Click="BTNAddMapping_Click"/>
+                <Button Name="BTNAddEvent" Content="Add Event" FontSize="20" FontWeight="Bold" Click="BTNAddMapping_Click"/>
 
             </StackPanel>
         </ScrollViewer>

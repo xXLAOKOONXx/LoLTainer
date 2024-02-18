@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -12,7 +14,7 @@ namespace LoLTainer.SettingsManager
 {
     public class SettingsManager : Interfaces.ISettingsManager
     {
-        private List<Setting> _settings;
+        private EventActionSetting _eventActionSetting;
         /// <summary>
         /// Constructor for <see cref="SettingsManager"/>.
         /// Reads stored settings from file or creates a blank list of settings otherwise
@@ -23,17 +25,21 @@ namespace LoLTainer.SettingsManager
             {
                 try
                 {
-                    ReadSettingsFromFile();
+                    ReadSettingsFromFile(_settingsPath);
                 }
                 catch (Exception ex)
                 {
-                    _settings = new List<Setting>();
+                    Loggings.Logger.Log(Loggings.LogType.Settings, string.Format("Exception reading from existing Settingsfile; Message: {0}", ex.Message));
+                    _eventActionSetting = new EventActionSetting();
+                    _eventActionSetting.FileName = _settingsPath;
                 }
             }
             else
             {
-                _settings = new List<Setting>();
+                _eventActionSetting = new EventActionSetting();
+                _eventActionSetting.FileName = _settingsPath;
             }
+            _eventActionSetting.PropertyChanged += (o, s) => this.NotifyPropertyChanged("EventActionSetting");
         }
 
         #region file interactions
@@ -44,12 +50,13 @@ namespace LoLTainer.SettingsManager
                 return Path.Combine(AppContext.BaseDirectory, "soundsettings.lt");
             }
         }
-        private void ReadSettingsFromFile()
+        private void ReadSettingsFromFile(string fileName)
         {
             Loggings.Logger.Log(Loggings.LogType.Settings, "Reading settings from file");
             IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(_settingsPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            _settings = (List<Setting>)formatter.Deserialize(stream);
+            Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            _eventActionSetting = (EventActionSetting)formatter.Deserialize(stream);
+            _eventActionSetting.FileName = fileName;
             stream.Close();
             Loggings.Logger.Log(Loggings.LogType.Settings, "Settings read from file");
         }
@@ -57,68 +64,55 @@ namespace LoLTainer.SettingsManager
         {
             Loggings.Logger.Log(Loggings.LogType.Settings, "Saving settings in file");
             IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(_settingsPath, FileMode.Create, FileAccess.Write, FileShare.None);
-            formatter.Serialize(stream, _settings);
+            Stream stream = new FileStream(_eventActionSetting.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
+            formatter.Serialize(stream, _eventActionSetting);
             stream.Close();
             Loggings.Logger.Log(Loggings.LogType.Settings, "Settings saved in file");
         }
         #endregion
 
         #region ISettingsManager Implementation
-        public bool AddSetting(Setting setting)
+        public void ReadFromFile(string fileName)
         {
-            if (_settings.Select(s => s.Event).Contains(setting.Event))
+            Save();
+            ReadSettingsFromFile(fileName);
+
+        }
+
+        public EventActionSetting EventActionSetting
+        {
+            get
             {
-                Loggings.Logger.Log(Loggings.LogType.Settings, "Adding settings tried, but already exists");
-                return false;
+                return _eventActionSetting;
             }
-            _settings.Add(setting);
-            Loggings.Logger.Log(Loggings.LogType.Settings, "New setting added: " + setting.Event.ToString() + " " + setting.FileName);
+        }
+
+        public void Save()
+        {
             WriteSettingsToFile();
-            return true;
         }
 
-        public bool CheckAllFilesExist()
+        public bool CheckFileExists(EventActionSetting eventActionSetting)
         {
-            Loggings.Logger.Log(Loggings.LogType.Settings, "Checking all files");
-            foreach (var item in _settings)
-            {
-                if (!CheckFileExists(item))
-                {
-                    Loggings.Logger.Log(Loggings.LogType.Settings, "(!) File of setting not existing: " + item.Event.ToString() + " " + item.FileName);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public bool CheckFileExists(Setting setting)
-        {
-            return File.Exists(setting.FileName);
-        }
-
-        public IEnumerable<Setting> GetAllSettings()
-        {
-            foreach (var item in _settings)
-            {
-                yield return item;
-            }
-        }
-
-        public bool RemoveSetting(Setting setting)
-        {
-            var ret = _settings.Remove(setting);
-            Loggings.Logger.Log(Loggings.LogType.Settings, "Returning Setting " + setting.Event.ToString() + " was " + (ret ? "successful" : "unsuccsessful"));
-            if (ret)
-            {
-                this.WriteSettingsToFile();
-            }
-            return ret;
+            return File.Exists(eventActionSetting.FileName);
         }
 
         public void Close()
         {
             WriteSettingsToFile();
+        }
+        #endregion
+
+        #region INotifyPropertyChanged implementation
+        [field: NonSerialized]
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
         #endregion
     }

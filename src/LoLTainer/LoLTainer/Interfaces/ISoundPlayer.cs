@@ -21,13 +21,15 @@ namespace LoLTainer.Interfaces
         /// <param name="playLengthInSec">seconds the file should be played</param>
         /// <param name="volume">volume standardized between 0 and 100. To not change the volume use -1.</param>
         /// <returns></returns>
-        Task PlaySound(int playerId, string fileName, int playLengthInSec, int volume = -1, PlayMode playMode = PlayMode.WaitPlaying);
+        Task PlaySound(string playerId, string fileName,TimeSpan? startTime, TimeSpan? playLength, float volume = -1, PlayMode playMode = PlayMode.WaitPlaying);
+
+        Task PlaySound(Services.PropertyBundleTranslator.SoundPlayerPropertyBundle soundPlayerPropertyBundle);
         /// <summary>
         /// Stops the sound assosiated to a specific <paramref name="playerId"/>
         /// </summary>
         /// <param name="playerId">Id of the player</param>
         /// <returns>Task object</returns>
-        Task StopSound(int playerId);
+        Task StopSound(string playerId);
         /// <summary>
         /// Terminates all Sound that is played right now and cleares all caches
         /// </summary>

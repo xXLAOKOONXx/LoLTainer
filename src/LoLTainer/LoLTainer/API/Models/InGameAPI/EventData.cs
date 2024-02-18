@@ -114,6 +114,14 @@ namespace LoLTainer.API.Models.InGameAPI
             }
 
             /// <summary>
+            /// <para>JSON Property Result translated in Win or Not; determined for player side / blue side if spectator</para>  
+            /// <para>used for <see cref="Event"/> <see cref="EventNames."/> to name who won the game</para>
+            /// </summary>
+            public bool Result
+            {
+                get => _jToken["Result"].ToString() == "Win";
+            }
+            /// <summary>
             /// Method to provide the event data in a readable format.
             /// Returns JToken.ToString()
             /// </summary>
@@ -131,6 +139,10 @@ namespace LoLTainer.API.Models.InGameAPI
             public const string BaronKill = "BaronKill";
             public const string MultiKill = "Multikill";
             public const string FirstBlood = "FirstBlood";
+            public const string TurretKilled = "TurretKilled";
+            public const string InhibKilled = "InhibKilled";
+            public const string GameEnd = "GameEnd";
+            public const string GameStart = "GameStart";
         }
 
     }

@@ -15,9 +15,10 @@ namespace LoLTainer.Models
     {
         private Misc.Event _event;
         private string _fileName;
-        private int _playLengthInSec = 10;
-        private int _soundPlayerGroup = 0;
-        private int _volume = -1;
+        private TimeSpan? _startTime = null;
+        private TimeSpan? _playLength = TimeSpan.FromSeconds(10);
+        private string _soundPlayerGroup = "default";
+        private float _volume = -1;
         private PlayMode _playMode = PlayMode.StopPlaying;
 
         /// <summary>
@@ -34,18 +35,29 @@ namespace LoLTainer.Models
         /// <summary>
         /// Duration to play the sound (in seconds), default value is 10 seconds
         /// </summary>
-        public int PlayLengthInSec
+        public TimeSpan? PlayLength
         {
-            get => _playLengthInSec; set
+            get => _playLength; set
             {
                 NotifyPropertyChanged();
-                _playLengthInSec = value;
+                _playLength = value;
+            }
+        }
+        /// <summary>
+        /// Duration to play the sound (in seconds), default value is 10 seconds
+        /// </summary>
+        public TimeSpan? StartTime
+        {
+            get => _startTime; set
+            {
+                NotifyPropertyChanged();
+                _startTime = value;
             }
         }
         /// <summary>
         /// Group of the Sound. Sounds in the same group override each other, default value is 0;
         /// </summary>
-        public int SoundPlayerGroup
+        public string SoundPlayerGroup
         {
             get => _soundPlayerGroup; set
             {
@@ -67,7 +79,7 @@ namespace LoLTainer.Models
         /// <summary>
         /// The Volume the sound will play at. Normalized to values between 0 and 100. '-1' stands for not changing the volume.
         /// </summary>
-        public int Volume
+        public float Volume
         {
             get => _volume; set
             {

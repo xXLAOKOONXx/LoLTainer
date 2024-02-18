@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LoLTainer.Misc;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,15 +17,11 @@ using WebSocketSharp;
 
 namespace LoLTainer.API
 {
-    public class LCUManager : IdentifiableObject, INotifyPropertyChanged
+    public class LCUManager : EventAPIManagers.BaseEventAPIManager, INotifyPropertyChanged, Interfaces.ILCUAPIInformationProvider
     {
-        public EventHandler<bool> Connected;
+        private bool _tryingToConnect = false;
+
         public EventHandler<bool> InGame;
-        public bool IsConnected
-        {
-            get;
-            private set;
-        }
 
         /// <summary>
         /// ID of the summoner icon the current summoner has equiped
@@ -59,22 +57,23 @@ namespace LoLTainer.API
             }
         }
 
+        private LCUEventMapper _lCUEventMapper;
+
         public LCUManager() : base()
         {
-            Connected += (o, b) => IsConnected = b;
-
             Loggings.Logger.Log(Loggings.LogType.LCU, "Setting up LCU Manager");
             WebsocketMessageEventHandler += OnWebSocketMessage;
             GameFlowSessionEventHandler += OnGameFlowSession;
-            InitiateClientConnection();
+            _lCUEventMapper = new LCUEventMapper(this);
+
             Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Manager set up");
             SummonerChangedEventHandler += OnSummonerChanged;
         }
         /// <summary>
         /// EventArgument = Websocket is active;
         /// </summary>
-        private EventHandler<bool> WebSocketActivityChanged;
-        private WebSocket _clientWebSocket;
+        private EventHandler<bool> WebSocketActivityChanged = null;
+        private WebSocket _clientWebSocket = null;
 
 
         #region private constants
@@ -109,19 +108,44 @@ namespace LoLTainer.API
         public EventHandler<JArray> LobbyChangedEventHandler { get; private set; }
         */
         public EventHandler<JArray> SummonerChangedEventHandler { get; private set; }
+
+        private int _queue = -1;
+        public int QueueId
+        {
+            get => _queue;
+            set
+            {
+                _queue = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string ChampionName => throw new NotImplementedException();
         #endregion
 
         private void OnGameFlowSession(object sender, JArray jArray)
         {
-            var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
-            Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b ? "InGame" : "Not InGame"));
-            InGame?.Invoke(this, b);
+            try
+            {
+                var b = jArray[2]["data"]["phase"].ToString() == "InProgress";
+                Loggings.Logger.Log(Loggings.LogType.LCU, "GameFlowSession message: " + (b ? "InGame" : "Not InGame"));
+                InGame?.Invoke(this, b);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private void OnWebSocketMessage(object sender, MessageEventArgs e)
         {
             Loggings.Logger.Log(Loggings.LogType.LCU, "WebSocket Message received");
             var Messages = JArray.Parse(e.Data);
+
+            /*
+            Console.WriteLine(Messages.ToString());
+            Loggings.Logger.Log(Loggings.LogType.LCU, String.Format("WebSocketMessage received: {0}", Messages.ToString()));
+            */
 
             int MessageType = 0;
             if (!int.TryParse(Messages[0].ToString(), out MessageType) || MessageType != 8)
@@ -229,8 +253,13 @@ namespace LoLTainer.API
         private void OnWebSocketClose(object sender, CloseEventArgs closeEventArgs)
         {
             WebSocketActivityChanged?.Invoke(this, false);
-            Connected?.Invoke(this, false);
-            InitiateClientConnection();
+            Connected = false;
+
+            if (_tryingToConnect)
+            {
+                // Fire and Forget
+                InitiateClientConnection();
+            }
         }
 
 
@@ -248,22 +277,26 @@ namespace LoLTainer.API
                     successfulGetAuth = true;
                     Loggings.Logger.Log(Loggings.LogType.LCU, String.Format("LCU Port: {0}, Token: {1}", port, token));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // No Client found => retry in a few seconds
                     await Task.Delay(10000);
+                    if (!_tryingToConnect)
+                    {
+                        return;
+                    }
                 }
             }
             try
             {
                 SetUpConnection(port: port, token: token);
                 Loggings.Logger.Log(Loggings.LogType.LCU, "LCU Connection established");
-                Connected?.Invoke(this, true);
+                Connected = true;
                 UpdateSummonerInformation();
             }
             catch (Exception ex)
             {
-
+                Loggings.Logger.Log(Loggings.LogType.LCU, string.Format("Uncaught Exception raised in InitiateClientConnection; Message: {0}", ex.Message));
             }
         }
         private void UpdateSummonerInformation(JToken jToken)
@@ -286,7 +319,6 @@ namespace LoLTainer.API
         private void UpdateSummonerInformation()
         {
             string partialUrl = "/lol-summoner/v1/current-summoner";
-            string body = "";
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback +=
@@ -306,18 +338,6 @@ namespace LoLTainer.API
             this.CurrentSummonerName = jArray["displayName"].ToString();
         }
 
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged(string info)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(info));
-            }
-        }
-
         private void EndAsyncEvent<T>(IAsyncResult iar)
         {
             var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
@@ -331,6 +351,33 @@ namespace LoLTainer.API
             {
                 Loggings.Logger.Log(Loggings.LogType.IngameAPI, "Event Listener Error : " + ex.Message, base.Id);
             }
+        }
+
+        public override void Connect()
+        {
+            _tryingToConnect = true;
+
+            // Fire and Forget
+            InitiateClientConnection();
+        }
+
+        public override void DisConnect()
+        {
+            _tryingToConnect = false;
+            if (_clientWebSocket != null)
+            {
+                _clientWebSocket.Close();
+            }
+
+        }
+
+        public override IEnumerable<Event> GetSupportedEvents()
+        {
+            yield return Event.EndGame;
+            yield return Event.EnterChampSelect;
+            yield return Event.EnterGame;
+            yield return Event.EnterLobby;
+            yield return Event.EnterMatchmaking;
         }
     }
 }

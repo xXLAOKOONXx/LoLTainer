@@ -23,14 +23,14 @@ namespace LoLTainer
     public partial class MainWindow : Window
     {
         private JToken _uISettings;
-        private Interfaces.ISettingsManager _settingsManager;
-        private Interfaces.IAPIManager _aPIManager;
+        private ApplicationManager _applicationManager;
+
 
         public MainWindow()
         {
             InitializeComponent();
-            _settingsManager = new SettingsManager.SettingsManager();
-            _aPIManager = new API.APIManager(_settingsManager);
+            _applicationManager = new ApplicationManager();
+
             DrawUISettings();
             DrawList();
             SetBindings();
@@ -38,8 +38,13 @@ namespace LoLTainer
 
         private void SetBindings()
         {
+            /*
+             * TODO
             LBLClientStatus.SetBinding(ContentProperty, _aPIManager.APIConnectionMessageBinding());
-            LBLSummonerName.SetBinding(ContentProperty, _aPIManager.SummonerNameBinding());
+            */
+            var bnd = new Binding("CurrentSummonerName");
+            bnd.Source = _applicationManager.LCUAPIInformationProvider;
+            LBLSummonerName.SetBinding(ContentProperty, bnd);
         }
 
         private void DrawUISettings()
@@ -52,29 +57,57 @@ namespace LoLTainer
 
             _uISettings = uISettings["MainWindow"];
 
-            this.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BackgroundColor"].ToString()));
+            SetBackgroundFromSettings(this, "BackgroundColor");
+            SetBackgroundFromSettings(BTNAddEvent, "BTNAddEventBackgroundColor");
+            BTNAddEvent.BorderThickness = new Thickness(0);
 
-            this.BTNAddMapping.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["BTNAddQueueBackgroundColor"].ToString()));
+            Brush tmpBrush;
+            try
+            {
+                tmpBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["TXTBLKRiotLegalBackgroundColor"].ToString()));
+                TXTBLKRiotLegal.Background = tmpBrush;
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Error getting Color from UISettings; Color:{0}, ErrorMessage:{1}", "TXTBLKRiotLegalBackgroundColor", ex.Message));
+            }
 
-            this.TXTBLKRiotLegal.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings["TXTBLKRiotLegalBackgroundColor"].ToString()));
+            DrawBTNAppStatus();
+            DrawBTNOBSStatus();
+        }
+        private void SetBackgroundFromSettings(Control control, string colorName)
+        {
 
+            Brush tmpBrush;
+            try
+            {
+                tmpBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(_uISettings[colorName].ToString()));
+                control.Background = tmpBrush;
+            }
+            catch (Exception ex)
+            {
+                Loggings.Logger.Log(Loggings.LogType.UI, String.Format("Error getting Color from UISettings; Color:{0}, ErrorMessage:{1}", colorName, ex.Message));
+            }
         }
 
         private void DrawList()
         {
             SettingsPanel.Children.Clear();
 
-            foreach (var item in _settingsManager.GetAllSettings())
+            foreach (var item in _applicationManager.EventActionSetting.Settings)
             {
                 SettingsPanel.Children.Add(GetUIElement(item));
             }
         }
 
-        private UIElement GetUIElement(Setting setting)
+        private UIElement GetUIElement(KeyValuePair<Misc.Event, List<Models.PropertyBundle>> setting)
         {
             var magicWrap = new StackPanel();
+            magicWrap.Margin = new Thickness(0, 0, 0, 1);
             var head = new Button();
-            head.Content = setting.Event;
+            head.Content = setting.Key.ToString();
+            var headBorderThickness = new Thickness(0);
+            head.BorderThickness = headBorderThickness;
             magicWrap.Children.Add(head);
 
             var body = new Grid();
@@ -82,27 +115,20 @@ namespace LoLTainer
             body.ColumnDefinitions.Add(new ColumnDefinition());
             body.ColumnDefinitions.Add(new ColumnDefinition());
             body.ColumnDefinitions.Add(new ColumnDefinition());
+            body.Height = 25;
 
-            var lbl1 = new Label();
-            var bnd = new Binding("FileName");
-            bnd.Source = setting;
-            lbl1.SetBinding(Label.ContentProperty, bnd);
-            lbl1.HorizontalContentAlignment = HorizontalAlignment.Right;
-            lbl1.FlowDirection = FlowDirection.RightToLeft;
-            Grid.SetColumn(lbl1, 0);
-            Grid.SetColumnSpan(lbl1, 2); // As long as no edit Button available this space might be used in that way.
-            body.Children.Add(lbl1);
-
-            /* Edit Button removed at least temporary
-            var btn = new Button();
-            btn.Content = "Edit";
-            Grid.SetColumn(btn, 1);
-            btn.Click += (s, e) =>
+            // Edit Button
+            var editButton = new Button();
+            editButton.Content = "Edit";
+            Grid.SetColumn(editButton, 0);
+            editButton.Click += (s, e) =>
             {
                 ChangeSetting(setting);
             };
-            body.Children.Add(btn);
-            */
+            editButton.BorderThickness = new Thickness(0);
+            body.Children.Add(editButton);
+            SetBackgroundFromSettings(editButton, "BTNEditEventBackgroundColor");
+
 
 
             magicWrap.Children.Add(body);
@@ -134,38 +160,93 @@ namespace LoLTainer
             {
                 this.RemoveSetting(setting);
             };
-
+            BTNDelete.BorderThickness = new Thickness(0);
             Grid.SetColumn(BTNDelete, 2);
 
             return magicWrap;
         }
 
-        private void RemoveSetting(Setting setting)
+        private void RemoveSetting(KeyValuePair<Misc.Event, List<PropertyBundle>> setting)
         {
-            _settingsManager.RemoveSetting(setting);
-            DrawList();
-        }
-        private void AddSetting()
-        {
-            var adder = new Windows.AddSetting(SettingAdd,_settingsManager.GetAllSettings().Select(set => set.Event));
-
-            adder.Show();
-        }
-
-        private void SettingAdd(Setting setting)
-        {
-            _settingsManager.AddSetting(setting);
+            if (!_applicationManager.EventActionSetting.Settings.ContainsKey(setting.Key))
+            {
+                return;
+            }
+            _applicationManager.EventActionSetting.Settings.Remove(setting.Key);
             DrawList();
         }
 
-        private void ChangeSetting(Setting setting)
+        private void ChangeSetting(KeyValuePair<Misc.Event, List<Models.PropertyBundle>> setting)
         {
-            
+            //this.IsEnabled = false;
+            Windows.EditEvent editEvent = new Windows.EditEvent(setting.Key, setting.Value, _applicationManager);
+            editEvent.Show();
+            // TODO Improve Section for error handling + enable disable
         }
+
+        private void EditingEventFinished()
+        {
+            this.IsEnabled = true;
+        }
+
 
         private void BTNAddMapping_Click(object sender, RoutedEventArgs e)
         {
-            AddSetting();
+            this.IsEnabled = false;
+            var win = new Windows.AddEvent(_applicationManager.AllAvailableEvents, AddingEventCompleted);
+            win.Show();
         }
+
+        void AddingEventCompleted(Misc.Event? @event)
+        {
+            this.IsEnabled = true;
+            if (@event != null &&
+                !_applicationManager.EventActionSetting.Settings.ContainsKey((Misc.Event)@event))
+            {
+                _applicationManager.EventActionSetting.Settings.Add((Misc.Event)@event, new List<PropertyBundle>());
+            }
+            _applicationManager.SaveChanges();
+            DrawList();
+        }
+
+        private void BTNAppStatus_Click(object sender, RoutedEventArgs e)
+        {
+            _applicationManager.AppOn = !_applicationManager.AppOn;
+            DrawBTNAppStatus();
+        }
+
+        private void DrawBTNAppStatus()
+        {
+            if (_applicationManager.AppOn)
+            {
+                SetBackgroundFromSettings(BTNAppStatus, "BTNStatusOnBackgroundColor");
+                BTNAppStatus.Content = "On";
+            }
+            else
+            {
+                SetBackgroundFromSettings(BTNAppStatus, "BTNStatusOffBackgroundColor");
+                BTNAppStatus.Content = "Off";
+            }
+        }
+
+        private void BTNOBSStatus_Click(object sender, RoutedEventArgs e)
+        {
+            _applicationManager.OBSOn = !_applicationManager.OBSOn;
+            DrawBTNOBSStatus();
+        }
+        private void DrawBTNOBSStatus()
+        {
+            if (_applicationManager.OBSOn)
+            {
+                SetBackgroundFromSettings(BTNOBSStatus, "BTNStatusOnBackgroundColor");
+                BTNOBSStatus.Content = "On";
+            }
+            else
+            {
+                SetBackgroundFromSettings(BTNOBSStatus, "BTNStatusOffBackgroundColor");
+                BTNOBSStatus.Content = "Off";
+            }
+        }
+
     }
 }
