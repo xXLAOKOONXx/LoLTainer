@@ -6,6 +6,9 @@ You can find all available Events and Actions in the documentation for users '/d
 ## User Documentation
 [Shiny Walk Through](https://github.com/xXLaokoonXx/LoLTainer/blob/master/documentation/user/ShinyUseCase.md)  
 [Events available](https://github.com/xXLaokoonXx/LoLTainer/blob/master/documentation/user/Actions.md)  
+  
+### [Video Guide](https://youtu.be/HYwCLpAhoSI)  
+  
 ## Developer Documentation
 Check out the /documentation/dev/ folder for some outline documentation.  
 Inside the code you should find a handful of inline documentation.  
